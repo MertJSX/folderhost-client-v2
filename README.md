@@ -1,5 +1,5 @@
-# 📁 Folder Host Client ([Folder Host Go](https://github.com/MertJSX/folder-host))
-This is client side of [Folder Host Go](https://github.com/MertJSX/folder-host). The difference of this project is that this project uses Vite instead of Create-React-App. The next update will be switching from Socket.IO to pure WebSocket.
+# 📁 Folder Host Client ([Folderhost Go](https://github.com/MertJSX/folderhost-go))
+This is client side of [Folderhost Go](https://github.com/MertJSX/folderhost-go). The difference of this project is that this project uses Vite instead of Create-React-App. The next update will be switching from Socket.IO to pure WebSocket.
 
 # Screenshots
 ## Explorer
