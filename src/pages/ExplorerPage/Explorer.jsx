@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 import axios from "axios";
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import io from 'socket.io-client';
 
 const ExplorerPage = () => {
@@ -29,6 +30,7 @@ const ExplorerPage = () => {
   const [downloading, setDownloading] = useState(false);
   const [unzipping, setUnzipping] = useState(false);
   const [waitingResponse, setWaitingResponse] = useState(false);
+  const apiBaseURL = API_BASE_URL; 
 
   function getParent(filePath) {
     let lastIndex = filePath.lastIndexOf('/');
@@ -48,53 +50,56 @@ const ExplorerPage = () => {
   }, [path])
 
   useEffect(() => {
-    if (Cookies.get("ip") && Cookies.get("token")) {
+    console.log("API BASE URL");
+    console.log(apiBaseURL);
+    
+    if (Cookies.get("token")) {
       readDir()
-      if (!connected) {
-        socket.current = io(Cookies.get("ip"), { auth: { token: Cookies.get("token") } });
-        setConnected(true)
-        socket.current.on('connect_error', (err) => {
-          console.error("Socket connect error");
-          setTimeout(() => {
-            setError(`Socket: ${err.message}`)
-            setTimeout(() => {
-              setError("")
-            }, 5000);
-          }, 3000);
-        });
+      // if (!connected) {
+      //   socket.current = io(apiBaseURL, { auth: { token: Cookies.get("token") } });
+      //   setConnected(true)
+      //   socket.current.on('connect_error', (err) => {
+      //     console.error("Socket connect error");
+      //     setTimeout(() => {
+      //       setError(`Socket: ${err.message}`)
+      //       setTimeout(() => {
+      //         setError("")
+      //       }, 5000);
+      //     }, 3000);
+      //   });
 
-        socket.current.on('connect', () => {
-          console.log('Connected to the server!');
+      //   socket.current.on('connect', () => {
+      //     console.log('Connected to the server!');
 
-          socket.current.on('unzip-progress', (res) => {
-            setUnzipProgress(res.progress);
-          });
+      //     socket.current.on('unzip-progress', (res) => {
+      //       setUnzipProgress(res.progress);
+      //     });
 
-          socket.current.on('unzip-completed', (res) => {
-            setUnzipping(false);
-            setUnzipProgress(100)
-            setTimeout(() => {
-              setUnzipProgress(0)
-              readDir()
-            }, 3000);
-          });
+      //     socket.current.on('unzip-completed', (res) => {
+      //       setUnzipping(false);
+      //       setUnzipProgress(100)
+      //       setTimeout(() => {
+      //         setUnzipProgress(0)
+      //         readDir()
+      //       }, 3000);
+      //     });
 
-          socket.current.on('error', (res) => {
-            console.error(res);
-            setError(res.err)
-            setTimeout(() => {
-              setError("")
-            }, 5000);
-          });
+      //     socket.current.on('error', (res) => {
+      //       console.error(res);
+      //       setError(res.err)
+      //       setTimeout(() => {
+      //         setError("")
+      //       }, 5000);
+      //     });
 
-          socket.current.on('disconnect', (reason) => {
-            console.warn(`Disconnected from the server: ${reason}`);
-            if (reason !== "transport close") {
-              socket.current = null;
-            }
-          });
-        });
-      }
+      //     socket.current.on('disconnect', (reason) => {
+      //       console.warn(`Disconnected from the server: ${reason}`);
+      //       if (reason !== "transport close") {
+      //         socket.current = null;
+      //       }
+      //     });
+      //   });
+      // }
     } else {
       navigate("/login")
     }
@@ -142,7 +147,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${Cookies.get("ip")}/api/rename-file?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
+    axios.post(`${apiBaseURL}/api/rename-file?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
       { token: Cookies.get("token") })
       .then((data) => {
         setWaitingResponse(false)
@@ -166,7 +171,7 @@ const ExplorerPage = () => {
     } else {
       newPath = newPath + "/" + newName
     }
-    axios.post(`${Cookies.get("ip")}/api/rename-file?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
+    axios.post(`${apiBaseURL}/api/rename-file?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
       { token: Cookies.get("token") })
       .then((data) => {
         setWaitingResponse(false)
@@ -192,7 +197,7 @@ const ExplorerPage = () => {
     } else {
       setDownloading(true);
     }
-    axios.post(`${Cookies.get("ip")}/api/download?filepath=${filepath.slice(1)}`,
+    axios.post(`${apiBaseURL}/api/download?filepath=${filepath.slice(1)}`,
       { token: Cookies.get("token") },
       {
         responseType: "blob",
@@ -238,7 +243,7 @@ const ExplorerPage = () => {
       setWaitingResponse(true);
     }
     let newPath = `${getParent(item.path.slice(0, -1))}`;
-    axios.post(`${Cookies.get("ip")}/api/delete?path=${item.path.slice(1)}`,
+    axios.post(`${apiBaseURL}/api/delete?path=${item.path.slice(1)}`,
       { token: Cookies.get("token") }
     ).then((data) => {
       setWaitingResponse(false)
@@ -272,7 +277,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${Cookies.get("ip")}/api/create-copy?path=${item.path.slice(1)}`,
+    axios.post(`${apiBaseURL}/api/create-copy?path=${item.path.slice(1)}`,
       { token: Cookies.get("token") }
     ).then((data) => {
       setWaitingResponse(false)
@@ -295,7 +300,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${Cookies.get("ip")}/api/write-file?path=${itempath.slice(1)}&type=create`, {
+    axios.post(`${apiBaseURL}/api/write-file?path=${itempath.slice(1)}&type=create`, {
       itemType: itemType,
       itemName: itemName,
       token: Cookies.get("token")
@@ -324,7 +329,7 @@ const ExplorerPage = () => {
       setIsEmpty(false)
       setDir([]);
       setRes("");
-      axios.post(Cookies.get("ip") + `/api/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
+      axios.post(apiBaseURL + `/api/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
         { token: Cookies.get("token") }
       )
         .then((data) => {
@@ -343,7 +348,7 @@ const ExplorerPage = () => {
       setDir([]);
       setIsEmpty(false)
       setRes("");
-      axios.post(Cookies.get("ip") + `/api/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
+      axios.post(apiBaseURL + `/api/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
         { token: Cookies.get("token") }
       ).then((data) => {
         console.log(data.data);
@@ -366,7 +371,7 @@ const ExplorerPage = () => {
       setDir([]);
       setIsEmpty(false)
       setRes("");
-      axios.post(Cookies.get("ip") + `/api/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
+      axios.post(apiBaseURL + `/api/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
         { token: Cookies.get("token") }
       ).then((data) => {
         console.log(data.data);
