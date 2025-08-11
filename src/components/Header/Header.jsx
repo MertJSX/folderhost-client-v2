@@ -6,7 +6,7 @@ const Header = (props) => {
     return (
         <div className='header-container flex flex-row items-center justify-center gap-5 bg-slate-800 p-2 fixed top-0 w-full border-b-2'>
             <h1 className="text-left font-black text-2xl italic select-none">
-                Folder Host
+                FolderHost
             </h1>
             <input
                 type="text"

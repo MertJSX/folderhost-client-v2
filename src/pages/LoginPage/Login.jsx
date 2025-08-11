@@ -44,7 +44,7 @@ const Login = () => {
         <div>
             <div className="flex bg-slate-800 items-center justify-center flex-col m-auto mt-[10%] p-2 gap-4 rounded-lg min-w-[370px] w-1/3 h-[40vh]">
                 <h1 className="text-left font-extrabold text-5xl italic select-none">
-                    Folder Host
+                    FolderHost
                 </h1>
                 <input
                     type="text"
