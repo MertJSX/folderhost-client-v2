@@ -43,7 +43,7 @@ const UploadFile = () => {
           return;
         }
         let progress = progressEvent.progress.toString();
-        progress = progress.split('.')[1]; // Noktadan sonraki kısmı al
+        progress = progress.split('.')[1];
         progress = progress.substring(0, 2);
         setUploadProgress(progress)
       }
