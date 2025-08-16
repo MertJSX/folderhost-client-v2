@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import convertBytesToString from '../../utils/convertBytesToString';
 
 const UploadFile = () => {
   const params = useParams();
@@ -24,49 +25,63 @@ const UploadFile = () => {
     setRes("");
     setErr("");
     setUploadProgress(0);
-  },[file])
+    setUploading(false)
+  }, [file])
 
-  function uploadFile() {
-    let formData = new FormData();
-    formData.append('file', file)
+  async function uploadFile() {
+    const chunkSize = 5 * 1024 * 1024; // 5 MB
+    const totalChunks = Math.ceil(file.size / chunkSize)
+    const progressIndex = 100 / totalChunks;
+    const fileID = Date.now().toString();
+    const fileName = file.name;
+
     setRes("");
     setErr("");
     setUploadProgress(0);
-    axios.post(`${Cookies.get("ip")}/api/upload?path=${path.slice(1)}`, formData, {
-      headers: {
-        'token': Cookies.get("token")
-      },
-      onUploadProgress: (progressEvent) => {
-        console.log(progressEvent);
-        
-        if (progressEvent.progress === 1) {
-          return;
-        }
-        let progress = progressEvent.progress.toString();
-        progress = progress.split('.')[1];
-        progress = progress.substring(0, 2);
-        setUploadProgress(progress)
-      }
-    })
-      .then((data) => {
-        setTimeout(() => {
-          setUploadProgress(100);
-        }, 1000);
-        console.log(data);
-        setUploading(false)
-        if (data.data.response) {
-          setRes(data.data.response)
-        }
-        setTimeout(() => {
-          setRes("");
-        }, 3000);
-      }).catch((err) => {
-        console.error(err);
-        if (err.response) {
-          console.error(err.response);
-          setErr(err.response.data.err)
+    for (let i = 0; i < totalChunks; i++) {
+      console.log("Sending chunk "+i);
+      
+      const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
+      let formData = new FormData();
+      formData.append('file', chunk)
+      formData.append('chunkIndex', i)
+      formData.append('totalChunks', totalChunks)
+      formData.append('fileID', fileID)
+      formData.append('fileName', fileName)
+
+      await axios.post(`${Cookies.get("ip")}/api/upload?path=${path.slice(1)}`, formData, {
+        headers: {
+          'token': Cookies.get("token")
         }
       })
+        .then((data) => {
+          setUploadProgress((prev) => prev + progressIndex)
+          
+          if (data.data.response && !data.data.uploaded) {
+            setRes(`Uploading ${convertBytesToString(chunkSize * i)} / ${convertBytesToString(file.size)}`)
+          }
+          if (data.data.uploaded) {
+            setRes(data.data.response)
+            setUploadProgress(100);
+          }
+        }).catch((err) => {
+          console.error(err);
+          if (err.response) {
+            console.error(err.response);
+            setErr(err.response.data.err)
+          }
+        })
+    }
+
+
+    setUploadProgress(100)
+
+    setTimeout(() => {
+      setUploadProgress(0)
+    }, 1000);
+
+    setUploading(false)
+
   }
 
   return (
