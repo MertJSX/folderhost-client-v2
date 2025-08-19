@@ -50,9 +50,6 @@ const ExplorerPage = () => {
   }, [path])
 
   useEffect(() => {
-    console.log("API BASE URL");
-    console.log(apiBaseURL);
-    
     if (Cookies.get("token")) {
       readDir()
       // if (!connected) {
@@ -147,7 +144,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${apiBaseURL}/api/rename-file?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
+    axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
       { token: Cookies.get("token") })
       .then((data) => {
         setWaitingResponse(false)
@@ -171,7 +168,7 @@ const ExplorerPage = () => {
     } else {
       newPath = newPath + "/" + newName
     }
-    axios.post(`${apiBaseURL}/api/rename-file?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
+    axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
       { token: Cookies.get("token") })
       .then((data) => {
         setWaitingResponse(false)
