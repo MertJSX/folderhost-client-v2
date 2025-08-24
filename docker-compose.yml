@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  folderhost-client: # Service name
+    container_name: folderhost-client
+    build: 
+      context: . # Dockerfile path
+    ports:
+      - "5173:5173"
