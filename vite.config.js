@@ -7,6 +7,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: mode === 'development' ? {
+      host: '0.0.0.0',
+      port: 5173,
       proxy: {
         '/api': {
           target: env.VITE_API_BASE_URL || 'http://localhost:5000',
