@@ -11,15 +11,12 @@ const Header = (props) => {
             <input
                 type="text"
                 className='bg-slate-600 rounded-xl text-center w-1/5 text-gray-400'
-                placeholder='IP'
-                value={Cookies.get("ip")}
+                value={import.meta.env.VITE_API_BASE_URL}
             readOnly/>
             <button
                 className='bg-slate-600 px-4 rounded-xl border-2 border-sky-600 hover:border-sky-700 active:bg-slate-700 font-bold'
                 onClick={() => {
-                    Cookies.remove("ip");
-                    Cookies.remove("username");
-                    Cookies.remove("password");
+                    Cookies.remove("token");
                     navigate("/login");
                 }}
             >

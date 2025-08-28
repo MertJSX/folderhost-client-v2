@@ -15,19 +15,14 @@ const DropdownMenu = () => {
 
     const options = [
         {
-            mode: "balanced",
-            title: 'Balanced mode',
-            description: "You won't get folder size information for child directories, but you won't be slower like the Quality mode."
+            mode: "optimized",
+            title: 'Optimized mode',
+            description: "You will get faster loading, but you won't be able to get folder size information!"
         },
         {
             mode: "quality",
             title: 'Quality mode',
             description: 'This is the slowest plan, but you will get all the folder size and file size information.'
-        },
-        {
-            mode: "optimized",
-            title: 'Optimized mode',
-            description: "You will get faster loading, but you won't be able to get folder size information!"
         }
 
     ];
@@ -59,7 +54,7 @@ const DropdownMenu = () => {
         if (Cookies.get("mode")) {
             setSelectedOption(Cookies.get("mode"))
         } else {
-            setSelectedOption(options[2].title)
+            setSelectedOption(options[0].title)
             Cookies.set("mode", selectedOption)
         }
     }, [])
@@ -70,11 +65,9 @@ const DropdownMenu = () => {
                 onClick={toggleDropdown}
                 className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"
             >
-                {selectedOption === "Optimized mode" ? 
-                    <PiSpeedometerBold size={onButtonSize} /> :
-                    selectedOption === "Quality mode" ?
+                {selectedOption === "Quality mode" ? 
                     <IoDiamond size={onButtonSize} /> :
-                    <FaBalanceScale size={onButtonSize} />
+                    <PiSpeedometerBold size={onButtonSize} />
                 }
                 {selectedOption}
                 {isOpen ? <FaArrowDown size={onButtonSize - 5} /> : <FaArrowLeft size={onButtonSize - 5} />}

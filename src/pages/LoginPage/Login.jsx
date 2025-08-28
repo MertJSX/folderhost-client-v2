@@ -4,22 +4,19 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const Login = () => {
-    const [ip, setIp] = useState(window.location.origin);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [err, setErr] = useState("")
     const navigate = useNavigate();
 
     function verifyPassword() {
-        axios.post(ip + `/api/verify-password`, {
+        axios.post(import.meta.env.VITE_API_BASE_URL + `/api/verify-password`, {
             username: username,
             password: password
         }).then((data) => {
             console.log(data);
             if (data.data.res) {
-                Cookies.set("ip", ip);
                 Cookies.set("token", data.data.token);
-                // navigate(`/explorer/${encodeURIComponent("./")}`); // useless for now
                 navigate('/');
             }
         }).catch((err) => {
@@ -42,19 +39,10 @@ const Login = () => {
 
     return (
         <div>
-            <div className="flex bg-slate-800 items-center justify-center flex-col m-auto mt-[10%] p-2 gap-4 rounded-lg min-w-[370px] w-1/3 h-[40vh]">
+            <div className="flex bg-slate-800 items-center justify-center flex-col m-auto mt-[10%] p-2 gap-4 rounded-lg w-[400px] h-[35vh]">
                 <h1 className="text-left font-extrabold text-5xl italic select-none">
                     FolderHost
                 </h1>
-                <input
-                    type="text"
-                    className='bg-slate-600 rounded w-2/3 text-center m-1 text-2xl min-w-[300px]'
-                    placeholder='IP'
-                    value={ip}
-                    onChange={(e) => {
-                        setIp(e.target.value)
-                    }}
-                />
                 <input
                     type="text"
                     className='bg-slate-600 rounded w-2/3 text-center m-1 text-2xl min-w-[300px]'
@@ -74,7 +62,7 @@ const Login = () => {
                     }}
                 />
                 <button
-                    className='bg-slate-600 w-2/3 px-4 rounded-lg border-2 m-1 mt-2 border-sky-600 hover:border-sky-700 active:bg-slate-700 font-bold text-2xl min-w-[300px]'
+                    className='transition-all bg-sky-700 hover:bg-sky-600 w-2/3 px-4 rounded-lg border-1 m-1 mt-2 active:bg-slate-700 font-bold text-2xl min-w-[300px]'
                     onClick={() => {
                         verifyPassword();
                     }}

@@ -13,8 +13,6 @@ const AllOptions = ({ isOpen, setShowDisabled }) => {
             }
         </>
     )
-
-
 }
 
 export default AllOptions
