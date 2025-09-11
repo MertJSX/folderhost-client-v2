@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
-import io from 'socket.io-client';
 import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp';
+import useWebSocket from '../../utils/useWebSocket';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CodeEditorPage = () => {
     const params = useParams();
@@ -14,26 +15,54 @@ const CodeEditorPage = () => {
     const [res, setRes] = useState("");
     const [readOnly, setReadOnly] = useState(false);
     const [fileTitle, setFileTitle] = useState("")
-    const socket = useRef();
-    const throttleTimeout = useRef(null);
-    const [throttleDelay, setThrottleDelay] = useState(Cookies.get("editor-throttle") || 200)
+    const {
+        isConnected,
+        isConnectedRef,
+        messages,
+        sendMessage
+    } = useWebSocket(path.slice(1))
 
-    function handleEditorChange(value, event) {
-        const THROTTLE_DELAY = throttleDelay; // 200ms delay to throttle changes
-
-        console.log(THROTTLE_DELAY);
-        
-
-        if (throttleTimeout.current) {
-            clearTimeout(throttleTimeout.current);
-        }
-
-        throttleTimeout.current = setTimeout(() => {
-            socket.current.emit("change-file", { path: path.slice(1), content: value });
-        }, THROTTLE_DELAY);
+    function handleEditorChange(event) {
+        sendChangeToWebSocket(event.changes)
     }
+
+    const sendChangeToWebSocket = useCallback((changes) => {
+        if (!isConnectedRef.current || readOnly) return;
+
+        changes.forEach(change => {
+            let changeType;
+            if (change.text && change.range.startLineNumber !== change.range.endLineNumber ||
+                change.range.startColumn !== change.range.endColumn) {
+                changeType = 'replace';
+            } else if (change.text) {
+                changeType = 'insert';
+            } else {
+                changeType = 'delete';
+            }
+
+            const delta = JSON.stringify({
+                type: 'editor-change',
+                path: path.slice(1),
+                change: {
+                    type: changeType,
+                    range: {
+                        startLineNumber: change.range.startLineNumber,
+                        startColumn: change.range.startColumn,
+                        endLineNumber: change.range.endLineNumber,
+                        endColumn: change.range.endColumn
+                    },
+                    text: change.text || '',
+                    timestamp: Date.now()
+                }
+            });
+
+            console.log("Sending delta:", delta);
+            sendMessage(delta);
+        });
+    }, [readOnly]);
+
     function readFile() {
-        axios.post(`${Cookies.get("ip")}/api/read-file?filepath=${path.slice(1)}`,
+        axios.post(`${API_BASE_URL}/api/read-file?filepath=${path.slice(1)}`,
             { token: Cookies.get("token") }).then((data) => {
                 console.log(data.data);
                 if (data.data.res) {
@@ -44,6 +73,7 @@ const CodeEditorPage = () => {
                 }
             })
     }
+
     function detectFileLanguage() {
         const extensionToLanguageMap = {
             "yml": "yaml",
@@ -69,58 +99,27 @@ const CodeEditorPage = () => {
         let fileExtension = path.substring(path.lastIndexOf('.') + 1);
         return extensionToLanguageMap[fileExtension] || "plaintext";
     }
+
     useEffect(() => {
-        if (Cookies.get("ip") && Cookies.get("token")) {
-            readFile(false)
+        if (Cookies.get("token")) {
+            readFile()
         } else {
             navigate("/login");
         }
     }, [])
 
     useEffect(() => {
-        if (!socket.current) {
-            socket.current = io(Cookies.get("ip"), { auth: { token: Cookies.get("token"), watch: path.slice(1) } });
-            socket.current.on('connect_error', (err) => {
-                console.error("Socket connect error");
-                setTimeout(() => {
-                    // setRes(`Socket: ${err.message}`)
-                    setRes(`Socket: Cannot connect to the server!`)
-                    setTimeout(() => {
-                        setRes("")
-                    }, 5000);
-                }, 3000);
-            })
-            socket.current.on('connect', () => {
-                console.log('Connected to the server');
-                socket.current.on('file-changed', (res) => {
-                    if (res.path === path.slice(1)) {
-                        setFileContent(res.fileContent)
-                    }
-                });
-                socket.current.on('error', (res) => {
-                    console.error(res);
-                    setRes(res.err)
-                    setTimeout(() => {
-                        setRes("")
-                    }, 5000);
-                });
-                socket.current.on('disconnect', (reason) => {
-                    console.log(`Disconnected from the server: ${reason}`);
-                    // socket.current = null;
-                });
-            });
+        if (isConnected) {
+            setRes("Connected!")
+            setTimeout(() => {
+                setRes("")
+            }, 1000);
+            return
         }
+        
+        setRes("Connection lost")
 
-        return () => {
-            if (socket.current) {
-                socket.current.off('connect');
-                socket.current.off('file-changed');
-                socket.current.off('disconnect');
-                socket.current.off('error');
-                socket.current.off('connect_error');
-            }
-        };
-    }, [])
+    }, [isConnected])
 
     return (
         <div>
@@ -132,8 +131,8 @@ const CodeEditorPage = () => {
                 response={res}
                 title={fileTitle}
                 readOnly={readOnly}
-                throttleDelay={throttleDelay}
-                setThrottleDelay={setThrottleDelay}
+                isConnected={isConnectedRef}
+                messages={messages}
             />
         </div>
     )
