@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import convertBytesToString from '../../utils/convertBytesToString';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UploadFile = () => {
   const params = useParams();
@@ -49,7 +50,7 @@ const UploadFile = () => {
       formData.append('fileID', fileID)
       formData.append('fileName', fileName)
 
-      await axios.post(`${Cookies.get("ip")}/api/upload?path=${path.slice(1)}`, formData, {
+      await axios.post(`${API_BASE_URL}/api/upload?path=${path.slice(1)}`, formData, {
         headers: {
           'token': Cookies.get("token")
         }
