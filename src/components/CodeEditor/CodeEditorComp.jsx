@@ -10,6 +10,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
   const [editorFontSize, setEditorFontSize] = useState(Cookies.get("editor-fontsize") || 18);
   const [minimap, setMinimap] = useState(Cookies.get("editor-minimap") || true);
   const [toggleSettings, setToggleSettings] = useState(false);
+  const [clientsCount, setClientsCount] = useState(0)
   const isRemoteChangeRef = useRef(false);
   const editorRef = useRef(null);
   const changeTimeoutRef = useRef(null);
@@ -104,8 +105,18 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyZ
       ],
       run: () => {
-        console.log("Undo!");
         editor.trigger("myapp", "undo");
+      }
+    });
+
+    editor.addAction({
+      id: 'redo-file',
+      label: 'Redo File',
+      keybindings: [
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.Shift | monaco.KeyCode.KeyZ
+      ],
+      run: () => {
+        editor.trigger("myapp", "redo");
       }
     });
   });
@@ -123,21 +134,26 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
 
   useEffect(() => {
     if (isConnected.current) {
-      let change = {};
-
-      console.log(messages);
+      let message = {};
       
-
       try {
-        change = JSON.parse(messages[messages.length - 1]).change;
+        message = JSON.parse(messages[messages.length - 1]);
       } catch (err) {
+        console.warn(messages[messages.length - 1]);
+        
         console.error(err);
         return
       }
 
-      isRemoteChangeRef.current = true;
-
-      applyRemoteChange(change)
+      switch (message.type) {
+        case "editor-change":
+          isRemoteChangeRef.current = true;
+          applyRemoteChange(message.change)
+          break;
+        case "editor-update-usercount":
+          setClientsCount(message.count)
+          break;
+      }
     }
   }, [messages])
 
@@ -155,7 +171,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
           forceMoveMarkers: true
         }]);
         break;
-
       case 'delete':
         model.applyEdits([{
           range: change.range,
@@ -163,7 +178,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
           forceMoveMarkers: true
         }]);
         break;
-
       case 'replace':
         model.applyEdits([{
           range: change.range,
@@ -171,19 +185,17 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
           forceMoveMarkers: true
         }]);
         break;
-
       case 'full':
         model.setValue(change.content);
         break;
     }
   };
 
-
-
   return (
     <div>
       <div className="flex flex-col items-center justify-center">
         <div className="flex items-center gap-1 p-2 flex-nowrap">
+          <h1 className='text-lg px-5 text-green-400'>Online: <span className='text-emerald-300'>{clientsCount}</span></h1>
           <h1 className='text-lg italic px-5 text-gray-400 text-nowrap'>Editing: <span className='text-emerald-300'>{title}</span></h1>
           <button
             className='text-lg px-6 border-2 bg-gray-700 hover:bg-gray-800 active:bg-gray-700 border-slate-400 rounded-lg'
