@@ -13,7 +13,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
   const [clientsCount, setClientsCount] = useState(0)
   const isRemoteChangeRef = useRef(false);
   const editorRef = useRef(null);
-  const changeTimeoutRef = useRef(null);
 
   const handleEditorDidMount = useCallback((editor, monaco) => {
 
@@ -73,7 +72,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
       console.log(event);
 
       if (readOnly) {
-        // Salt okunur modda değişiklikleri geri al
         editor.trigger("myapp", "undo");
         return;
       }
@@ -211,7 +209,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
         <div className="flex flex-row w-full justify-center">
           <Editor
             className='mx-auto'
-            width={toggleSettings ? "65vw" : "90vw"} // 68vw and 90vw
+            width={toggleSettings ? "65vw" : "90vw"}
             height="90vh"
             theme="vs-dark"
             onMount={handleEditorDidMount}
@@ -227,8 +225,8 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
               readOnlyMessage: true,
               minimap: {
                 enabled: minimap,
-                renderCharacters: false, // Karakterleri render etmeyi devre dışı bırakma
-                maxColumn: 120 // Minimap'taki sütun sayısını sınırla
+                renderCharacters: false,
+                maxColumn: 120
               },
               scrollBeyondLastLine: false,
               renderWhitespace: 'none',
@@ -239,7 +237,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
                 invincibleCharacters: true,
                 selectOnLineNumbers: true,
                 autoClosingBrackets: 'always',
-                // formatOnType: true,
                 snippetSuggestions: 'inline',
                 suggestOnTriggerCharacters: true,
                 tabCompletion: 'on',
@@ -248,7 +245,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
             }}
             language={editorLanguage}
             value={fileContent}
-          // onChange={handleEditorChange}
           />
           {
             toggleSettings ?
@@ -312,23 +308,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
                     <option value={false}>Disabled</option>
                   </select>
                 </div>
-
-                {/* <div className="flex">
-                  <h1 className='text-lg italic text-nowrap'>Throttle Delay: </h1>
-                  <input
-                    className='bg-gray-600 text-center px-0 mx-2 w-16'
-                    type="number"
-                    value={throttleDelay}
-                    min={0}
-                    max={3000}
-                    step={20}
-                    onChange={(e) => {
-                      setThrottleDelay(parseInt(e.target.value, 10))
-                      Cookies.set("editor-throttle", parseInt(e.target.value, 10))
-                    }} />ms
-                </div> */}
-
-
               </div> :
               null
 
