@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useContext } from 'react'
 import moment from 'moment'
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
 import { FaFileImage } from "react-icons/fa";
 import { FaFilePdf } from "react-icons/fa6";
 import { FaFileArchive } from "react-icons/fa";
-import { FaCopy } from "react-icons/fa";
 import { FaHtml5 } from "react-icons/fa";
 import { FaCss3 } from "react-icons/fa";
 import { IoLogoJavascript } from "react-icons/io";
@@ -14,12 +13,16 @@ import { FaJava } from "react-icons/fa";
 import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
+import ExplorerContext from '../../utils/ExplorerContext';
 
-const ItemInfo = ({ itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping }) => {
+const ItemInfo = () => {
   const renameInput = useRef(null)
   const [folderName, setFolderName] = useState("");
   const [fileName, setFileName] = useState("");
   const logoSize = 75;
+  const {
+    itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping
+  } = useContext(ExplorerContext)
 
   return (
     <div className='flex flex-col bg-gray-700 items-center mt-4 gap-3 w-1/3 mx-auto p-4 min-w-[320px] max-w-[30%] h-auto rounded-xl shadow-2xl'>

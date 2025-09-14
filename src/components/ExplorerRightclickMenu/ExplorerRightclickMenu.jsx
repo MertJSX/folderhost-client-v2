@@ -1,4 +1,8 @@
-const ExplorerRightclickMenu = ({ x, y, itemInfo, permissions, showDisabled }) => {
+import { useContext } from "react"
+import ExplorerContext from "../../utils/ExplorerContext"
+
+const ExplorerRightclickMenu = ({ x, y }) => {
+    const {itemInfo, permissions, showDisabled} = useContext(ExplorerContext)
     return (
         <div
             style={{ top: `${y}px`, left: `${x}px` }}

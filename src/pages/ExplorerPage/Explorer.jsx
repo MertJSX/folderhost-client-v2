@@ -8,7 +8,7 @@ import axios from "axios";
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-import io from 'socket.io-client';
+import ExplorerContext from '../../utils/ExplorerContext';
 
 const ExplorerPage = () => {
   const params = useParams();
@@ -30,7 +30,7 @@ const ExplorerPage = () => {
   const [downloading, setDownloading] = useState(false);
   const [unzipping, setUnzipping] = useState(false);
   const [waitingResponse, setWaitingResponse] = useState(false);
-  const apiBaseURL = API_BASE_URL; 
+  const apiBaseURL = API_BASE_URL;
 
   function getParent(filePath) {
     let lastIndex = filePath.lastIndexOf('/');
@@ -331,7 +331,7 @@ const ExplorerPage = () => {
       )
         .then((data) => {
           console.log(data.data);
-          
+
           setIsEmpty(data.data.isEmpty)
           setDir(data.data.data)
           setPermissions(data.data.permissions)
@@ -349,7 +349,7 @@ const ExplorerPage = () => {
         { token: Cookies.get("token") }
       ).then((data) => {
         console.log(data.data);
-        
+
         if (!data.data.data) {
           setRes(data.data.err)
           return;
@@ -364,7 +364,7 @@ const ExplorerPage = () => {
       })
       return;
     } else if (pathInput) {
-      
+
       setDir([]);
       setIsEmpty(false)
       setRes("");
@@ -372,7 +372,7 @@ const ExplorerPage = () => {
         { token: Cookies.get("token") }
       ).then((data) => {
         console.log(data.data);
-        
+
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);
         setDir(data.data.data)
@@ -399,58 +399,48 @@ const ExplorerPage = () => {
   }
 
   return (
-    <div className='home-container'>
+    <ExplorerContext.Provider
+      value={{
+        path: path,
+        setPath: setPath,
+        readDir: readDir,
+        error: error,
+        response: response,
+        setShowDisabled: setShowDisabled,
+        directory: directory,
+        setDirectory: setDir,
+        itemInfo: itemInfo,
+        setItemInfo: setItemInfo,
+        isEmpty: isEmpty,
+        moveItem: moveItem,
+        getParent: getParent,
+        directoryInfo: directoryInfo,
+        downloading: downloading,
+        unzipping: unzipping,
+        waitingResponse: waitingResponse,
+        permissions: permissions,
+        unzipProgress: unzipProgress,
+        createCopy: createCopy,
+        startUnzipping: startUnzipping,
+        createItem: createItem,
+        deleteItem: deleteItem,
+        renameItem: renameItem,
+        downloadFile: downloadFile
+
+      }}
+      className='home-container'>
       <Header />
-      <OptionsBar
-        path={path}
-        setPath={setPath}
-        readDir={readDir}
-        error={error}
-        response={response}
-        setShowDisabled={setShowDisabled}
-      />
+      <OptionsBar />
       <div className="flex flex-row w-full justify-center items-center flex-wrap">
-        <FileExplorer
-          directory={directory}
-          setDirectory={setDir}
-          setDir={setDir}
-          itemInfo={itemInfo}
-          setItemInfo={setItemInfo}
-          isEmpty={isEmpty}
-          readDir={readDir}
-          path={path}
-          response={response}
-          moveItem={moveItem}
-          getParent={getParent}
-          directoryInfo={directoryInfo}
-          downloading={downloading}
-          unzipping={unzipping}
-          waitingResponse={waitingResponse}
-          permissions={permissions}
-          showDisabled={showDisabled}
-        />
+        <FileExplorer />
         {
-          Object.keys(itemInfo).length !== 0 ? (
-            <ItemInfo
-              itemInfo={itemInfo}
-              setItemInfo={setItemInfo}
-              renameItem={renameItem}
-              downloadFile={downloadFile}
-              downloadProgress={downloadProgress}
-              deleteItem={deleteItem}
-              createCopy={createCopy}
-              path={path}
-              createItem={createItem}
-              unzipProgress={unzipProgress}
-              permissions={permissions}
-              showDisabled={showDisabled}
-              startUnzipping={startUnzipping}
-            />
-          ) : null
+          Object.keys(itemInfo).length !== 0 && (
+            <ItemInfo />
+          )
         }
       </div>
 
-    </div>
+    </ExplorerContext.Provider>
   )
 }
 

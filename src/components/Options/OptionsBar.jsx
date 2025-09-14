@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AllOptions from './AllOptions';
 import { IoMdSettings } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa";
+import ExplorerContext from '../../utils/ExplorerContext';
 
 
-const OptionsBar = ({path, setPath, readDir, error, response, setShowDisabled}) => {
+const OptionsBar = () => {
     const [settings, setSettings] = useState(false);
     const navigate = useNavigate();
     const buttonSize = 20;
+    const {
+        path, setPath, readDir, error, response, setShowDisabled
+    } = useContext(ExplorerContext)
     return (
         <div className='flex bg-slate-800 flex-col justify-center w-full mt-14 gap-5 p-2'>
             <div className='flex w-full justify-center'>

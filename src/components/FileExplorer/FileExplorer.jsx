@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useContext } from 'react'
 import moment from 'moment';
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
@@ -16,8 +16,9 @@ import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
 import convertToBytes from '../../utils/convertToBytes';
 import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
+import ExplorerContext from '../../utils/ExplorerContext';
 
-const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, permissions, showDisabled }) => {
+const FileExplorer = () => {
   const [draggedItem, setDraggedItem] = useState({});
   const [dropTarget, setDropTarget] = useState("");
   const childElements = useRef([]);
@@ -28,11 +29,14 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
     x: 0,
     y: 0
   })
+  const {
+    directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse
+  } = useContext(ExplorerContext)
 
   function handleContextMenu(event, element) {
     event.preventDefault()
     console.log("Event fired!");
-    
+
     if (!element) {
       setContextMenu({ show: false, x: event.pageX, y: event.pageY })
       return
@@ -139,7 +143,6 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                 }}
               >
                 <IoMdArrowBack size={22} className='mx-2' />
-                {/* <h1 className='text-lg'>{"<--"}</h1> */}
               </button>
             ) : isEmpty ?
               (
@@ -150,7 +153,6 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                 >
                   <FaFolder size={22} className='mx-2' />
                   <IoMdArrowBack size={22} className='mx-2' />
-                  {/* <h1 className='text-lg'>{"<--"}</h1> */}
                 </button>
               ) : null
         }
@@ -163,7 +165,6 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
             >
               <FaFolderOpen size={22} className='mx-2' />
               <h1 className='text-base text-gray-300 mr-2'>{directoryInfo.name}</h1>
-              {/* <h1 className='text-lg'>{"<--"}</h1> */}
             </div> : null
 
         }
@@ -201,14 +202,12 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
           }}
         >Size</h1>
       </div>
-      <div className='flex flex-col gap-2 overflow-hidden overflow-y-scroll' onContextMenu={(e) => {handleContextMenu(e, null)}}>
-        {contextMenu.show && 
-        <ExplorerRightclickMenu 
-        x={contextMenu.x} 
-        y={contextMenu.y} 
-        itemInfo={itemInfo}
-        permissions={permissions}
-         />}
+      <div className='flex flex-col gap-2 overflow-hidden overflow-y-scroll' onContextMenu={(e) => { handleContextMenu(e, null) }}>
+        {contextMenu.show &&
+          <ExplorerRightclickMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+          />}
         {
           directory[0] !== undefined ?
             directory.map((element) => (
@@ -262,7 +261,7 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                 }}
                 key={element.id}
                 onClick={() => {
-                  setContextMenu({show: false, x: 0, y: 0})
+                  setContextMenu({ show: false, x: 0, y: 0 })
                   if (!waitingResponse && !downloading && !unzipping) {
                     setItemInfo(element);
                   }
@@ -306,7 +305,6 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                                       <IoLogoJavascript size={22} className='mx-2' /> :
                                       <FaFileAlt size={22} className='mx-2' />
                 }
-                {/* <h1 className='text-lg text-wrap w-1/3'>{element.name.length > 18 ? `${element.name.slice(0, 19)} (...)` : element.name}</h1> */}
                 <h1 className='text-lg text-left text-wrap break-words w-1/3'>{element.name}</h1>
                 <h1 className='text-sm text-left pl-10 mx-auto text-gray-400 w-1/3'>{moment(element.dateModified).format("Do MMMM YYYY HH:mm")}</h1>
                 {
