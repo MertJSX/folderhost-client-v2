@@ -426,6 +426,8 @@ const ExplorerPage = () => {
           downloading={downloading}
           unzipping={unzipping}
           waitingResponse={waitingResponse}
+          permissions={permissions}
+          showDisabled={showDisabled}
         />
         {
           Object.keys(itemInfo).length !== 0 ? (

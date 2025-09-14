@@ -15,13 +15,33 @@ import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
 import convertToBytes from '../../utils/convertToBytes';
+import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
 
-const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse }) => {
+const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, permissions, showDisabled }) => {
   const [draggedItem, setDraggedItem] = useState({});
   const [dropTarget, setDropTarget] = useState("");
   const childElements = useRef([]);
   const previousDirRef = useRef();
   const [selectedChildEl, setSelectedChildEl] = useState(null);
+  const [contextMenu, setContextMenu] = useState({
+    show: false,
+    x: 0,
+    y: 0
+  })
+
+  function handleContextMenu(event, element) {
+    event.preventDefault()
+    console.log("Event fired!");
+    
+    if (!element) {
+      setContextMenu({ show: false, x: event.pageX, y: event.pageY })
+      return
+    }
+    if (!waitingResponse && !downloading && !unzipping) {
+      setItemInfo(element);
+      setContextMenu({ show: true, x: event.pageX, y: event.pageY })
+    }
+  }
 
   useEffect(() => {
     if (dropTarget) {
@@ -181,7 +201,14 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
           }}
         >Size</h1>
       </div>
-      <div className='flex flex-col gap-2 overflow-hidden overflow-y-scroll'>
+      <div className='flex flex-col gap-2 overflow-hidden overflow-y-scroll' onContextMenu={(e) => {handleContextMenu(e, null)}}>
+        {contextMenu.show && 
+        <ExplorerRightclickMenu 
+        x={contextMenu.x} 
+        y={contextMenu.y} 
+        itemInfo={itemInfo}
+        permissions={permissions}
+         />}
         {
           directory[0] !== undefined ?
             directory.map((element) => (
@@ -235,9 +262,14 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                 }}
                 key={element.id}
                 onClick={() => {
+                  setContextMenu({show: false, x: 0, y: 0})
                   if (!waitingResponse && !downloading && !unzipping) {
                     setItemInfo(element);
                   }
+                }}
+                onContextMenu={(event) => {
+                  event.stopPropagation();
+                  handleContextMenu(event, element)
                 }}
                 onDoubleClick={() => {
                   if (element.isDirectory) {
@@ -298,13 +330,13 @@ const FileExplorer = ({ directory, setDirectory, directoryInfo, moveItem, itemIn
                 <FaFolderOpen size={22} className='mx-2' />
                 <h1 className='text-lg'>Empty folder</h1>
               </div>
-            ) : <h1 className='text-2xl'>{response ? <span className='text-amber-200'>{response}</span> : 
-            (
-              <div className='flex items-center justify-center'>
-                Loading
-                <img src='/loading2.gif' width={40} height={40} className='select-none' alt='' />
-              </div>
-            )}</h1>
+            ) : <h1 className='text-2xl'>{response ? <span className='text-amber-200'>{response}</span> :
+              (
+                <div className='flex items-center justify-center'>
+                  Loading
+                  <img src='/loading2.gif' width={40} height={40} className='select-none' alt='' />
+                </div>
+              )}</h1>
         }
       </div>
 
