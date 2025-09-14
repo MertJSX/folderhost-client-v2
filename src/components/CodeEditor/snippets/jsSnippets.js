@@ -8,6 +8,20 @@ export const jsSnippets = (monaco) => {
             documentation: 'Creates a new function'
         },
         {
+            label: 'while',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: `while(\${1:condition}) {\n\t$0\n}`,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Creates a while loop'
+        },
+        {
+            label: 'for',
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: `for(int i = 0;i < \${1:item}.length;i++) {\n\t$0\n}`,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: 'Creates a while loop'
+        },
+        {
             label: 'if',
             kind: monaco.languages.CompletionItemKind.Snippet,
             insertText: `if (\${1:condition}) {\n\t$0\n}`,
