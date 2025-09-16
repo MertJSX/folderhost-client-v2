@@ -24,21 +24,15 @@ const FileExplorer = () => {
   const childElements = useRef([]);
   const previousDirRef = useRef();
   const [selectedChildEl, setSelectedChildEl] = useState(null);
-  const [contextMenu, setContextMenu] = useState({
-    show: false,
-    x: 0,
-    y: 0
-  })
   const {
-    directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse
+    directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
   } = useContext(ExplorerContext)
 
   function handleContextMenu(event, element) {
     event.preventDefault()
-    console.log("Event fired!");
-
     if (!element) {
-      setContextMenu({ show: false, x: event.pageX, y: event.pageY })
+      setItemInfo(directoryInfo)
+      setContextMenu({ show: true, x: event.pageX, y: event.pageY })
       return
     }
     if (!waitingResponse && !downloading && !unzipping) {
@@ -202,7 +196,7 @@ const FileExplorer = () => {
           }}
         >Size</h1>
       </div>
-      <div className='flex flex-col gap-2 overflow-hidden overflow-y-scroll' onContextMenu={(e) => { handleContextMenu(e, null) }}>
+      <div className='flex flex-col gap-2 overflow-hidden overflow-y-auto h-[100%]' onContextMenu={(e) => { handleContextMenu(e, null) }}>
         {contextMenu.show &&
           <ExplorerRightclickMenu
             x={contextMenu.x}

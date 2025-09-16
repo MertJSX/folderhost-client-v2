@@ -25,6 +25,11 @@ const ExplorerPage = () => {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [unzipProgress, setUnzipProgress] = useState(0)
   const [connected, setConnected] = useState(false);
+  const [contextMenu, setContextMenu] = useState({
+    show: false,
+    x: 0,
+    y: 0
+  })
   const socket = useRef();
   // Work states
   const [downloading, setDownloading] = useState(false);
@@ -425,7 +430,9 @@ const ExplorerPage = () => {
         createItem: createItem,
         deleteItem: deleteItem,
         renameItem: renameItem,
-        downloadFile: downloadFile
+        downloadFile: downloadFile,
+        contextMenu: contextMenu,
+        setContextMenu: setContextMenu
 
       }}
       className='home-container'>
