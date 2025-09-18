@@ -9,6 +9,7 @@ import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import ExplorerContext from '../../utils/ExplorerContext';
+import MessageBox from '../../components/MessageBox/MessageBox';
 
 const ExplorerPage = () => {
   const params = useParams();
@@ -25,6 +26,8 @@ const ExplorerPage = () => {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [unzipProgress, setUnzipProgress] = useState(0)
   const [connected, setConnected] = useState(false);
+  const [messageBoxMsg, setMessageBoxMsg] = useState("")
+  const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -113,9 +116,6 @@ const ExplorerPage = () => {
     } else {
       setError(error);
     }
-    setTimeout(() => {
-      setError("")
-    }, 5000);
   }
 
   function handleError(err, isErrorData) {
@@ -134,6 +134,16 @@ const ExplorerPage = () => {
       declareError("Cannot connect to the server!")
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      setMessageBoxMsg(error)
+      setMessageBoxIsErr(true)
+    } else {
+      setMessageBoxMsg(response)
+      setMessageBoxIsErr(false)
+    }
+  }, [error, response])
 
   function waitPreviousAction() {
     setError("You should wait!")
@@ -295,16 +305,14 @@ const ExplorerPage = () => {
     })
   }
 
-  function createItem(itempath, itemType, itemName) {
+  function createItem(itempath, isFolder, itemName) {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${apiBaseURL}/api/write-file?path=${itempath.slice(1)}&type=create`, {
-      itemType: itemType,
-      itemName: itemName,
+    axios.post(`${apiBaseURL}/api/create-item?path=${itempath.slice(1)}&isFolder=${isFolder}&itemName=${itemName}`, {
       token: Cookies.get("token")
     })
       .then((data) => {
@@ -432,20 +440,24 @@ const ExplorerPage = () => {
         renameItem: renameItem,
         downloadFile: downloadFile,
         contextMenu: contextMenu,
-        setContextMenu: setContextMenu
+        setContextMenu: setContextMenu,
+        setMessageBoxIsErr: setMessageBoxIsErr,
+        setMessageBoxMsg: setMessageBoxMsg,
+        setError: setError,
+        setRes: setRes
 
-      }}
-      className='home-container'>
+      }}>
       <Header />
       <OptionsBar />
-      <div className="flex flex-row w-full justify-center items-center flex-wrap">
+      <main className="relative flex flex-row w-full justify-center items-center flex-wrap min-h-[94.2%]">
+        <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
         <FileExplorer />
         {
           Object.keys(itemInfo).length !== 0 && (
             <ItemInfo />
           )
         }
-      </div>
+      </main>
 
     </ExplorerContext.Provider>
   )

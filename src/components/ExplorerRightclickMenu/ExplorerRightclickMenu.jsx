@@ -6,7 +6,7 @@ const ExplorerRightclickMenu = ({ x, y }) => {
     return (
         <div
             style={{ top: `${y}px`, left: `${x}px` }}
-            className='flex flex-col items-start bg-gray-800 rounded-lg text-white p-1 absolute z-20 w-40'
+            className='flex flex-col items-start bg-gray-800 rounded-lg text-white p-1 fixed z-20 w-40'
         >
             {!itemInfo.isDirectory ? (
                 <>
