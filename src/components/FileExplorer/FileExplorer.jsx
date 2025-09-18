@@ -92,7 +92,7 @@ const FileExplorer = () => {
   }
 
   return (
-    <div className='flex flex-col resize overflow-auto bg-gray-700 mt-4 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl'>
+    <div className='flex flex-col resize overflow-auto bg-gray-700 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl'>
       <div className='flex gap-2'>
         {
           directory ?
