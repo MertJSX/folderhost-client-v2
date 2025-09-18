@@ -53,10 +53,6 @@ const OptionsBar = () => {
                 </button>
             </div>
             <AllOptions isOpen={settings} setShowDisabled={setShowDisabled} />
-            {/* {response ?
-                <h1 className='text-emerald-400 text-2xl text-center'>{response}</h1>
-                : error ? <h1 className='text-red-500 text-2xl text-center'>{error}</h1> : null
-            } */}
         </div>
     )
 }
