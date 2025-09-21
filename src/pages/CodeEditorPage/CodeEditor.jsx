@@ -131,7 +131,7 @@ const CodeEditorPage = () => {
                 response={res}
                 title={fileTitle}
                 readOnly={readOnly}
-                isConnected={isConnectedRef}
+                isConnectedRef={isConnectedRef}
                 messages={messages}
             />
         </div>

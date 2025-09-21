@@ -6,7 +6,7 @@ import { yamlSnippets } from './snippets/yamlSnippets';
 import theme from './themes/theme.json'
 import Cookies from 'js-cookie';
 
-const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnected }) => {
+const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef }) => {
   const [editorFontSize, setEditorFontSize] = useState(Cookies.get("editor-fontsize") || 18);
   const [minimap, setMinimap] = useState(Cookies.get("editor-minimap") || true);
   const [toggleSettings, setToggleSettings] = useState(false);
@@ -131,7 +131,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
   }, [readOnly, fileContent])
 
   useEffect(() => {
-    if (isConnected.current) {
+    if (isConnectedRef.current) {
       let message = {};
       
       try {
