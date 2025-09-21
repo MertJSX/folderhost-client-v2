@@ -10,6 +10,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import ExplorerContext from '../../utils/ExplorerContext';
 import MessageBox from '../../components/MessageBox/MessageBox';
+import useWebSocket from '../../utils/useWebSocket';
 
 const ExplorerPage = () => {
   const params = useParams();
@@ -24,7 +25,7 @@ const ExplorerPage = () => {
   const [response, setRes] = useState("");
   const [error, setError] = useState("");
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [unzipProgress, setUnzipProgress] = useState(0)
+  const [unzipProgress, setUnzipProgress] = useState("") // formatted unzip size
   const [connected, setConnected] = useState(false);
   const [messageBoxMsg, setMessageBoxMsg] = useState("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
@@ -34,6 +35,13 @@ const ExplorerPage = () => {
     y: 0
   })
   const socket = useRef();
+  const {
+    isConnected,
+    isConnectedRef,
+    messages,
+    sendMessage,
+    connectionError
+  } = useWebSocket(path.slice(1))
   // Work states
   const [downloading, setDownloading] = useState(false);
   const [unzipping, setUnzipping] = useState(false);
@@ -58,60 +66,60 @@ const ExplorerPage = () => {
   }, [path])
 
   useEffect(() => {
+    if (isConnected) {
+      setError("")
+      return
+    }
+
+    if (connectionError) {
+      setError("WebSocket connection error!")
+    }
+  }, [isConnected])
+
+
+  useEffect(() => {
+    if (isConnectedRef.current) {
+      let message = {};
+
+      try {
+        message = JSON.parse(messages[messages.length - 1]);
+      } catch (err) {
+        console.warn(messages[messages.length - 1]);
+
+        console.error(err);
+        return
+      }
+
+      switch (message.type) {
+        case "unzip-progress":
+          setUnzipProgress(message.totalSize)
+          if (message.abortMsg) {
+            readDir()
+            setUnzipProgress("")
+            setUnzipping(false)
+            setError(message.abortMsg)
+          }
+          if (message.isCompleted) {
+            readDir()
+            setUnzipProgress("")
+            setUnzipping(false)
+            setRes("Unzip completed successfully!")
+          }
+          break;
+      }
+    }
+  }, [messages])
+
+  useEffect(() => {
     if (Cookies.get("token")) {
       readDir()
-      // if (!connected) {
-      //   socket.current = io(apiBaseURL, { auth: { token: Cookies.get("token") } });
-      //   setConnected(true)
-      //   socket.current.on('connect_error', (err) => {
-      //     console.error("Socket connect error");
-      //     setTimeout(() => {
-      //       setError(`Socket: ${err.message}`)
-      //       setTimeout(() => {
-      //         setError("")
-      //       }, 5000);
-      //     }, 3000);
-      //   });
-
-      //   socket.current.on('connect', () => {
-      //     console.log('Connected to the server!');
-
-      //     socket.current.on('unzip-progress', (res) => {
-      //       setUnzipProgress(res.progress);
-      //     });
-
-      //     socket.current.on('unzip-completed', (res) => {
-      //       setUnzipping(false);
-      //       setUnzipProgress(100)
-      //       setTimeout(() => {
-      //         setUnzipProgress(0)
-      //         readDir()
-      //       }, 3000);
-      //     });
-
-      //     socket.current.on('error', (res) => {
-      //       console.error(res);
-      //       setError(res.err)
-      //       setTimeout(() => {
-      //         setError("")
-      //       }, 5000);
-      //     });
-
-      //     socket.current.on('disconnect', (reason) => {
-      //       console.warn(`Disconnected from the server: ${reason}`);
-      //       if (reason !== "transport close") {
-      //         socket.current = null;
-      //       }
-      //     });
-      //   });
-      // }
     } else {
       navigate("/login")
     }
   }, [])
 
   function declareError(error, client = true) {
-      setError(`${error}`);
+    setError(`${error}`);
   }
 
   function handleError(err, isErrorData) {
@@ -157,7 +165,7 @@ const ExplorerPage = () => {
     }
     axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
       { token: Cookies.get("token") })
-      .then((data) => {
+      .then(() => {
         setWaitingResponse(false)
         readDir();
       }).catch((err) => {
@@ -181,7 +189,7 @@ const ExplorerPage = () => {
     }
     axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
       { token: Cookies.get("token") })
-      .then((data) => {
+      .then(() => {
         setWaitingResponse(false)
         if (item.isDirectory) {
           if (item.path === `${path}/`) {
@@ -401,9 +409,13 @@ const ExplorerPage = () => {
     }
     if (socket !== null) {
       setUnzipping(true);
-      socket.current.emit("unzip", {
+      sendMessage(JSON.stringify({
+        type: "unzip",
         path: itemInfo.path.slice(1)
-      })
+      }))
+      // socket.current.emit("unzip", {
+      //   path: itemInfo.path.slice(1)
+      // })
     }
   }
 
@@ -437,7 +449,6 @@ const ExplorerPage = () => {
         downloadFile: downloadFile,
         contextMenu: contextMenu,
         setContextMenu: setContextMenu,
-        setMessageBoxIsErr: setMessageBoxIsErr,
         setMessageBoxMsg: setMessageBoxMsg,
         setError: setError,
         setRes: setRes

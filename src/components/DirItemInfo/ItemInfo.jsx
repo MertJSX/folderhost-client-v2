@@ -160,7 +160,7 @@ const ItemInfo = () => {
                 disabled
               >Create copy</button> : null
           }
-          {itemInfo.name.split(".").pop() === "zip" && unzipProgress === 0 ?
+          {itemInfo.name.split(".").pop() === "zip" && unzipProgress === "" ?
             (permissions.unzip ?
               <button
                 className='bg-yellow-600 px-6 font-bold rounded-xl'
@@ -174,12 +174,10 @@ const ItemInfo = () => {
                 title='No permission!'
                 disabled
               >Unzip</button> : null)
-            : itemInfo.name.split(".").pop() === "zip" && unzipProgress > 0 ?
+            : itemInfo.name.split(".").pop() === "zip" && unzipProgress !== "" ?
               <div>
-                <h1 className="text-center">{unzipProgress === 100 ? "Unzipped" : unzipProgress >= 1 ? `Unzipping... ${unzipProgress}%` : "Unzipping..."}</h1>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                  <div className="bg-yellow-600 h-2.5 rounded-full" style={{ width: `${unzipProgress}%` }} />
-                </div>
+                <h1 className='text-center'>Unzipping...</h1>
+                <h1 className='text-center text-xl'>Progress: <span className='text-sky-300'>{unzipProgress}</span></h1>
               </div> : null
           }
           {!downloadProgress ?
