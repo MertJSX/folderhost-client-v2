@@ -4,7 +4,7 @@ import { useContext } from "react";
 import ExplorerContext from "../../utils/ExplorerContext";
 
 const MessageBox = ({ message, isErr }) => {
-    const { setMessageBoxMsg, setMessageBoxErr, setError, setRes } = useContext(ExplorerContext)
+    const { setMessageBoxMsg, setError, setRes } = useContext(ExplorerContext)
     return message && (
         <section className='bg-black absolute inset-0 flex items-center justify-center w-full bg-opacity-60'>
             <div className={`flex flex-col justify-center items-center bg-slate-800 border-2 rounded-xl w-[550px] p-5 ${isErr ? "border-red-400" : "border-sky-400"}`}>
@@ -19,7 +19,6 @@ const MessageBox = ({ message, isErr }) => {
                         setError("")
                         setRes("")
                         setMessageBoxMsg("")
-                        setMessageBoxErr(false)
                     }}
                 >Okay</button>
             </div>
