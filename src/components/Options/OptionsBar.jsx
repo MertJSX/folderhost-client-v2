@@ -12,14 +12,15 @@ const OptionsBar = () => {
     const navigate = useNavigate();
     const buttonSize = 20;
     const {
-        path, setPath, readDir, error, response, setShowDisabled
+        path, setPath, readDir, setShowDisabled
     } = useContext(ExplorerContext)
     return (
-        <div className='flex bg-slate-800 flex-col justify-center w-full mt-14 gap-5 p-2'>
+        <div className='flex flex-col justify-center w-11/12 mx-auto pt-10 gap-5 p-2'>
             <div className='flex w-full justify-center'>
                 <input
                     type="text"
-                    className='w-1/2 bg-slate-600 text-lg min-w-[300px] font-bold font-mono rounded-t-lg rounded-l-lg rounded-b-lg rounded-r-none rounded-tr-none px-2'
+                    spellCheck={false}
+                    className='w-1/2 bg-slate-600 text-base min-w-[300px] font-bold font-sans rounded-t-lg rounded-l-lg rounded-b-lg rounded-r-none rounded-tr-none px-2'
                     placeholder='Path'
                     value={path}
                     onKeyDown={(e) => {

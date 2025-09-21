@@ -1,10 +1,10 @@
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 
-const Header = (props) => {
+const Header = () => {
     let navigate = useNavigate();
     return (
-        <div className='header-container flex flex-row items-center justify-center gap-5 bg-slate-800 p-2 fixed top-0 w-full border-b-2'>
+        <div className='header-container flex flex-row items-center justify-center gap-5 bg-slate-800 p-2 sticky left-0 right-0 top-0 w-full border-b-2'>
             <h1 className="text-left font-black text-2xl italic select-none">
                 FolderHost
             </h1>

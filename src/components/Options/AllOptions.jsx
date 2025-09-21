@@ -1,4 +1,4 @@
-import DropdownMenu from './DropdownMenu';
+import ChangeMode from './ChangeMode';
 import ShowDisabled from './ShowDisabled';
 
 const AllOptions = ({ isOpen, setShowDisabled }) => {
@@ -6,7 +6,7 @@ const AllOptions = ({ isOpen, setShowDisabled }) => {
         <>
             {isOpen ?
                 <div className='flex flex-row flex-wrap justify-center'>
-                   <DropdownMenu />
+                   <ChangeMode />
                    <ShowDisabled setShowDisabled={setShowDisabled} />
                 </div> :
                 null

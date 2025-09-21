@@ -111,11 +111,7 @@ const ExplorerPage = () => {
   }, [])
 
   function declareError(error, client = true) {
-    if (client) {
-      setError(`Client: ${error}`);
-    } else {
-      setError(error);
-    }
+      setError(`${error}`);
   }
 
   function handleError(err, isErrorData) {
@@ -146,7 +142,7 @@ const ExplorerPage = () => {
   }, [error, response])
 
   function waitPreviousAction() {
-    setError("You should wait!")
+    setError("You must wait previus action to be completed!")
     setTimeout(() => {
       setError("")
     }, 3000);
@@ -448,16 +444,23 @@ const ExplorerPage = () => {
 
       }}>
       <Header />
-      <OptionsBar />
-      <main className="relative flex flex-row w-full justify-center items-center flex-wrap min-h-[94.2%]">
-        <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
-        <FileExplorer />
-        {
-          Object.keys(itemInfo).length !== 0 && (
-            <ItemInfo />
-          )
-        }
-      </main>
+      <div className='relative'>
+        <OptionsBar />
+        <main className="flex flex-row w-full justify-center items-center flex-wrap min-h-[calc(100vh-134px)]"
+          onClick={(e) => {
+            setContextMenu({ show: false, x: e.pageX, y: e.pageY })
+          }}
+        >
+          <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
+          <FileExplorer />
+          {
+            Object.keys(itemInfo).length !== 0 && (
+              <ItemInfo />
+            )
+          }
+        </main>
+      </div>
+
 
     </ExplorerContext.Provider>
   )
