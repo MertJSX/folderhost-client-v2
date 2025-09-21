@@ -6,7 +6,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa";
 import Cookies from 'js-cookie';
 
-const DropdownMenu = () => {
+const ChangeMode = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(Cookies.get("mode") || "Optimized mode");
     const dropdownRef = useRef(null);
@@ -102,4 +102,4 @@ const DropdownMenu = () => {
     );
 };
 
-export default DropdownMenu;
+export default ChangeMode;
