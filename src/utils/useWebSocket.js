@@ -5,6 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const useWebSocket = (path) => {
   const wsRef = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
   const isConnectedRef = useRef(false)
   const [messages, setMessages] = useState([]);
   // const messages = useRef([])
@@ -18,7 +19,6 @@ const useWebSocket = (path) => {
     }
 
     const wsUrl = `${API_BASE_URL}/ws/${encodeURIComponent(path)}?token=${encodeURIComponent(token)}`;
-    //const wsUrl = "ws://localhost:5000/ws/%2F?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTc1MzM0NzgsInVzZXJuYW1lIjoiYWRtaW4ifQ.xHjvdPSgFJRZs8GUmZ2svHkbBxgRGDsZqlDX4UHjZcw"
 
     const websocket = new WebSocket(wsUrl);
 
@@ -44,6 +44,7 @@ const useWebSocket = (path) => {
 
       console.log('WebSocket connection has been closed', event.code, event.reason);
       setIsConnected(false);
+      setConnectionError(true);
       isConnectedRef.current = false;
       // setWs(null);
       wsRef.current = null;
@@ -92,6 +93,7 @@ const useWebSocket = (path) => {
     isConnectedRef,
     messages,
     sendMessage,
+    connectionError,
     connect,
     disconnect
   };
