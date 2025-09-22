@@ -124,9 +124,6 @@ const ItemInfo = () => {
             </h1> : null
         }
         <h1 className='text-gray-400'>
-          Created: <span className='text-gray-300'>{moment(itemInfo.birthDate).format("Do MMMM YYYY HH:mm")}</span>
-        </h1>
-        <h1 className='text-gray-400'>
           Modified: <span className='text-gray-300'>{moment(itemInfo.dateModified).format("Do MMMM YYYY HH:mm")}</span>
         </h1>
         {!itemInfo.isDirectory ? (
