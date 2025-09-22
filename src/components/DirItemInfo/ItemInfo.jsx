@@ -1,4 +1,4 @@
-import { useRef, useState, useContext } from 'react'
+import { useRef, useState, useContext, useEffect } from 'react'
 import moment from 'moment'
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
@@ -138,7 +138,7 @@ const ItemInfo = () => {
                 onDoubleClick={() => {
                   deleteItem(itemInfo)
                 }}
-              >Delete file</button> : showDisabled === "true" ?
+              >Delete file</button> : showDisabled === true ?
               <button
                 className='bg-red-600 px-6 font-bold rounded-xl opacity-50'
                 title='No permission!'
@@ -153,7 +153,7 @@ const ItemInfo = () => {
                 onClick={() => {
                   createCopy(itemInfo)
                 }}
-              >Create copy</button> : showDisabled === "true" ?
+              >Create copy</button> : showDisabled === true ?
               <button
                 className='bg-sky-600 px-6 font-bold rounded-xl opacity-50'
                 title='No permission!'
@@ -168,7 +168,7 @@ const ItemInfo = () => {
                 onClick={() => {
                   startUnzipping()
                 }}
-              >Unzip</button> : showDisabled === "true" ?
+              >Unzip</button> : showDisabled === true ?
               <button
                 className='bg-yellow-600 px-6 font-bold rounded-xl opacity-50'
                 title='No permission!'
@@ -188,7 +188,7 @@ const ItemInfo = () => {
                 onClick={() => {
                   downloadFile(itemInfo.path)
                 }}
-              >Download</button> : showDisabled === "true" ?
+              >Download</button> : showDisabled === true ?
               <button
                 className='bg-emerald-600 px-6 font-bold rounded-xl opacity-50'
                 title='No permission!'
@@ -209,7 +209,7 @@ const ItemInfo = () => {
                 href={`/editor/${encodeURIComponent(itemInfo.path)}`}
                 target="_blank" rel="noreferrer"
                 className='bg-sky-700 px-6 font-bold text-center rounded-xl'
-              >Open Editor</a> : showDisabled === "true" ?
+              >Open Editor</a> : showDisabled === true ?
               <button
                 className='bg-sky-700 px-6 font-bold text-center rounded-xl opacity-50'
                 disabled
@@ -308,8 +308,8 @@ const ItemInfo = () => {
                           }}
                         >Create</button>
                       </div>
-                    </div> : showDisabled === "true" ?
-                    <h1 className='text-center text-lg text-yellow-200 opacity-50'>( No permission to create content )</h1> : null
+                    </div> : showDisabled === true ?
+                    <h1 className='text-center text-lg text-yellow-200'>No permission to create content</h1> : null
                 }
 
               </div> : null

@@ -17,7 +17,7 @@ const ExplorerPage = () => {
   const navigate = useNavigate();
   const [path, setPath] = useState(params.path);
   const [permissions, setPermissions] = useState({});
-  const [showDisabled, setShowDisabled] = useState(Cookies.get("show-disabled"));
+  const [showDisabled, setShowDisabled] = useState(Cookies.get("show-disabled") === "true");
   const [directory, setDir] = useState([]);
   const [isEmpty, setIsEmpty] = useState(false);
   const [directoryInfo, setDirectoryInfo] = useState({})
@@ -105,6 +105,9 @@ const ExplorerPage = () => {
             setUnzipping(false)
             setRes("Unzip completed successfully!")
           }
+          break;
+        case "error":
+          setError(message.error)
           break;
       }
     }
@@ -451,7 +454,8 @@ const ExplorerPage = () => {
         setContextMenu: setContextMenu,
         setMessageBoxMsg: setMessageBoxMsg,
         setError: setError,
-        setRes: setRes
+        setRes: setRes,
+        showDisabled: showDisabled
 
       }}>
       <Header />
