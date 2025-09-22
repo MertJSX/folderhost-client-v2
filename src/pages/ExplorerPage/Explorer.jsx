@@ -249,8 +249,6 @@ const ExplorerPage = () => {
 
         };
         reader.readAsText(err.response.data);
-
-        // handleError(errorData, true);
       })
   }
 
@@ -350,8 +348,6 @@ const ExplorerPage = () => {
         { token: Cookies.get("token") }
       )
         .then((data) => {
-          console.log(data.data);
-
           setIsEmpty(data.data.isEmpty)
           setDir(data.data.data)
           setPermissions(data.data.permissions)
@@ -368,8 +364,6 @@ const ExplorerPage = () => {
       axios.post(apiBaseURL + `/api/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
         { token: Cookies.get("token") }
       ).then((data) => {
-        console.log(data.data);
-
         if (!data.data.data) {
           setRes(data.data.err)
           return;
@@ -391,8 +385,6 @@ const ExplorerPage = () => {
       axios.post(apiBaseURL + `/api/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
         { token: Cookies.get("token") }
       ).then((data) => {
-        console.log(data.data);
-
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);
         setDir(data.data.data)
