@@ -133,6 +133,7 @@ const CodeEditorPage = () => {
                 readOnly={readOnly}
                 isConnectedRef={isConnectedRef}
                 messages={messages}
+                setRes={setRes}
             />
         </div>
     )

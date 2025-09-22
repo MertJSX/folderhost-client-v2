@@ -6,7 +6,7 @@ import { yamlSnippets } from './snippets/yamlSnippets';
 import theme from './themes/theme.json'
 import Cookies from 'js-cookie';
 
-const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef }) => {
+const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef, setRes }) => {
   const [editorFontSize, setEditorFontSize] = useState(Cookies.get("editor-fontsize") || 18);
   const [minimap, setMinimap] = useState(Cookies.get("editor-minimap") || true);
   const [toggleSettings, setToggleSettings] = useState(false);
@@ -68,7 +68,6 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
     });
 
     editor.onDidChangeModelContent((event) => {
-      console.log("On did change model content");
       console.log(event);
 
       if (readOnly) {
@@ -133,12 +132,12 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
   useEffect(() => {
     if (isConnectedRef.current) {
       let message = {};
-      
+
       try {
         message = JSON.parse(messages[messages.length - 1]);
       } catch (err) {
         console.warn(messages[messages.length - 1]);
-        
+
         console.error(err);
         return
       }
@@ -150,6 +149,9 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
           break;
         case "editor-update-usercount":
           setClientsCount(message.count)
+          break;
+        case "error":
+          setRes(message.error)
           break;
       }
     }
