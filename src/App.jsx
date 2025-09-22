@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CodeEditor from './pages/CodeEditorPage/CodeEditor';
 import UploadFile from './pages/UploadFilePage/UploadFile';
 import NoPage from './pages/NoPage';
+import Recovery from './pages/Recovery/Recovery';
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
           <Route path="explorer" >
             <Route index element={<NoPage />} />
             <Route path=':path' element={<ExplorerPage />} />
+          </Route>
+          <Route path="recovery" >
+            <Route index element={<Recovery />} />
           </Route>
           <Route path="editor" >
             <Route index element={<NoPage />} />

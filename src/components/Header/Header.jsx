@@ -30,7 +30,7 @@ const Header = () => {
             <nav className='flex flex-row justify-center items-center gap-5'>
                 <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/explorer/.%2F"}><MdExplore />Explorer</Link>
                 <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/explorer"}><MdMiscellaneousServices />Services</Link>
-                <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/explorer"}><FaArrowRotateLeft />Recovery</Link>
+                <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/recovery"}><FaArrowRotateLeft />Recovery</Link>
                 <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/explorer"}><FaUserFriends />Users</Link>
                 <Link className='text-xl flex items-center gap-1 p-2 transition-all hover:-translate-y-0.5' to={"/explorer"}><FaPencilAlt />Logs</Link>
             </nav>
