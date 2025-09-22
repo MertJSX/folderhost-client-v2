@@ -15,7 +15,7 @@ const OptionsBar = () => {
         path, setPath, readDir, setShowDisabled
     } = useContext(ExplorerContext)
     return (
-        <div className='flex flex-col justify-center w-11/12 mx-auto pt-10 gap-5 p-2'>
+        <div className='flex flex-col justify-center w-11/12 mx-auto pt-5 gap-5 p-2'>
             <div className='flex w-full justify-center'>
                 <input
                     type="text"

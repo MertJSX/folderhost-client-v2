@@ -416,9 +416,6 @@ const ExplorerPage = () => {
         type: "unzip",
         path: itemInfo.path.slice(1)
       }))
-      // socket.current.emit("unzip", {
-      //   path: itemInfo.path.slice(1)
-      // })
     }
   }
 
@@ -461,7 +458,7 @@ const ExplorerPage = () => {
       <Header />
       <div className='relative'>
         <OptionsBar />
-        <main className="flex flex-row w-full justify-center items-center flex-wrap min-h-[calc(100vh-134px)]"
+        <main className="flex flex-row w-full justify-center pt-5 flex-wrap min-h-[calc(100vh-158px)]"
           onClick={(e) => {
             setContextMenu({ show: false, x: e.pageX, y: e.pageY })
           }}
