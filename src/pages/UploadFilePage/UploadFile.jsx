@@ -2,9 +2,8 @@ import UploadFileComp from '../../components/UploadFileComponent/UploadFileComp'
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import axios from 'axios';
 import convertBytesToString from '../../utils/convertBytesToString';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import axiosInstance from '../../utils/axiosInstance';
 
 const UploadFile = () => {
   const params = useParams();
@@ -50,11 +49,7 @@ const UploadFile = () => {
       formData.append('fileID', fileID)
       formData.append('fileName', fileName)
 
-      await axios.post(`${API_BASE_URL}/api/upload?path=${path.slice(1)}`, formData, {
-        headers: {
-          'token': Cookies.get("token")
-        }
-      })
+      await axiosInstance.post(`/upload?path=${path.slice(1)}`, formData)
         .then((data) => {
           setUploadProgress((prev) => prev + progressIndex)
           

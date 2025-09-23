@@ -33,10 +33,6 @@ const Login = () => {
         })
     }
 
-    useEffect((() => {
-        console.log(window.location.origin);
-    }), [])
-
     return (
         <div>
             <div className="flex bg-slate-800 items-center justify-center flex-col m-auto mt-[10%] p-2 gap-4 rounded-lg w-[400px] h-[35vh]">

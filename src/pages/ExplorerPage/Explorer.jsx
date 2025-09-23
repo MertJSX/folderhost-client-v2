@@ -4,13 +4,12 @@ import OptionsBar from '../../components/Options/OptionsBar';
 import ItemInfo from '../../components/DirItemInfo/ItemInfo';
 import { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
-import axios from "axios";
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import ExplorerContext from '../../utils/ExplorerContext';
 import MessageBox from '../../components/MessageBox/MessageBox';
 import useWebSocket from '../../utils/useWebSocket';
+import axiosInstance from '../../utils/axiosInstance';
 
 const ExplorerPage = () => {
   const params = useParams();
@@ -25,7 +24,7 @@ const ExplorerPage = () => {
   const [response, setRes] = useState("");
   const [error, setError] = useState("");
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [unzipProgress, setUnzipProgress] = useState("") // formatted unzip size
+  const [unzipProgress, setUnzipProgress] = useState("") // formatted unzip size (2.5 GB for example)
   const [connected, setConnected] = useState(false);
   const [messageBoxMsg, setMessageBoxMsg] = useState("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
@@ -46,7 +45,6 @@ const ExplorerPage = () => {
   const [downloading, setDownloading] = useState(false);
   const [unzipping, setUnzipping] = useState(false);
   const [waitingResponse, setWaitingResponse] = useState(false);
-  const apiBaseURL = API_BASE_URL;
 
   function getParent(filePath) {
     let lastIndex = filePath.lastIndexOf('/');
@@ -166,8 +164,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`,
-      { token: Cookies.get("token") })
+    axiosInstance.get(`/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`)
       .then(() => {
         setWaitingResponse(false)
         readDir();
@@ -190,8 +187,7 @@ const ExplorerPage = () => {
     } else {
       newPath = newPath + "/" + newName
     }
-    axios.post(`${apiBaseURL}/api/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`,
-      { token: Cookies.get("token") })
+    axiosInstance.get(`/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`)
       .then(() => {
         setWaitingResponse(false)
         if (item.isDirectory) {
@@ -216,8 +212,7 @@ const ExplorerPage = () => {
     } else {
       setDownloading(true);
     }
-    axios.post(`${apiBaseURL}/api/download?filepath=${filepath.slice(1)}`,
-      { token: Cookies.get("token") },
+    axiosInstance.get(`/download?filepath=${filepath.slice(1)}`,
       {
         responseType: "blob",
         onDownloadProgress: (
@@ -260,8 +255,7 @@ const ExplorerPage = () => {
       setWaitingResponse(true);
     }
     let newPath = `${getParent(item.path.slice(0, -1))}`;
-    axios.post(`${apiBaseURL}/api/delete?path=${item.path.slice(1)}`,
-      { token: Cookies.get("token") }
+    axiosInstance.get(`/delete?path=${item.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
       if (item.isDirectory) {
@@ -294,8 +288,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${apiBaseURL}/api/create-copy?path=${item.path.slice(1)}`,
-      { token: Cookies.get("token") }
+    axiosInstance.get(`/create-copy?path=${item.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
       readDir()
@@ -317,9 +310,7 @@ const ExplorerPage = () => {
     } else {
       setWaitingResponse(true);
     }
-    axios.post(`${apiBaseURL}/api/create-item?path=${itempath.slice(1)}&isFolder=${isFolder}&itemName=${itemName}`, {
-      token: Cookies.get("token")
-    })
+    axiosInstance.get(`/create-item?path=${itempath.slice(1)}&isFolder=${isFolder}&itemName=${itemName}`)
       .then((data) => {
         setWaitingResponse(false)
         readDir()
@@ -344,8 +335,7 @@ const ExplorerPage = () => {
       setIsEmpty(false)
       setDir([]);
       setRes("");
-      axios.post(apiBaseURL + `/api/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
-        { token: Cookies.get("token") }
+      axiosInstance.get(`/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       )
         .then((data) => {
           setIsEmpty(data.data.isEmpty)
@@ -361,8 +351,7 @@ const ExplorerPage = () => {
       setDir([]);
       setIsEmpty(false)
       setRes("");
-      axios.post(apiBaseURL + `/api/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
-        { token: Cookies.get("token") }
+      axiosInstance.get(`/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         if (!data.data.data) {
           setRes(data.data.err)
@@ -382,8 +371,7 @@ const ExplorerPage = () => {
       setDir([]);
       setIsEmpty(false)
       setRes("");
-      axios.post(apiBaseURL + `/api/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`,
-        { token: Cookies.get("token") }
+      axiosInstance.get(`/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);

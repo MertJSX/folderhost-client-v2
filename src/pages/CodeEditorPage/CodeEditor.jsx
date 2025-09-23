@@ -4,7 +4,8 @@ import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp';
 import useWebSocket from '../../utils/useWebSocket';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import axiosInstance from '../../utils/axiosInstance';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CodeEditorPage = () => {
     const params = useParams();
@@ -62,9 +63,8 @@ const CodeEditorPage = () => {
     }, [readOnly]);
 
     function readFile() {
-        axios.post(`${API_BASE_URL}/api/read-file?filepath=${path.slice(1)}`,
-            { token: Cookies.get("token") }).then((data) => {
-                console.log(data.data);
+        axiosInstance.get(`/read-file?filepath=${path.slice(1)}`
+            ).then((data) => {
                 if (data.data.res) {
                     setFileTitle(data.data.title);
                     setFileContent(data.data.data);
