@@ -8,7 +8,6 @@ const useWebSocket = (path) => {
   const [connectionError, setConnectionError] = useState(false);
   const isConnectedRef = useRef(false)
   const [messages, setMessages] = useState([]);
-  // const messages = useRef([])
   const reconnectTimeoutRef = useRef(null);
 
   const connect = useCallback(() => {
@@ -35,18 +34,14 @@ const useWebSocket = (path) => {
     };
 
     websocket.onmessage = (event) => {
-      console.log('Message:', event.data);
       setMessages(prev => [...prev, event.data]);
     };
 
     websocket.onclose = (event) => {
-      console.error(event);
-
       console.log('WebSocket connection has been closed', event.code, event.reason);
       setIsConnected(false);
       setConnectionError(true);
       isConnectedRef.current = false;
-      // setWs(null);
       wsRef.current = null;
 
       if (!reconnectTimeoutRef.current) {
