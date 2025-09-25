@@ -203,7 +203,7 @@ const FileExplorer = () => {
             y={contextMenu.y}
           />}
         {
-          directory[0] !== undefined ?
+          directory.length > 0 ?
             directory.map((element) => (
               <div
                 ref={addToChildElements}

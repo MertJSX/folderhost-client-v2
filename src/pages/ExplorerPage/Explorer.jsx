@@ -339,7 +339,11 @@ const ExplorerPage = () => {
       )
         .then((data) => {
           setIsEmpty(data.data.isEmpty)
-          setDir(data.data.data)
+          if (data.data.data != null) {
+            setDir(data.data.data)
+          } else {
+            setDir([])
+          }
           setPermissions(data.data.permissions)
           setDirectoryInfo(data.data.directoryInfo)
           setItemInfo(data.data.directoryInfo)
@@ -358,7 +362,11 @@ const ExplorerPage = () => {
           return;
         }
         setIsEmpty(data.data.isEmpty);
-        setDir(data.data.data)
+        if (data.data.data != null) {
+          setDir(data.data.data)
+        } else {
+          setDir([])
+        }
         setPermissions(data.data.permissions)
         setDirectoryInfo(data.data.directoryInfo)
         setItemInfo(data.data.directoryInfo);
@@ -375,7 +383,11 @@ const ExplorerPage = () => {
       ).then((data) => {
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);
-        setDir(data.data.data)
+        if (data.data.data != null) {
+          setDir(data.data.data)
+        } else {
+          setDir([])
+        }
         setPermissions(data.data.permissions)
         setDirectoryInfo(data.data.directoryInfo)
         setItemInfo(data.data.directoryInfo)

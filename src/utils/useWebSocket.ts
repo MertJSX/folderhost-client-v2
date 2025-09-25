@@ -4,10 +4,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const useWebSocket = (path) => {
   const wsRef = useRef(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionError, setConnectionError] = useState(false);
-  const isConnectedRef = useRef(false)
-  const [messages, setMessages] = useState([]);
+  const [isConnected, setIsConnected] = useState<Boolean>(false);
+  const [connectionError, setConnectionError] = useState<Boolean>(false);
+  const isConnectedRef = useRef<Boolean>(false)
+  const [messages, setMessages] = useState<Array<string>>([]);
   const reconnectTimeoutRef = useRef(null);
 
   const connect = useCallback(() => {

@@ -1,0 +1,36 @@
+import { type ContextMenuType } from "./ContextMenuType.js"
+import React from "react"
+
+export interface ExplorerContextType {
+        path: string,
+        setPath: React.SetStateAction<string>,
+        readDir: Function,
+        error: string,
+        response: string,
+        setShowDisabled: React.SetStateAction<boolean>,
+        directory: object[],
+        setDirectory: React.SetStateAction<object[]>,
+        itemInfo: object,
+        setItemInfo: React.SetStateAction<object>,
+        isEmpty: boolean,
+        moveItem: Function,
+        getParent: Function,
+        directoryInfo: object,
+        downloading: boolean,
+        unzipping: boolean,
+        waitingResponse: boolean,
+        permissions: object,
+        unzipProgress: string,
+        createCopy: Function,
+        startUnzipping: Function,
+        createItem: Function,
+        deleteItem: Function,
+        renameItem: Function,
+        downloadFile: Function,
+        contextMenu: ContextMenuType,
+        setContextMenu: React.SetStateAction<ContextMenuType>,
+        setMessageBoxMsg: React.SetStateAction<string>,
+        setError: React.SetStateAction<string>,
+        setRes: React.SetStateAction<string>,
+        showDisabled: boolean
+}
