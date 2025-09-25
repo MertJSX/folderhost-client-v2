@@ -4,9 +4,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const Login = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [err, setErr] = useState("")
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [err, setErr] = useState<string>("")
     const navigate = useNavigate();
 
     function verifyPassword() {

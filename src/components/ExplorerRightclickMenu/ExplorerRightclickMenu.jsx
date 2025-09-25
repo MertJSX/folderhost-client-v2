@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import ExplorerContext from "../../utils/ExplorerContext"
+import ExplorerContext from "../../utils/ExplorerContext.js"
 
 const ExplorerRightclickMenu = ({ x, y }) => {
     const {itemInfo, permissions, showDisabled} = useContext(ExplorerContext)

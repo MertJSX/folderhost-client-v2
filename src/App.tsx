@@ -1,12 +1,12 @@
-import ExplorerPage from './pages/ExplorerPage/Explorer';
-import Home from './pages/HomePage/Home';
-import Login from './pages/LoginPage/Login';
+import ExplorerPage from './pages/ExplorerPage/Explorer.jsx';
+import Home from './pages/HomePage/Home.jsx';
+import Login from './pages/LoginPage/Login.jsx';
 import "./global.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import CodeEditor from './pages/CodeEditorPage/CodeEditor';
-import UploadFile from './pages/UploadFilePage/UploadFile';
-import NoPage from './pages/NoPage';
-import Recovery from './pages/Recovery/Recovery';
+import CodeEditor from './pages/CodeEditorPage/CodeEditor.jsx';
+import UploadFile from './pages/UploadFilePage/UploadFile.jsx';
+import NoPage from './pages/NoPage.jsx';
+import Recovery from './pages/Recovery/Recovery.jsx';
 
 function App() {
   return (

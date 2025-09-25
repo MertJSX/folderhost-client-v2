@@ -1,30 +1,31 @@
-import Header from '../../components/Header/Header';
-import FileExplorer from '../../components/FileExplorer/FileExplorer';
-import OptionsBar from '../../components/Options/OptionsBar';
-import ItemInfo from '../../components/DirItemInfo/ItemInfo';
+import Header from '../../components/Header/Header.jsx';
+import FileExplorer from '../../components/FileExplorer/FileExplorer.jsx';
+import OptionsBar from '../../components/Options/OptionsBar.jsx';
+import ItemInfo from '../../components/DirItemInfo/ItemInfo.jsx';
 import { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
-import ExplorerContext from '../../utils/ExplorerContext';
-import MessageBox from '../../components/MessageBox/MessageBox';
-import useWebSocket from '../../utils/useWebSocket';
-import axiosInstance from '../../utils/axiosInstance';
+import ExplorerContext from '../../utils/ExplorerContext.js';
+import MessageBox from '../../components/MessageBox/MessageBox.jsx';
+import useWebSocket from '../../utils/useWebSocket.js';
+import axiosInstance from '../../utils/axiosInstance.js';
+import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
 
-const ExplorerPage = () => {
+const ExplorerPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [path, setPath] = useState(params.path);
-  const [permissions, setPermissions] = useState({});
+  const [path, setPath] = useState(params.path || './');
+  const [permissions, setPermissions] = useState<object>({});
   const [showDisabled, setShowDisabled] = useState(Cookies.get("show-disabled") === "true");
-  const [directory, setDir] = useState([]);
+  const [directory, setDir] = useState<object[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
-  const [directoryInfo, setDirectoryInfo] = useState({})
-  const [itemInfo, setItemInfo] = useState({});
+  const [directoryInfo, setDirectoryInfo] = useState<object>({});
+  const [itemInfo, setItemInfo] = useState<object>({});
   const [response, setRes] = useState("");
   const [error, setError] = useState("");
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [unzipProgress, setUnzipProgress] = useState("") // formatted unzip size (2.5 GB for example)
+  const [unzipProgress, setUnzipProgress] = useState(""); // formatted unzip size (2.5 GB for example)
   const [connected, setConnected] = useState(false);
   const [messageBoxMsg, setMessageBoxMsg] = useState("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
@@ -33,7 +34,12 @@ const ExplorerPage = () => {
     x: 0,
     y: 0
   })
-  const socket = useRef();
+  const socket = useRef<WebSocket | null>(null);
+  // Work states
+  const [downloading, setDownloading] = useState(false);
+  const [unzipping, setUnzipping] = useState(false);
+  const [waitingResponse, setWaitingResponse] = useState(false);
+
   const {
     isConnected,
     isConnectedRef,
@@ -41,12 +47,8 @@ const ExplorerPage = () => {
     sendMessage,
     connectionError
   } = useWebSocket(path.slice(1))
-  // Work states
-  const [downloading, setDownloading] = useState(false);
-  const [unzipping, setUnzipping] = useState(false);
-  const [waitingResponse, setWaitingResponse] = useState(false);
 
-  function getParent(filePath) {
+  function getParent(filePath: string): string {
     let lastIndex = filePath.lastIndexOf('/');
     if (lastIndex === -1) return filePath;
 
@@ -74,10 +76,9 @@ const ExplorerPage = () => {
     }
   }, [isConnected])
 
-
   useEffect(() => {
     if (isConnectedRef.current) {
-      let message = {};
+      let message: any = {};
 
       try {
         message = JSON.parse(messages[messages.length - 1]);
@@ -119,11 +120,11 @@ const ExplorerPage = () => {
     }
   }, [])
 
-  function declareError(error, client = true) {
+  function declareError(error: string, client: boolean = true): void {
     setError(`${error}`);
   }
 
-  function handleError(err, isErrorData) {
+  function handleError(err: any, isErrorData?: boolean): void {
     setWaitingResponse(false);
     if (isErrorData && err.err) {
       declareError(err.err)
@@ -150,14 +151,14 @@ const ExplorerPage = () => {
     }
   }, [error, response])
 
-  function waitPreviousAction() {
+  function waitPreviousAction(): void {
     setError("You must wait previus action to be completed!")
     setTimeout(() => {
       setError("")
     }, 3000);
   }
 
-  function moveItem(oldPath, newPath) {
+  function moveItem(oldPath: string, newPath: string): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
@@ -173,15 +174,16 @@ const ExplorerPage = () => {
       })
   }
 
-  function renameItem(item, newName) {
+  function renameItem(item: object, newName: string): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    let oldPath = item.path.slice(1);
-    let newPath = `${getParent(item.path.slice(0, -1))}`; // /${newName}
+    const itemWithPath = item as { path: string; isDirectory: boolean };
+    let oldPath = itemWithPath.path.slice(1);
+    let newPath = `${getParent(itemWithPath.path.slice(0, -1))}`; // /${newName}
     if (newPath.slice(-1) === "/") {
       newPath = newPath + newName
     } else {
@@ -190,8 +192,8 @@ const ExplorerPage = () => {
     axiosInstance.get(`/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`)
       .then(() => {
         setWaitingResponse(false)
-        if (item.isDirectory) {
-          if (item.path === `${path}/`) {
+        if (itemWithPath.isDirectory) {
+          if (itemWithPath.path === `${path}/`) {
             readDir(false, newPath)
 
           } else {
@@ -205,7 +207,7 @@ const ExplorerPage = () => {
       })
   }
 
-  function downloadFile(filepath) {
+  function downloadFile(filepath: string): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
@@ -216,7 +218,7 @@ const ExplorerPage = () => {
       {
         responseType: "blob",
         onDownloadProgress: (
-          progressEvent) => {
+          progressEvent: any) => {
           if (progressEvent.progress === 1) {
             return;
           }
@@ -233,13 +235,13 @@ const ExplorerPage = () => {
         setTimeout(() => {
           setDownloadProgress(0);
         }, 5000);
-        fileDownload(data.data, itemInfo.name)
+        fileDownload(data.data, (itemInfo as any).name)
       }).catch((err) => {
         setDownloading(false);
 
         const reader = new FileReader();
         reader.onload = function (event) {
-          const jsonData = JSON.parse(event.target.result);
+          const jsonData = JSON.parse(event.target?.result as string);
           handleError(jsonData, true)
 
         };
@@ -247,19 +249,20 @@ const ExplorerPage = () => {
       })
   }
 
-  function deleteItem(item) {
+  function deleteItem(item: object): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    let newPath = `${getParent(item.path.slice(0, -1))}`;
-    axiosInstance.get(`/delete?path=${item.path.slice(1)}`
+    const itemWithPath = item as { path: string; isDirectory: boolean };
+    let newPath = `${getParent(itemWithPath.path.slice(0, -1))}`;
+    axiosInstance.get(`/delete?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
-      if (item.isDirectory) {
-        if (item.path === `${path}/`) {
+      if (itemWithPath.isDirectory) {
+        if (itemWithPath.path === `${path}/`) {
           readDir(false, newPath)
 
         } else {
@@ -281,14 +284,15 @@ const ExplorerPage = () => {
     })
   }
 
-  function createCopy(item) {
+  function createCopy(item: object): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    axiosInstance.get(`/create-copy?path=${item.path.slice(1)}`
+    const itemWithPath = item as { path: string };
+    axiosInstance.get(`/create-copy?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
       readDir()
@@ -303,7 +307,7 @@ const ExplorerPage = () => {
     })
   }
 
-  function createItem(itempath, isFolder, itemName) {
+  function createItem(itempath: string, isFolder: boolean, itemName: string): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
@@ -327,7 +331,7 @@ const ExplorerPage = () => {
       })
   }
 
-  function readDir(asParentPath, pathInput) {
+  function readDir(asParentPath?: boolean, pathInput?: string): void {
     setWaitingResponse(false);
     setDownloading(false);
     if (asParentPath && path !== "./") {
@@ -397,7 +401,7 @@ const ExplorerPage = () => {
     }
   }
 
-  function startUnzipping() {
+  function startUnzipping(): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
@@ -406,47 +410,48 @@ const ExplorerPage = () => {
       setUnzipping(true);
       sendMessage(JSON.stringify({
         type: "unzip",
-        path: itemInfo.path.slice(1)
+        path: (itemInfo as any).path.slice(1)
       }))
     }
   }
 
+  const contextValue: ExplorerContextType = {
+    path: path,
+    setPath: setPath,
+    readDir: readDir,
+    error: error,
+    response: response,
+    setShowDisabled: setShowDisabled,
+    directory: directory,
+    setDirectory: setDir,
+    itemInfo: itemInfo,
+    setItemInfo: setItemInfo,
+    isEmpty: isEmpty,
+    moveItem: moveItem,
+    getParent: getParent,
+    directoryInfo: directoryInfo,
+    downloading: downloading,
+    unzipping: unzipping,
+    waitingResponse: waitingResponse,
+    permissions: permissions,
+    unzipProgress: unzipProgress,
+    createCopy: createCopy,
+    startUnzipping: startUnzipping,
+    createItem: createItem,
+    deleteItem: deleteItem,
+    renameItem: renameItem,
+    downloadFile: downloadFile,
+    contextMenu: contextMenu,
+    setContextMenu: setContextMenu,
+    setMessageBoxMsg: setMessageBoxMsg,
+    setError: setError,
+    setRes: setRes,
+    showDisabled: showDisabled
+  };
+
   return (
     <ExplorerContext.Provider
-      value={{
-        path: path,
-        setPath: setPath,
-        readDir: readDir,
-        error: error,
-        response: response,
-        setShowDisabled: setShowDisabled,
-        directory: directory,
-        setDirectory: setDir,
-        itemInfo: itemInfo,
-        setItemInfo: setItemInfo,
-        isEmpty: isEmpty,
-        moveItem: moveItem,
-        getParent: getParent,
-        directoryInfo: directoryInfo,
-        downloading: downloading,
-        unzipping: unzipping,
-        waitingResponse: waitingResponse,
-        permissions: permissions,
-        unzipProgress: unzipProgress,
-        createCopy: createCopy,
-        startUnzipping: startUnzipping,
-        createItem: createItem,
-        deleteItem: deleteItem,
-        renameItem: renameItem,
-        downloadFile: downloadFile,
-        contextMenu: contextMenu,
-        setContextMenu: setContextMenu,
-        setMessageBoxMsg: setMessageBoxMsg,
-        setError: setError,
-        setRes: setRes,
-        showDisabled: showDisabled
-
-      }}>
+      value={contextValue}>
       <Header />
       <div className='relative'>
         <OptionsBar />
@@ -464,8 +469,6 @@ const ExplorerPage = () => {
           }
         </main>
       </div>
-
-
     </ExplorerContext.Provider>
   )
 }

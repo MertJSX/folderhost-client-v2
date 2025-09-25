@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom'
 import { FaHome } from "react-icons/fa";
 import Cookies from 'js-cookie';
-import { useEffect } from 'react';
+import React from 'react';
 
-const Home = () => {
-  useEffect(() => {
-    console.log(Cookies.get("password"));
-    
-  }, [])
+const Home: React.FC = () => {
   return (
     <div>
         <div className="flex flex-col justify-center items-center bg-gray-700 w-1/2 mx-auto rounded-lg p-5 gap-4 mt-20">

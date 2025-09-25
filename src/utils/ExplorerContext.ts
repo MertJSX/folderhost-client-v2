@@ -4,15 +4,15 @@ import { type ContextMenuType } from "../types/ContextMenuType.js";
 
 const ExplorerContext: Context<ExplorerContextType> = createContext<ExplorerContextType>({
     path: "",
-    setPath: ((value: string | ((prev: string) => string)) => {}) as React.SetStateAction<string>,
+    setPath: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
     readDir: () => {},
     error: "",
     response: "",
-    setShowDisabled: ((value: boolean | ((prev: boolean) => boolean)) => {}) as React.SetStateAction<boolean>,
+    setShowDisabled: ((value: boolean | ((prev: boolean) => boolean)) => {}) as React.Dispatch<React.SetStateAction<boolean>>,
     directory: [],
-    setDirectory: ((value: object[] | ((prev: object[]) => object[])) => {}) as React.SetStateAction<object[]>,
+    setDirectory: ((value: object[] | ((prev: object[]) => object[])) => {}) as React.Dispatch<React.SetStateAction<object[]>>,
     itemInfo: {},
-    setItemInfo: ((value: object | ((prev: object) => object)) => {}) as React.SetStateAction<object>,
+    setItemInfo: ((value: object | ((prev: object) => object)) => {}) as React.Dispatch<React.SetStateAction<object>>,
     isEmpty: false,
     moveItem: () => {},
     getParent: () => "",
@@ -33,10 +33,10 @@ const ExplorerContext: Context<ExplorerContextType> = createContext<ExplorerCont
         x: 0,
         y: 0
     },
-    setContextMenu: ((value: ContextMenuType) => {}) as React.SetStateAction<ContextMenuType>,
-    setMessageBoxMsg: ((value: string | ((prev: string) => string)) => {}) as React.SetStateAction<string>,
-    setError: ((value: string | ((prev: string) => string)) => {}) as React.SetStateAction<string>,
-    setRes: ((value: string | ((prev: string) => string)) => {}) as React.SetStateAction<string>,
+    setContextMenu: ((value: ContextMenuType) => {}) as React.Dispatch<React.SetStateAction<ContextMenuType>>,
+    setMessageBoxMsg: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
+    setError: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
+    setRes: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
     showDisabled: false
 });
 

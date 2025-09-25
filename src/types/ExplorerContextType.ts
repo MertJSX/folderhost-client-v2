@@ -3,15 +3,15 @@ import React from "react"
 
 export interface ExplorerContextType {
         path: string,
-        setPath: React.SetStateAction<string>,
+        setPath: React.Dispatch<React.SetStateAction<string>>,
         readDir: Function,
         error: string,
         response: string,
-        setShowDisabled: React.SetStateAction<boolean>,
+        setShowDisabled: React.Dispatch<React.SetStateAction<boolean>>,
         directory: object[],
-        setDirectory: React.SetStateAction<object[]>,
+        setDirectory: React.Dispatch<React.SetStateAction<object[]>>,
         itemInfo: object,
-        setItemInfo: React.SetStateAction<object>,
+        setItemInfo: React.Dispatch<React.SetStateAction<object>>,
         isEmpty: boolean,
         moveItem: Function,
         getParent: Function,
@@ -28,9 +28,9 @@ export interface ExplorerContextType {
         renameItem: Function,
         downloadFile: Function,
         contextMenu: ContextMenuType,
-        setContextMenu: React.SetStateAction<ContextMenuType>,
-        setMessageBoxMsg: React.SetStateAction<string>,
-        setError: React.SetStateAction<string>,
-        setRes: React.SetStateAction<string>,
+        setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuType>>,
+        setMessageBoxMsg: React.Dispatch<React.SetStateAction<string>>,
+        setError: React.Dispatch<React.SetStateAction<string>>,
+        setRes: React.Dispatch<React.SetStateAction<string>>,
         showDisabled: boolean
 }
