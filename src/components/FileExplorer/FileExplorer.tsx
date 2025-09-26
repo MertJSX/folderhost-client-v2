@@ -30,6 +30,11 @@ const FileExplorer: React.FC = () => {
     directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
   } = useContext<ExplorerContextType>(ExplorerContext)
 
+  useEffect(() => {
+    console.log(`Is Empty: ${isEmpty}`);
+    
+  }, [isEmpty])
+
   function handleContextMenu(event, element) {
     event.preventDefault()
     if (!element) {
