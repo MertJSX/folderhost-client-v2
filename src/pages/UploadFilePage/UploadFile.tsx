@@ -1,19 +1,19 @@
-import UploadFileComp from '../../components/UploadFileComponent/UploadFileComp';
+import UploadFileComp from '../../components/UploadFileComponent/UploadFileComp.jsx';
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import convertBytesToString from '../../utils/convertBytesToString';
-import axiosInstance from '../../utils/axiosInstance';
+import convertBytesToString from '../../utils/convertBytesToString.js';
+import axiosInstance from '../../utils/axiosInstance.js';
 
 const UploadFile = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [path, setPath] = useState(params.path);
-  const [file, setFile] = useState();
-  const [res, setRes] = useState("");
-  const [err, setErr] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [path, setPath] = useState<string>(params.path);
+  const [file, setFile] = useState<File | undefined>();
+  const [res, setRes] = useState<string>("");
+  const [err, setErr] = useState<string>("");
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   useEffect(() => {
     if (!Cookies.get("ip") && !Cookies.get("token")) {
@@ -29,23 +29,21 @@ const UploadFile = () => {
   }, [file])
 
   async function uploadFile() {
-    const chunkSize = 5 * 1024 * 1024; // 5 MB
-    const totalChunks = Math.ceil(file.size / chunkSize)
-    const progressIndex = 100 / totalChunks;
-    const fileID = Date.now().toString();
-    const fileName = file.name;
+    const chunkSize: number = 5 * 1024 * 1024; // 5 MB
+    const totalChunks: number = Math.ceil(file.size / chunkSize)
+    const progressIndex: number = 100 / totalChunks;
+    const fileID: string = Date.now().toString();
+    const fileName: string = file.name;
 
     setRes("");
     setErr("");
     setUploadProgress(0);
     for (let i = 0; i < totalChunks; i++) {
-      console.log("Sending chunk "+i);
-      
       const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
       let formData = new FormData();
       formData.append('file', chunk)
-      formData.append('chunkIndex', i)
-      formData.append('totalChunks', totalChunks)
+      formData.append('chunkIndex', i.toString())
+      formData.append('totalChunks', totalChunks.toString())
       formData.append('fileID', fileID)
       formData.append('fileName', fileName)
 
