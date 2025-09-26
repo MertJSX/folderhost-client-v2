@@ -1,7 +1,11 @@
 import { useContext } from "react"
 import ExplorerContext from "../../utils/ExplorerContext.js"
 
-const ExplorerRightclickMenu = ({ x, y }) => {
+interface ExplorerRightclickMenuProps {
+    x: number, y: number
+}
+
+const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y }) => {
     const {itemInfo, permissions, showDisabled} = useContext(ExplorerContext)
     return (
         <div

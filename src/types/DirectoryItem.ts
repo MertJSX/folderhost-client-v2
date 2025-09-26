@@ -1,5 +1,5 @@
 export interface DirectoryItem {
-    id: string,
+    id: number,
     name: string,
     parentPath: string,
     path: string,

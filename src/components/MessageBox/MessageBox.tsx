@@ -1,9 +1,14 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useContext } from "react";
-import ExplorerContext from "../../utils/ExplorerContext";
+import ExplorerContext from "../../utils/ExplorerContext.js";
 
-const MessageBox = ({ message, isErr }) => {
+interface MessageBoxProps {
+    message: string,
+    isErr: boolean
+}
+
+const MessageBox: React.FC<MessageBoxProps> = ({ message, isErr }) => {
     const { setMessageBoxMsg, setError, setRes } = useContext(ExplorerContext)
     return message && (
         <section className='bg-black absolute inset-0 flex items-center justify-center w-full bg-opacity-60'>

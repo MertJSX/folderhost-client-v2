@@ -1,6 +1,7 @@
 import { type ContextMenuType } from "./ContextMenuType.js"
 import React from "react"
-
+import { type DirectoryItem } from "./DirectoryItem.js"
+import { type AccountPermissions } from "./AccountPermissions.js"
 export interface ExplorerContextType {
         path: string,
         setPath: React.Dispatch<React.SetStateAction<string>>,
@@ -8,18 +9,18 @@ export interface ExplorerContextType {
         error: string,
         response: string,
         setShowDisabled: React.Dispatch<React.SetStateAction<boolean>>,
-        directory: object[],
-        setDirectory: React.Dispatch<React.SetStateAction<object[]>>,
-        itemInfo: object,
-        setItemInfo: React.Dispatch<React.SetStateAction<object>>,
+        directory: DirectoryItem[] | null,
+        setDirectory: React.Dispatch<React.SetStateAction<DirectoryItem[]>>,
+        itemInfo: DirectoryItem,
+        setItemInfo: React.Dispatch<React.SetStateAction<DirectoryItem>>,
         isEmpty: boolean,
         moveItem: Function,
         getParent: Function,
-        directoryInfo: object,
+        directoryInfo: DirectoryItem,
         downloading: boolean,
         unzipping: boolean,
         waitingResponse: boolean,
-        permissions: object,
+        permissions: AccountPermissions,
         unzipProgress: string,
         createCopy: Function,
         startUnzipping: Function,
@@ -32,5 +33,6 @@ export interface ExplorerContextType {
         setMessageBoxMsg: React.Dispatch<React.SetStateAction<string>>,
         setError: React.Dispatch<React.SetStateAction<string>>,
         setRes: React.Dispatch<React.SetStateAction<string>>,
-        showDisabled: boolean
+        showDisabled: boolean,
+        downloadProgress: number
 }

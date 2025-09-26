@@ -14,19 +14,21 @@ import { FaJava } from "react-icons/fa";
 import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
-import convertToBytes from '../../utils/convertToBytes';
-import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
-import ExplorerContext from '../../utils/ExplorerContext';
+import convertToBytes from '../../utils/convertToBytes.js';
+import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu.jsx';
+import ExplorerContext from '../../utils/ExplorerContext.js';
+import { type DirectoryItem } from '../../types/DirectoryItem.js';
+import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
 
-const FileExplorer = () => {
-  const [draggedItem, setDraggedItem] = useState({});
-  const [dropTarget, setDropTarget] = useState("");
+const FileExplorer: React.FC = () => {
+  const [draggedItem, setDraggedItem] = useState<DirectoryItem>();
+  const [dropTarget, setDropTarget] = useState<string>("");
   const childElements = useRef([]);
-  const previousDirRef = useRef();
+  const previousDirRef = useRef<HTMLButtonElement>(null);
   const [selectedChildEl, setSelectedChildEl] = useState(null);
   const {
     directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
-  } = useContext(ExplorerContext)
+  } = useContext<ExplorerContextType>(ExplorerContext)
 
   function handleContextMenu(event, element) {
     event.preventDefault()
@@ -44,13 +46,13 @@ const FileExplorer = () => {
   useEffect(() => {
     if (dropTarget) {
       moveItem(draggedItem.path, dropTarget)
-      setDraggedItem({});
+      setDraggedItem(null);
       setDropTarget("");
     }
   }, [dropTarget])
 
   useEffect(() => {
-    if (itemInfo.id || itemInfo.id === 0) {
+    if (itemInfo?.id || itemInfo?.id === 0) {
       if (selectedChildEl !== null) {
         childElements.current[selectedChildEl].classList.remove("border-sky-300")
       }
@@ -114,7 +116,7 @@ const FileExplorer = () => {
                   }
                 }}
                 onDragEnter={(event) => {
-                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget)) {
+                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return;
                   }
@@ -122,7 +124,7 @@ const FileExplorer = () => {
                   previousDirRef.current.classList.add("border-emerald-400")
                 }}
                 onDragLeave={(event) => {
-                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget)) {
+                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return
                   }
@@ -178,7 +180,7 @@ const FileExplorer = () => {
         <h1
           className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
           onClick={() => {
-            let sortedItems = [...directory].sort((a, b) => new Date(b.dateModified) - new Date(a.dateModified))
+            let sortedItems = [...directory].sort((a, b) => new Date(b.dateModified).getTime() - new Date(a.dateModified).getTime())
               .map((file, index) => ({
                 ...file, id: index
               }))
@@ -218,7 +220,7 @@ const FileExplorer = () => {
                     childElements.current[element.id].classList.add("border-gray-600")
                   }
                   if (draggedItem.path === element.path) {
-                    setDraggedItem({});
+                    setDraggedItem(null);
                     return
                   }
                   console.log(event);

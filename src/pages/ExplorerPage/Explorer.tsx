@@ -11,22 +11,23 @@ import MessageBox from '../../components/MessageBox/MessageBox.jsx';
 import useWebSocket from '../../utils/useWebSocket.js';
 import axiosInstance from '../../utils/axiosInstance.js';
 import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
+import { type DirectoryItem } from '../../types/DirectoryItem.js';
+import { type AccountPermissions } from '../../types/AccountPermissions.js';
 
 const ExplorerPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [path, setPath] = useState(params.path || './');
-  const [permissions, setPermissions] = useState<object>({});
+  const [permissions, setPermissions] = useState<AccountPermissions>(null);
   const [showDisabled, setShowDisabled] = useState(Cookies.get("show-disabled") === "true");
-  const [directory, setDir] = useState<object[]>([]);
+  const [directory, setDir] = useState<DirectoryItem[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
-  const [directoryInfo, setDirectoryInfo] = useState<object>({});
-  const [itemInfo, setItemInfo] = useState<object>({});
+  const [directoryInfo, setDirectoryInfo] = useState<DirectoryItem>(null);
+  const [itemInfo, setItemInfo] = useState<DirectoryItem>(null);
   const [response, setRes] = useState("");
   const [error, setError] = useState("");
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [unzipProgress, setUnzipProgress] = useState(""); // formatted unzip size (2.5 GB for example)
-  const [connected, setConnected] = useState(false);
   const [messageBoxMsg, setMessageBoxMsg] = useState("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
   const [contextMenu, setContextMenu] = useState({
@@ -174,14 +175,14 @@ const ExplorerPage: React.FC = () => {
       })
   }
 
-  function renameItem(item: object, newName: string): void {
+  function renameItem(item: DirectoryItem, newName: string): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    const itemWithPath = item as { path: string; isDirectory: boolean };
+    const itemWithPath = item;
     let oldPath = itemWithPath.path.slice(1);
     let newPath = `${getParent(itemWithPath.path.slice(0, -1))}`; // /${newName}
     if (newPath.slice(-1) === "/") {
@@ -235,7 +236,7 @@ const ExplorerPage: React.FC = () => {
         setTimeout(() => {
           setDownloadProgress(0);
         }, 5000);
-        fileDownload(data.data, (itemInfo as any).name)
+        fileDownload(data.data, itemInfo.name)
       }).catch((err) => {
         setDownloading(false);
 
@@ -249,14 +250,14 @@ const ExplorerPage: React.FC = () => {
       })
   }
 
-  function deleteItem(item: object): void {
+  function deleteItem(item: DirectoryItem): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    const itemWithPath = item as { path: string; isDirectory: boolean };
+    const itemWithPath = item;
     let newPath = `${getParent(itemWithPath.path.slice(0, -1))}`;
     axiosInstance.get(`/delete?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
@@ -284,14 +285,14 @@ const ExplorerPage: React.FC = () => {
     })
   }
 
-  function createCopy(item: object): void {
+  function createCopy(item: DirectoryItem): void {
     if (downloading || waitingResponse || unzipping) {
       waitPreviousAction();
       return
     } else {
       setWaitingResponse(true);
     }
-    const itemWithPath = item as { path: string };
+    const itemWithPath = item;
     axiosInstance.get(`/create-copy?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
@@ -410,7 +411,7 @@ const ExplorerPage: React.FC = () => {
       setUnzipping(true);
       sendMessage(JSON.stringify({
         type: "unzip",
-        path: (itemInfo as any).path.slice(1)
+        path: itemInfo.path.slice(1)
       }))
     }
   }
@@ -446,7 +447,8 @@ const ExplorerPage: React.FC = () => {
     setMessageBoxMsg: setMessageBoxMsg,
     setError: setError,
     setRes: setRes,
-    showDisabled: showDisabled
+    showDisabled: showDisabled,
+    downloadProgress: downloadProgress
   };
 
   return (
@@ -463,7 +465,7 @@ const ExplorerPage: React.FC = () => {
           <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
           <FileExplorer />
           {
-            Object.keys(itemInfo).length !== 0 && (
+            itemInfo && (
               <ItemInfo />
             )
           }

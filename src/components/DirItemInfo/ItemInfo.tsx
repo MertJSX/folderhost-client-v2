@@ -1,4 +1,4 @@
-import { useRef, useState, useContext, useEffect } from 'react'
+import { useRef, useState, useContext } from 'react'
 import moment from 'moment'
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
@@ -13,7 +13,8 @@ import { FaJava } from "react-icons/fa";
 import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
-import ExplorerContext from '../../utils/ExplorerContext';
+import ExplorerContext from '../../utils/ExplorerContext.js';
+import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
 
 const ItemInfo = () => {
   const renameInput = useRef(null)
@@ -22,7 +23,7 @@ const ItemInfo = () => {
   const logoSize = 75;
   const {
     itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping
-  } = useContext(ExplorerContext)
+  } = useContext<ExplorerContextType>(ExplorerContext)
 
   return (
     <div className='flex flex-col items-center justify-center w-1/3 mx-auto min-w-[320px] max-w-[30%] min-h-[600px] h-[700px] max-h-[800px]'>
@@ -227,7 +228,7 @@ const ItemInfo = () => {
                     deleteItem(itemInfo)
                   }}
                 >Delete directory</button> :
-                itemInfo.path !== "./" && showDisabled === "true" ?
+                itemInfo.path !== "./" && showDisabled === true ?
                   <button
                     className='bg-red-600 px-6 font-bold rounded-xl opacity-50'
                     title='No permission to delete!'
@@ -243,7 +244,7 @@ const ItemInfo = () => {
                     createCopy(itemInfo)
                   }}
                 >Create copy</button>
-                : itemInfo.path !== "./" && itemInfo.path !== (path.slice(-1) === "/" ? path : path + "/") && showDisabled === "true" ?
+                : itemInfo.path !== "./" && itemInfo.path !== (path.slice(-1) === "/" ? path : path + "/") && showDisabled === true ?
                   <button
                     className='bg-sky-600 px-6 font-bold rounded-xl opacity-50'
                     title='No permission!'
@@ -260,7 +261,7 @@ const ItemInfo = () => {
                         title='Click to upload.'
                         target='_blank' rel="noreferrer"
                         href={`/upload/${encodeURIComponent(itemInfo.path)}`}
-                      >Upload new file</a> : showDisabled === "true" ?
+                      >Upload new file</a> : showDisabled === true ?
                         <button
                           className='bg-purple-600 px-6 font-bold rounded-xl text-center opacity-50 cursor-not-allowed'
                           title='No permission to upload!'

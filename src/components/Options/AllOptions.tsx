@@ -1,7 +1,13 @@
-import ChangeMode from './ChangeMode';
-import ShowDisabled from './ShowDisabled';
+import type React from 'react';
+import ChangeMode from './ChangeMode.jsx';
+import ShowDisabled from './ShowDisabled.jsx';
 
-const AllOptions = ({ isOpen, setShowDisabled }) => {
+interface AllOptionsProps {
+    isOpen: boolean,
+    setShowDisabled: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const AllOptions: React.FC<AllOptionsProps> = ({ isOpen, setShowDisabled }) => {
     return (
         <>
             {isOpen ?
