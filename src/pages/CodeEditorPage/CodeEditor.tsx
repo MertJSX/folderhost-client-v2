@@ -1,21 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
-import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp';
-import useWebSocket from '../../utils/useWebSocket';
-import axiosInstance from '../../utils/axiosInstance';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
+import useWebSocket from '../../utils/useWebSocket.js';
+import axiosInstance from '../../utils/axiosInstance.js';
 
 const CodeEditorPage = () => {
     const params = useParams();
     const navigate = useNavigate();
-    const [editorLanguage, setEditorLanguage] = useState("plaintext");
-    const [fileContent, setFileContent] = useState("")
+    const [editorLanguage, setEditorLanguage] = useState<string>("plaintext");
+    const [fileContent, setFileContent] = useState<string>("")
     const path = params.path;
-    const [res, setRes] = useState("");
-    const [readOnly, setReadOnly] = useState(false);
-    const [fileTitle, setFileTitle] = useState("")
+    const [res, setRes] = useState<string>("");
+    const [readOnly, setReadOnly] = useState<boolean>(false);
+    const [fileTitle, setFileTitle] = useState<string>("")
     const {
         isConnected,
         isConnectedRef,

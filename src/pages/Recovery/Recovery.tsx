@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react"
-import Header from "../../components/Header/Header"
-import Cookies from "js-cookie"
+import Header from "../../components/Header/Header.jsx"
 import moment from "moment";
-import axiosInstance from "../../utils/axiosInstance"
+import axiosInstance from "../../utils/axiosInstance.js"
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
-import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
+import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo.jsx";
+import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
 
-const Recovery = () => {
-    const [recoveryRecords, setRecoveryRecords] = useState([]);
-    const [recordInfo, setRecordInfo] = useState(null);
-    const [loadIndex, setLoadIndex] = useState(1)
+const Recovery: React.FC = () => {
+    const [recoveryRecords, setRecoveryRecords] = useState<Array<RecoveryRecord>>([]);
+    const [recordInfo, setRecordInfo] = useState<RecoveryRecord>(null);
+    const [loadIndex, setLoadIndex] = useState<number>(1)
     const logoSize = 20;
     useEffect(() => {
         getRecoveryRecords()
@@ -61,7 +61,7 @@ const Recovery = () => {
                                 loadIndex > 0 ?
                                 <button onClick={() => {
                                     setLoadIndex(loadIndex + 1)
-                                    getRecoveryRecords(true)
+                                    getRecoveryRecords()
                                 }}>Load more</button> : null
                             }
                         </section>

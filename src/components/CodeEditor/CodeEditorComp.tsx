@@ -1,17 +1,31 @@
-import Editor from '@monaco-editor/react';
+import { Editor } from '@monaco-editor/react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { htmlSnippets } from './snippets/htmlSnippets';
-import { jsSnippets } from './snippets/jsSnippets';
-import { yamlSnippets } from './snippets/yamlSnippets';
-import theme from './themes/theme.json'
+import { htmlSnippets } from './snippets/htmlSnippets.js';
+import { jsSnippets } from './snippets/jsSnippets.js';
+import { yamlSnippets } from './snippets/yamlSnippets.js';
+import theme from './themes/theme.json' with { type: 'json' }
 import Cookies from 'js-cookie';
+import type { EditorChange } from '../../types/CodeEditorTypes.js';
 
-const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef, setRes }) => {
+interface CodeEditorCompProps {
+  editorLanguage: string,
+  handleEditorChange: Function,
+  setEditorLanguage: React.Dispatch<React.SetStateAction<string>>,
+  fileContent: string,
+  response: string,
+  title: string, 
+  readOnly: boolean,
+  messages: Array<string>,
+  isConnectedRef: React.RefObject<Boolean>,
+  setRes: React.Dispatch<React.SetStateAction<string>>
+}
+
+const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef, setRes }) => {
   const [editorFontSize, setEditorFontSize] = useState(Cookies.get("editor-fontsize") || 18);
-  const [minimap, setMinimap] = useState(Cookies.get("editor-minimap") || true);
-  const [toggleSettings, setToggleSettings] = useState(false);
-  const [clientsCount, setClientsCount] = useState(0)
-  const isRemoteChangeRef = useRef(false);
+  const [minimap, setMinimap] = useState<boolean>(Cookies.get("editor-minimap") == "false" ? false : true);
+  const [toggleSettings, setToggleSettings] = useState<boolean>(false);
+  const [clientsCount, setClientsCount] = useState<number>(0)
+  const isRemoteChangeRef = useRef<boolean>(false);
   const editorRef = useRef(null);
 
   const handleEditorDidMount = useCallback((editor, monaco) => {
@@ -116,7 +130,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
         editor.trigger("myapp", "redo");
       }
     });
-  });
+  }, []);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -131,7 +145,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
 
   useEffect(() => {
     if (isConnectedRef.current) {
-      let message = {};
+      let message: EditorChange = null;
 
       try {
         message = JSON.parse(messages[messages.length - 1]);
@@ -224,7 +238,7 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
               domReadOnly: readOnly,
               quickSuggestions: true,
               suggestOnTriggerCharacters: true,
-              readOnlyMessage: true,
+              // readOnlyMessage: true,
               minimap: {
                 enabled: minimap,
                 renderCharacters: false,
@@ -236,13 +250,13 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
                 ambiguousCharacters: true,
                 includeComments: true,
                 includeStrings: true,
-                invincibleCharacters: true,
-                selectOnLineNumbers: true,
-                autoClosingBrackets: 'always',
-                snippetSuggestions: 'inline',
-                suggestOnTriggerCharacters: true,
-                tabCompletion: 'on',
-                wordBasedSuggestions: true
+                // invincibleCharacters: true,
+                // selectOnLineNumbers: true,
+                // autoClosingBrackets: 'always',
+                // snippetSuggestions: 'inline',
+                // suggestOnTriggerCharacters: true,
+                // tabCompletion: 'on',
+                // wordBasedSuggestions: true
               }
             }}
             language={editorLanguage}
@@ -300,14 +314,14 @@ const CodeEditorComp = ({ editorLanguage, handleEditorChange, setEditorLanguage,
                   <h1 className='text-lg italic text-nowrap'>Minimap:</h1>
                   <select
                     className='bg-slate-600 font-bold px-2 mx-2 w-full'
-                    value={minimap}
+                    value={minimap.toString()}
                     onChange={(e) => {
-                      setMinimap(e.target.value);
+                      setMinimap(e.target.value == "true");
                       Cookies.set("editor-minimap", e.target.value)
                     }}
                   >
-                    <option value={true}>Enabled</option>
-                    <option value={false}>Disabled</option>
+                    <option value={"true"}>Enabled</option>
+                    <option value={"false"}>Disabled</option>
                   </select>
                 </div>
               </div> :

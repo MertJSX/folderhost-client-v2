@@ -1,7 +1,12 @@
 import { FaFolder, FaFileAlt } from "react-icons/fa"
 import moment from "moment";
+import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
 
-const RecoveryRecordInfo = ({ recordInfo }) => {
+interface RecoveryRecordInfoProps {
+    recordInfo: RecoveryRecord
+}
+
+const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({ recordInfo }) => {
     const logoSize = 70;
     return recordInfo && (
         <article className="flex flex-col items-center justify-center w-1/3 mx-auto min-w-[320px] max-w-[30%] min-h-[600px] h-[700px] max-h-[800px]">
