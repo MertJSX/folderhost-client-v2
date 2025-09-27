@@ -2,7 +2,7 @@ import Header from '../../components/Header/Header.jsx';
 import FileExplorer from '../../components/FileExplorer/FileExplorer.jsx';
 import OptionsBar from '../../components/Options/OptionsBar.jsx';
 import ItemInfo from '../../components/DirItemInfo/ItemInfo.jsx';
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -76,11 +76,6 @@ const ExplorerPage: React.FC = () => {
       setError("WebSocket connection error!")
     }
   }, [isConnected])
-
-  useEffect(() => {
-    console.log(`IsEmpty on Explorer: ${isEmpty}`);
-
-  }, [isEmpty])
 
   useEffect(() => {
     if (isConnectedRef.current) {
@@ -347,17 +342,12 @@ const ExplorerPage: React.FC = () => {
       axiosInstance.get(`/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       )
         .then((data) => {
-          console.log("receive data");
-
-        console.log(data.data);
-        console.log(data.data.isEmpty);
-      
-          setIsEmpty(data.data.isEmpty)
           if (data.data.data != null) {
             setDir(data.data.data)
           } else {
             setDir([])
           }
+          setIsEmpty(data.data.isEmpty);
           setPermissions(data.data.permissions)
           setDirectoryInfo(data.data.directoryInfo)
           setItemInfo(data.data.directoryInfo)
@@ -368,16 +358,6 @@ const ExplorerPage: React.FC = () => {
     } else if (pathInput === undefined && !asParentPath) {
       axiosInstance.get(`/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
-        console.log("receive data");
-
-        console.log(data.data);
-        console.log(data.data.isEmpty);
-
-
-        if (!data.data.data) {
-          setRes(data.data.err)
-          return;
-        }
         setIsEmpty(data.data.isEmpty);
         if (data.data.data != null) {
           setDir(data.data.data)
@@ -394,11 +374,6 @@ const ExplorerPage: React.FC = () => {
     } else if (pathInput) {
       axiosInstance.get(`/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
-        console.log("receive data");
-
-        console.log(data.data);
-        console.log(data.data.isEmpty);
-
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);
         if (data.data.data != null) {
