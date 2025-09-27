@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
 import useWebSocket from '../../utils/useWebSocket.js';
 import axiosInstance from '../../utils/axiosInstance.js';
+import type { ChangeData } from '../../types/CodeEditorTypes.js';
+import type { editor } from 'monaco-editor';
 
 const CodeEditorPage = () => {
     const params = useParams();
@@ -19,16 +21,16 @@ const CodeEditorPage = () => {
         isConnectedRef,
         messages,
         sendMessage
-    } = useWebSocket(path.slice(1))
+    } = useWebSocket(path?.slice(1))
 
-    function handleEditorChange(event) {
+    function handleEditorChange(event: editor.IModelContentChangedEvent) {
         sendChangeToWebSocket(event.changes)
     }
 
-    const sendChangeToWebSocket = useCallback((changes) => {
+    const sendChangeToWebSocket = useCallback((changes: editor.IModelContentChange[]) => {
         if (!isConnectedRef.current || readOnly) return;
 
-        changes.forEach(change => {
+        changes.forEach((change: editor.IModelContentChange) => {
             let changeType;
             if (change.text && change.range.startLineNumber !== change.range.endLineNumber ||
                 change.range.startColumn !== change.range.endColumn) {
@@ -41,7 +43,7 @@ const CodeEditorPage = () => {
 
             const delta = JSON.stringify({
                 type: 'editor-change',
-                path: path.slice(1),
+                path: path?.slice(1),
                 change: {
                     type: changeType,
                     range: {
@@ -61,7 +63,7 @@ const CodeEditorPage = () => {
     }, [readOnly]);
 
     function readFile() {
-        axiosInstance.get(`/read-file?filepath=${path.slice(1)}`
+        axiosInstance.get(`/read-file?filepath=${path?.slice(1)}`
             ).then((data) => {
                 if (data.data.res) {
                     setFileTitle(data.data.title);
@@ -72,8 +74,8 @@ const CodeEditorPage = () => {
             })
     }
 
-    function detectFileLanguage() {
-        const extensionToLanguageMap = {
+    function detectFileLanguage(): string {
+        const extensionToLanguageMap: Record<string, string> = {
             "yml": "yaml",
             "yaml": "yaml",
             "js": "javascript",
@@ -93,6 +95,10 @@ const CodeEditorPage = () => {
             "sql": "sql",
             "xml": "xml"
         };
+
+        if (!path) {
+            return "plaintext"
+        }
 
         let fileExtension = path.substring(path.lastIndexOf('.') + 1);
         return extensionToLanguageMap[fileExtension] || "plaintext";

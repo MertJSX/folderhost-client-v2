@@ -13,22 +13,23 @@ import axiosInstance from '../../utils/axiosInstance.js';
 import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
 import { type DirectoryItem } from '../../types/DirectoryItem.js';
 import { type AccountPermissions } from '../../types/AccountPermissions.js';
+import type { WebSocketResponseType } from '../../types/CodeEditorTypes.js';
 
 const ExplorerPage: React.FC = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [path, setPath] = useState(params.path || './');
-  const [permissions, setPermissions] = useState<AccountPermissions>(null);
+  const [permissions, setPermissions] = useState<AccountPermissions | null>(null);
   const [showDisabled, setShowDisabled] = useState(Cookies.get("show-disabled") === "true");
   const [directory, setDir] = useState<DirectoryItem[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
-  const [directoryInfo, setDirectoryInfo] = useState<DirectoryItem>(null);
-  const [itemInfo, setItemInfo] = useState<DirectoryItem>(null);
-  const [response, setRes] = useState("");
-  const [error, setError] = useState("");
-  const [downloadProgress, setDownloadProgress] = useState(0);
-  const [unzipProgress, setUnzipProgress] = useState(""); // formatted unzip size (2.5 GB for example)
-  const [messageBoxMsg, setMessageBoxMsg] = useState("")
+  const [directoryInfo, setDirectoryInfo] = useState<DirectoryItem | null>(null);
+  const [itemInfo, setItemInfo] = useState<DirectoryItem | null>(null);
+  const [response, setRes] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [downloadProgress, setDownloadProgress] = useState<number>(0);
+  const [unzipProgress, setUnzipProgress] = useState<string>(""); // formatted unzip size (2.5 GB for example)
+  const [messageBoxMsg, setMessageBoxMsg] = useState<string>("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
   const [contextMenu, setContextMenu] = useState({
     show: false,
@@ -79,10 +80,10 @@ const ExplorerPage: React.FC = () => {
 
   useEffect(() => {
     if (isConnectedRef.current) {
-      let message: any = {};
+      let message: WebSocketResponseType;
 
       try {
-        message = JSON.parse(messages[messages.length - 1]);
+          message = JSON.parse(messages[messages.length - 1] ?? "");
       } catch (err) {
         console.warn(messages[messages.length - 1]);
 
@@ -92,7 +93,7 @@ const ExplorerPage: React.FC = () => {
 
       switch (message.type) {
         case "unzip-progress":
-          setUnzipProgress(message.totalSize)
+          setUnzipProgress(message.totalSize ?? "")
           if (message.abortMsg) {
             readDir()
             setUnzipProgress("")
@@ -107,7 +108,7 @@ const ExplorerPage: React.FC = () => {
           }
           break;
         case "error":
-          setError(message.error)
+          setError(message.error ?? "Unknown error")
           break;
       }
     }
@@ -236,7 +237,7 @@ const ExplorerPage: React.FC = () => {
         setTimeout(() => {
           setDownloadProgress(0);
         }, 5000);
-        fileDownload(data.data, itemInfo.name)
+        fileDownload(data.data, itemInfo?.name ?? "")
       }).catch((err) => {
         setDownloading(false);
 
@@ -399,7 +400,7 @@ const ExplorerPage: React.FC = () => {
       setUnzipping(true);
       sendMessage(JSON.stringify({
         type: "unzip",
-        path: itemInfo.path.slice(1)
+        path: itemInfo?.path.slice(1)
       }))
     }
   }

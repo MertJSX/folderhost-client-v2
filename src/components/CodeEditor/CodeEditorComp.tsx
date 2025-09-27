@@ -5,44 +5,70 @@ import { jsSnippets } from './snippets/jsSnippets.js';
 import { yamlSnippets } from './snippets/yamlSnippets.js';
 import theme from './themes/theme.json' with { type: 'json' }
 import Cookies from 'js-cookie';
-import type { EditorChange } from '../../types/CodeEditorTypes.js';
+import type { ChangeData, EditorChange } from '../../types/CodeEditorTypes.js';
+import type { Monaco } from '@monaco-editor/react';
+
+// Monaco Editor tip tanımlamaları
+// import type monaco from 'monaco-editor';
+import { editor, Position } from 'monaco-editor';
 
 interface CodeEditorCompProps {
   editorLanguage: string,
-  handleEditorChange: Function,
+  handleEditorChange: (event: editor.IModelContentChangedEvent) => void,
   setEditorLanguage: React.Dispatch<React.SetStateAction<string>>,
   fileContent: string,
   response: string,
-  title: string, 
+  title: string,
   readOnly: boolean,
   messages: Array<string>,
   isConnectedRef: React.RefObject<Boolean>,
   setRes: React.Dispatch<React.SetStateAction<string>>
 }
 
-const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleEditorChange, setEditorLanguage, fileContent, response, title, readOnly, messages, isConnectedRef, setRes }) => {
-  const [editorFontSize, setEditorFontSize] = useState(Cookies.get("editor-fontsize") || 18);
-  const [minimap, setMinimap] = useState<boolean>(Cookies.get("editor-minimap") == "false" ? false : true);
+const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
+  editorLanguage,
+  handleEditorChange,
+  setEditorLanguage,
+  fileContent,
+  response,
+  title,
+  readOnly,
+  messages,
+  isConnectedRef,
+  setRes
+}) => {
+  const [editorFontSize, setEditorFontSize] = useState<number>(parseInt(Cookies.get("editor-fontsize") ?? "18", 10) || 18);
+  const [minimap, setMinimap] = useState<boolean>(Cookies.get("editor-minimap") === "false" ? false : true);
   const [toggleSettings, setToggleSettings] = useState<boolean>(false);
   const [clientsCount, setClientsCount] = useState<number>(0)
   const isRemoteChangeRef = useRef<boolean>(false);
-  const editorRef = useRef(null);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
-  const handleEditorDidMount = useCallback((editor, monaco) => {
-
+  const handleEditorDidMount = useCallback((editor: editor.IStandaloneCodeEditor, monacoInstance: Monaco) => {
     editorRef.current = editor;
 
-    monaco.editor.defineTheme('vs-dark', theme);
+    monacoInstance.editor.defineTheme('vs-dark', theme as any);
 
-    monaco.languages.registerCompletionItemProvider('html', {
-      provideCompletionItems: (model, position) => {
-        let suggestions = htmlSnippets(monaco);
+    monacoInstance.languages.registerCompletionItemProvider('html', {
+      provideCompletionItems: (model: editor.ITextModel, position: Position) => {
+        let suggestions = htmlSnippets(monacoInstance).map(snippet => ({
+          ...snippet,
+          range,
+        }));
         const textBeforePosition = model.getValueInRange({
           startLineNumber: 1,
           startColumn: 1,
           endLineNumber: position.lineNumber,
           endColumn: position.column,
         });
+
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
 
         const scriptOpen = /<script[^>]*>/gi;
         const scriptClose = /<\/script>/gi;
@@ -62,30 +88,59 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
         const inScriptTag = lastOpenIndex > lastCloseIndex;
 
         if (inScriptTag) {
-          return { suggestions: jsSnippets(monaco) };
+          const suggestions = jsSnippets(monacoInstance).map(snippet => ({
+            ...snippet,
+            range,
+          }));
+          return { suggestions: suggestions };
         }
 
         return { suggestions: suggestions };
       }
     });
-    monaco.languages.registerCompletionItemProvider('javascript', {
-      provideCompletionItems: () => {
-        let suggestions = jsSnippets(monaco)
-        return { suggestions: suggestions };
-      }
+
+    monacoInstance.languages.registerCompletionItemProvider("javascript", {
+      provideCompletionItems: (model, position) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions = jsSnippets(monacoInstance).map(snippet => ({
+          ...snippet,
+          range,
+        }));
+
+        return { suggestions };
+      },
     });
-    monaco.languages.registerCompletionItemProvider('yaml', {
-      provideCompletionItems: () => {
-        let suggestions = yamlSnippets(monaco)
+
+    monacoInstance.languages.registerCompletionItemProvider('yaml', {
+      provideCompletionItems: (model, position) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        let suggestions = yamlSnippets(monacoInstance).map(snippet => ({
+          ...snippet,
+          range
+        }))
         return { suggestions: suggestions };
       }
     });
 
-    editor.onDidChangeModelContent((event) => {
+    editor.onDidChangeModelContent((event: editor.IModelContentChangedEvent) => {
       console.log(event);
 
       if (readOnly) {
-        editor.trigger("myapp", "undo");
+        editor.trigger("myapp", "undo", "");
         return;
       }
 
@@ -94,15 +149,14 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
         return;
       }
 
-      handleEditorChange(event)
-
-    })
+      handleEditorChange(event);
+    });
 
     editor.addAction({
       id: 'save-file',
       label: 'Save File',
       keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS
+        monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyS
       ],
       run: () => {
         console.log("Already saved!");
@@ -113,10 +167,10 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
       id: 'undo-file',
       label: 'Undo File',
       keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyZ
+        monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyCode.KeyZ
       ],
       run: () => {
-        editor.trigger("myapp", "undo");
+        editor.trigger("myapp", "undo", "");
       }
     });
 
@@ -124,58 +178,65 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
       id: 'redo-file',
       label: 'Redo File',
       keybindings: [
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.Shift | monaco.KeyCode.KeyZ
+        monacoInstance.KeyMod.CtrlCmd | monacoInstance.KeyMod.Shift | monacoInstance.KeyCode.KeyZ
       ],
       run: () => {
-        editor.trigger("myapp", "redo");
+        editor.trigger("myapp", "redo", "");
       }
     });
-  }, []);
+  }, [handleEditorChange, readOnly]);
 
   useEffect(() => {
     if (editorRef.current) {
       const position = editorRef.current.getPosition();
+      const model = editorRef.current.getModel();
 
-      editorRef.current.getModel().setValue(fileContent);
-      editorRef.current.setPosition(position);
-      editorRef.current.updateOptions({ readOnly: readOnly })
+      if (model) {
+        model.setValue(fileContent);
+        if (position) {
+          editorRef.current.setPosition(position);
+        }
+        editorRef.current.updateOptions({ readOnly: readOnly });
+      }
     }
-
-  }, [readOnly, fileContent])
+  }, [readOnly, fileContent]);
 
   useEffect(() => {
-    if (isConnectedRef.current) {
-      let message: EditorChange = null;
+    if (isConnectedRef.current && messages.length > 0) {
+      let message: EditorChange;
 
       try {
-        message = JSON.parse(messages[messages.length - 1]);
+        message = JSON.parse(messages[messages.length - 1] ?? "");
       } catch (err) {
         console.warn(messages[messages.length - 1]);
-
         console.error(err);
-        return
+        return;
       }
 
       switch (message.type) {
         case "editor-change":
           isRemoteChangeRef.current = true;
-          applyRemoteChange(message.change)
+          if (message.change) {
+            applyRemoteChange(message.change);
+          }
           break;
         case "editor-update-usercount":
-          setClientsCount(message.count)
+          setClientsCount(message.count ?? 0);
           break;
         case "error":
-          setRes(message.error)
+          setRes(message.error ?? "Unknown error");
           break;
       }
     }
-  }, [messages])
+  }, [messages, isConnectedRef, setRes]);
 
-  const applyRemoteChange = (change) => {
+  const applyRemoteChange = (change: ChangeData) => {
     if (!editorRef.current) return;
 
     const editor = editorRef.current;
     const model = editor.getModel();
+
+    if (!model) return;
 
     switch (change.type) {
       case 'insert':
@@ -200,7 +261,9 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
         }]);
         break;
       case 'full':
-        model.setValue(change.content);
+        if (change.content !== undefined) {
+          model.setValue(change.content);
+        }
         break;
     }
   };
@@ -214,7 +277,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
           <button
             className='text-lg px-6 border-2 bg-gray-700 hover:bg-gray-800 active:bg-gray-700 border-slate-400 rounded-lg'
             onClick={() => {
-              setToggleSettings(!toggleSettings)
+              setToggleSettings(!toggleSettings);
             }}
           >
             Settings
@@ -238,7 +301,6 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
               domReadOnly: readOnly,
               quickSuggestions: true,
               suggestOnTriggerCharacters: true,
-              // readOnlyMessage: true,
               minimap: {
                 enabled: minimap,
                 renderCharacters: false,
@@ -250,85 +312,76 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({ editorLanguage, handleE
                 ambiguousCharacters: true,
                 includeComments: true,
                 includeStrings: true,
-                // invincibleCharacters: true,
-                // selectOnLineNumbers: true,
-                // autoClosingBrackets: 'always',
-                // snippetSuggestions: 'inline',
-                // suggestOnTriggerCharacters: true,
-                // tabCompletion: 'on',
-                // wordBasedSuggestions: true
               }
             }}
             language={editorLanguage}
             value={fileContent}
           />
-          {
-            toggleSettings ?
-              <div className='flex flex-col bg-gray-800 w-[25%] h-auto items-center gap-2 pt-2 rounded-r-3xl'>
-                <h1 className="text-center text-4xl italic font-bold">Settings</h1>
-                <div className="flex">
-                  <h1 className='text-lg italic text-nowrap'>Mode:</h1>
-                  <select
-                    className='bg-slate-600 font-bold text-lg px-2 mx-2'
-                    value={editorLanguage}
-                    onChange={(e) => {
-                      setEditorLanguage(e.target.value);
-                    }}
-                  >
-                    <option value="javascript">Javascript</option>
-                    <option value="typescript">Typescript</option>
-                    <option value="html">HTML</option>
-                    <option value="css">CSS</option>
-                    <option value="php">PHP</option>
-                    <option value="yaml">YAML / YML</option>
-                    <option value="json">JSON</option>
-                    <option value="xml">XML</option>
-                    <option value="shell">Shell</option>
-                    <option value="bat">BAT</option>
-                    <option value="java">Java</option>
-                    <option value="kotlin">Kotlin</option>
-                    <option value="python">Python</option>
-                    <option value="csharp">C#</option>
-                    <option value="c">C</option>
-                    <option value="cpp">C++</option>
-                    <option value="sql">SQL</option>
-                    <option value="mysql">MYSQL</option>
-                    <option value="plaintext">Plain text</option>
-                  </select>
-                </div>
-                <div className="flex">
-                  <h1 className='text-lg italic text-nowrap'>Font size:</h1>
-                  <input
-                    className='bg-gray-600 text-center px-0 mx-2 w-14'
-                    type="number"
-                    value={editorFontSize}
-                    min={5}
-                    max={100}
-                    step={1}
-                    onChange={(e) => {
-                      setEditorFontSize(parseInt(e.target.value, 10));
-                      Cookies.set("editor-fontsize", parseInt(e.target.value, 10))
-                    }} />px
-                </div>
-                <div className="flex">
-                  <h1 className='text-lg italic text-nowrap'>Minimap:</h1>
-                  <select
-                    className='bg-slate-600 font-bold px-2 mx-2 w-full'
-                    value={minimap.toString()}
-                    onChange={(e) => {
-                      setMinimap(e.target.value == "true");
-                      Cookies.set("editor-minimap", e.target.value)
-                    }}
-                  >
-                    <option value={"true"}>Enabled</option>
-                    <option value={"false"}>Disabled</option>
-                  </select>
-                </div>
-              </div> :
-              null
-
-          }
-
+          {toggleSettings && (
+            <div className='flex flex-col bg-gray-800 w-[25%] h-auto items-center gap-2 pt-2 rounded-r-3xl'>
+              <h1 className="text-center text-4xl italic font-bold">Settings</h1>
+              <div className="flex">
+                <h1 className='text-lg italic text-nowrap'>Mode:</h1>
+                <select
+                  className='bg-slate-600 font-bold text-lg px-2 mx-2'
+                  value={editorLanguage}
+                  onChange={(e) => {
+                    setEditorLanguage(e.target.value);
+                  }}
+                >
+                  <option value="javascript">Javascript</option>
+                  <option value="typescript">Typescript</option>
+                  <option value="html">HTML</option>
+                  <option value="css">CSS</option>
+                  <option value="php">PHP</option>
+                  <option value="yaml">YAML / YML</option>
+                  <option value="json">JSON</option>
+                  <option value="xml">XML</option>
+                  <option value="shell">Shell</option>
+                  <option value="bat">BAT</option>
+                  <option value="java">Java</option>
+                  <option value="kotlin">Kotlin</option>
+                  <option value="python">Python</option>
+                  <option value="csharp">C#</option>
+                  <option value="c">C</option>
+                  <option value="cpp">C++</option>
+                  <option value="sql">SQL</option>
+                  <option value="mysql">MYSQL</option>
+                  <option value="plaintext">Plain text</option>
+                </select>
+              </div>
+              <div className="flex">
+                <h1 className='text-lg italic text-nowrap'>Font size:</h1>
+                <input
+                  className='bg-gray-600 text-center px-0 mx-2 w-14'
+                  type="number"
+                  value={editorFontSize}
+                  min={5}
+                  max={100}
+                  step={1}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    setEditorFontSize(value);
+                    Cookies.set("editor-fontsize", value.toString());
+                  }}
+                />px
+              </div>
+              <div className="flex">
+                <h1 className='text-lg italic text-nowrap'>Minimap:</h1>
+                <select
+                  className='bg-slate-600 font-bold px-2 mx-2 w-full'
+                  value={minimap.toString()}
+                  onChange={(e) => {
+                    setMinimap(e.target.value === "true");
+                    Cookies.set("editor-minimap", e.target.value);
+                  }}
+                >
+                  <option value={"true"}>Enabled</option>
+                  <option value={"false"}>Disabled</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

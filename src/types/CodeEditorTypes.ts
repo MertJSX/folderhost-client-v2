@@ -1,6 +1,6 @@
 interface WebSocketResponseType {
     type: string,
-    err?: string,
+    error?: string,
     res?: string,
     path?: string,
     totalSize?: string,
@@ -21,7 +21,8 @@ interface ChangeData {
     type: string,
     range: ChangeRange,
     text: string,
-    timestamp: number
+    timestamp: number,
+    content?: string
 }
 
 interface ChangeRange {

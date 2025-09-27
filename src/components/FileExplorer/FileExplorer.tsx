@@ -21,16 +21,16 @@ import { type DirectoryItem } from '../../types/DirectoryItem.js';
 import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
 
 const FileExplorer: React.FC = () => {
-  const [draggedItem, setDraggedItem] = useState<DirectoryItem>();
+  const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
   const [dropTarget, setDropTarget] = useState<string>("");
-  const childElements = useRef([]);
-  const previousDirRef = useRef<HTMLButtonElement>(null);
-  const [selectedChildEl, setSelectedChildEl] = useState(null);
+  const childElements = useRef<Array<HTMLDivElement>>([]);
+  const previousDirRef = useRef<HTMLButtonElement | null>(null);
+  const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
   const {
     directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
   } = useContext<ExplorerContextType>(ExplorerContext)
 
-  function handleContextMenu(event, element) {
+  function handleContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>, element: DirectoryItem | null) {
     event.preventDefault()
     if (!element) {
       setItemInfo(directoryInfo)
@@ -45,7 +45,7 @@ const FileExplorer: React.FC = () => {
 
   useEffect(() => {
     if (dropTarget) {
-      moveItem(draggedItem.path, dropTarget)
+      moveItem(draggedItem?.path, dropTarget)
       setDraggedItem(null);
       setDropTarget("");
     }
@@ -54,14 +54,14 @@ const FileExplorer: React.FC = () => {
   useEffect(() => {
     if (itemInfo?.id || itemInfo?.id === 0) {
       if (selectedChildEl !== null) {
-        childElements.current[selectedChildEl].classList.remove("border-sky-300")
+        childElements.current[selectedChildEl]?.classList.remove("border-sky-300")
       }
       setSelectedChildEl(itemInfo.id);
     } else {
       console.log(childElements.current[0]);
       if (selectedChildEl !== null) {
-        if (childElements.current[selectedChildEl].classList.contains("border-sky-300")) {
-          childElements.current[selectedChildEl].classList.remove("border-sky-300")
+        if (childElements.current[selectedChildEl]?.classList.contains("border-sky-300")) {
+          childElements.current[selectedChildEl]?.classList.remove("border-sky-300")
         }
       }
       setSelectedChildEl(null)
@@ -70,24 +70,27 @@ const FileExplorer: React.FC = () => {
 
   useEffect(() => {
     if (selectedChildEl !== null) {
-      childElements.current[selectedChildEl].classList.add("border-sky-300")
+      childElements.current[selectedChildEl]?.classList.add("border-sky-300")
     }
   }, [selectedChildEl])
 
   useEffect(() => {
     if (selectedChildEl !== null) {
-      if (childElements.current[selectedChildEl].classList.contains("border-sky-300")) {
+      if (childElements.current[selectedChildEl]?.classList.contains("border-sky-300")) {
         childElements.current[selectedChildEl].classList.remove("border-sky-300")
       }
     }
     childElements.current = []
     setSelectedChildEl(null);
-    directory.forEach((el) => {
+    directory?.forEach((el) => {
       console.log(el);
     })
   }, [directory])
 
-  function addToChildElements(e) {
+  function addToChildElements(e: HTMLDivElement | undefined | null) {
+    if (!e) {
+      return
+    }
     if (e && !childElements.current.includes(e)) {
       childElements.current.push(e);
     }
@@ -107,30 +110,30 @@ const FileExplorer: React.FC = () => {
                 }}
                 onDrop={(event) => {
                   event.preventDefault();
-                  if (draggedItem.isDirectory) {
+                  if (draggedItem?.isDirectory) {
                     let parentOfDir = draggedItem.parentPath;
                     parentOfDir = getParent(parentOfDir.slice(0, -1));
                     moveItem(draggedItem.path, parentOfDir)
                   } else {
-                    moveItem(draggedItem.path, getParent(getParent(draggedItem.path)))
+                    moveItem(draggedItem?.path, getParent(getParent(draggedItem?.path)))
                   }
                 }}
                 onDragEnter={(event) => {
-                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget as Node)) {
+                  if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return;
                   }
-                  previousDirRef.current.classList.remove("border-gray-600")
-                  previousDirRef.current.classList.add("border-emerald-400")
+                  previousDirRef.current?.classList.remove("border-gray-600")
+                  previousDirRef.current?.classList.add("border-emerald-400")
                 }}
                 onDragLeave={(event) => {
-                  if (event.relatedTarget && previousDirRef.current.contains(event.relatedTarget as Node)) {
+                  if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return
                   }
-                  if (previousDirRef.current.classList.contains("border-emerald-400")) {
-                    previousDirRef.current.classList.remove("border-emerald-400")
-                    previousDirRef.current.classList.add("border-gray-600")
+                  if (previousDirRef.current?.classList.contains("border-emerald-400")) {
+                    previousDirRef.current?.classList.remove("border-emerald-400")
+                    previousDirRef.current?.classList.add("border-gray-600")
                   }
                   console.log("Leave event!");
                 }}
@@ -170,7 +173,7 @@ const FileExplorer: React.FC = () => {
         <h1
           className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
           onClick={() => {
-            let sortedItems = [...directory].sort((a, b) => a.name.localeCompare(b.name))
+            let sortedItems = [...directory ?? []].sort((a, b) => a.name.localeCompare(b.name))
               .map((file, index) => ({
                 ...file, id: index
               }))
@@ -180,7 +183,7 @@ const FileExplorer: React.FC = () => {
         <h1
           className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
           onClick={() => {
-            let sortedItems = [...directory].sort((a, b) => new Date(b.dateModified).getTime() - new Date(a.dateModified).getTime())
+            let sortedItems = [...directory ?? []].sort((a, b) => new Date(b.dateModified).getTime() - new Date(a.dateModified).getTime())
               .map((file, index) => ({
                 ...file, id: index
               }))
@@ -190,7 +193,7 @@ const FileExplorer: React.FC = () => {
         <h1
           className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
           onClick={() => {
-            let sortedItems = [...directory].sort((a, b) => convertToBytes(b.size) - convertToBytes(a.size))
+            let sortedItems = [...directory ?? []].sort((a, b) => convertToBytes(b.size) - convertToBytes(a.size))
               .map((file, index) => ({
                 ...file, id: index
               }))
@@ -215,11 +218,11 @@ const FileExplorer: React.FC = () => {
                   setDraggedItem(element);
                 }}
                 onDrop={(event) => {
-                  if (childElements.current[element.id].classList.contains("border-emerald-400")) {
-                    childElements.current[element.id].classList.remove("border-emerald-400")
-                    childElements.current[element.id].classList.add("border-gray-600")
+                  if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
+                    childElements.current[element.id]?.classList.remove("border-emerald-400")
+                    childElements.current[element.id]?.classList.add("border-gray-600")
                   }
-                  if (draggedItem.path === element.path) {
+                  if (draggedItem?.path === element.path) {
                     setDraggedItem(null);
                     return
                   }
@@ -235,23 +238,23 @@ const FileExplorer: React.FC = () => {
                   document.body.style.cursor = 'default'
                 }}
                 onDragEnter={(event) => {
-                  if (event.relatedTarget && childElements.current[element.id].contains(event.relatedTarget)) {
+                  if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return;
                   }
                   if (element.isDirectory) {
-                    childElements.current[element.id].classList.remove("border-gray-600")
-                    childElements.current[element.id].classList.add("border-emerald-400")
+                    childElements.current[element.id]?.classList.remove("border-gray-600")
+                    childElements.current[element.id]?.classList.add("border-emerald-400")
                   }
                 }}
                 onDragLeave={(event) => {
-                  if (event.relatedTarget && childElements.current[element.id].contains(event.relatedTarget)) {
+                  if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
                     event.preventDefault()
                     return
                   }
-                  if (childElements.current[element.id].classList.contains("border-emerald-400")) {
-                    childElements.current[element.id].classList.remove("border-emerald-400")
-                    childElements.current[element.id].classList.add("border-gray-600")
+                  if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
+                    childElements.current[element.id]?.classList.remove("border-emerald-400")
+                    childElements.current[element.id]?.classList.add("border-gray-600")
                   }
                   console.log("Leave event!");
                 }}

@@ -12,10 +12,10 @@ const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y })
             style={{ top: `${y}px`, left: `${x}px` }}
             className='flex flex-col items-start bg-gray-800 rounded-lg text-white p-1 fixed z-20 w-40'
         >
-            {!itemInfo.isDirectory ? (
+            {!itemInfo?.isDirectory ? (
                 <>
                     {
-                        permissions.delete ?
+                        permissions?.delete ?
                             <button
                                 title='Double click to delete.'
                                 className="w-[80%] p-2 text-left text-base transition-all hover:bg-slate-800 hover:translate-x-1 relative">

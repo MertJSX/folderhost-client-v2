@@ -8,7 +8,7 @@ import axiosInstance from '../../utils/axiosInstance.js';
 const UploadFile = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [path, setPath] = useState<string>(params.path);
+  const [path, setPath] = useState<string>(params.path ?? "./");
   const [file, setFile] = useState<File | undefined>();
   const [res, setRes] = useState<string>("");
   const [err, setErr] = useState<string>("");
@@ -29,6 +29,9 @@ const UploadFile = () => {
   }, [file])
 
   async function uploadFile() {
+    if (!file) {
+      return
+    }
     const chunkSize: number = 5 * 1024 * 1024; // 5 MB
     const totalChunks: number = Math.ceil(file.size / chunkSize)
     const progressIndex: number = 100 / totalChunks;

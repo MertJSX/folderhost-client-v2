@@ -1,4 +1,6 @@
-export const jsSnippets = (monaco) => {
+import type { Monaco } from "@monaco-editor/react";
+
+export const jsSnippets = (monaco: Monaco) => {
     return [
         {
             label: 'funcion',

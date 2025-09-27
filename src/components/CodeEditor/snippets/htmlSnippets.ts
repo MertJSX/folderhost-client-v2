@@ -1,4 +1,6 @@
-export const htmlSnippets = (monaco) => {
+import type { Monaco } from "@monaco-editor/react";
+
+export const htmlSnippets = (monaco: Monaco) => {
     return [
         {
             label: 'html:5',
@@ -82,7 +84,7 @@ export const htmlSnippets = (monaco) => {
             kind: monaco.languages.CompletionItemKind.Property,
             insertText: `<audio controls>\n\t<source src="\${1:text}.mp3" type="audio/mpeg">\n\tYour browser does not support audio tag.\n</audio>`,
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            documentation: 'a tag'
+            documentation: 'audio tag'
         },
         {
             label: 'div',

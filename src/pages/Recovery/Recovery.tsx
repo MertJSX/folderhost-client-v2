@@ -9,7 +9,7 @@ import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
 
 const Recovery: React.FC = () => {
     const [recoveryRecords, setRecoveryRecords] = useState<Array<RecoveryRecord>>([]);
-    const [recordInfo, setRecordInfo] = useState<RecoveryRecord>(null);
+    const [recordInfo, setRecordInfo] = useState<RecoveryRecord | null>(null);
     const [loadIndex, setLoadIndex] = useState<number>(1)
     const logoSize = 20;
     useEffect(() => {
@@ -66,7 +66,9 @@ const Recovery: React.FC = () => {
                             }
                         </section>
                     </section>
-                    <RecoveryRecordInfo recordInfo={recordInfo} />
+                    {
+                        recordInfo && <RecoveryRecordInfo recordInfo={recordInfo} />
+                    }
                 </div>
 
             </main>
