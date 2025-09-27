@@ -9,9 +9,9 @@ interface ShowDisabledProps {
     setShowDisabled: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const ShowDisabled: React.FC<ShowDisabledProps> = ({setShowDisabled}) => {
+const ShowDisabled: React.FC<ShowDisabledProps> = ({ setShowDisabled }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [selectedOption, setSelectedOption] = useState<string>(null);
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const iconSize = 100;
     const buttonSize = 20;
@@ -34,19 +34,23 @@ const ShowDisabled: React.FC<ShowDisabledProps> = ({setShowDisabled}) => {
         setIsOpen(!isOpen);
     };
 
-    const handleOptionClick = (option) => {
+    const handleOptionClick = (option: {
+        mode: string;
+        title: string;
+        description: string;
+    }) => {
         if (option.mode === "show") {
-            Cookies.set("show-disabled", true);
+            Cookies.set("show-disabled", "true");
         } else {
-            Cookies.set("show-disabled", false);
+            Cookies.set("show-disabled", "false");
         }
         setSelectedOption(option.title);
         setIsOpen(false);
-        setShowDisabled(Cookies.get("show-disabled"))
+        setShowDisabled(Boolean(Cookies.get("show-disabled")) ?? false)
     };
 
-    const handleOutsideClick = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleOutsideClick = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             setIsOpen(false);
         }
     };
@@ -62,17 +66,17 @@ const ShowDisabled: React.FC<ShowDisabledProps> = ({setShowDisabled}) => {
         console.log(Cookies.get("show-disabled"));
         console.log(typeof Cookies.get("show-disabled"));
         let option = Cookies.get("show-disabled");
-        
+
 
         if (option !== undefined) {
             if (option === "true") {
-                setSelectedOption(options[0].title)
+                setSelectedOption(options[0]?.title ?? "Show disabled")
             } else {
-                setSelectedOption(options[1].title)
+                setSelectedOption(options[1]?.title ?? "Hide disabled")
             }
         } else {
-            setSelectedOption(options[1].title)
-            Cookies.set("show-disabled", false)
+            setSelectedOption(options[1]?.title ?? "Hide disabled")
+            Cookies.set("show-disabled", "false")
         }
 
     }, [])

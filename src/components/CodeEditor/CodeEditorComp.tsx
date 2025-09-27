@@ -1,11 +1,11 @@
 import { Editor } from '@monaco-editor/react';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { htmlSnippets } from './snippets/htmlSnippets.js';
-import { jsSnippets } from './snippets/jsSnippets.js';
-import { yamlSnippets } from './snippets/yamlSnippets.js';
+import { htmlSnippets } from './snippets/htmlSnippets';
+import { jsSnippets } from './snippets/jsSnippets';
+import { yamlSnippets } from './snippets/yamlSnippets';
 import theme from './themes/theme.json' with { type: 'json' }
 import Cookies from 'js-cookie';
-import type { ChangeData, EditorChange } from '../../types/CodeEditorTypes.js';
+import type { ChangeData, EditorChange } from '../../types/CodeEditorTypes';
 import type { Monaco } from '@monaco-editor/react';
 
 // Monaco Editor tip tanımlamaları

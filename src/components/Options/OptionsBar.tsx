@@ -4,8 +4,8 @@ import AllOptions from './AllOptions.jsx';
 import { IoMdSettings } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa";
-import ExplorerContext from '../../utils/ExplorerContext.js';
-import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
+import ExplorerContext from '../../utils/ExplorerContext';
+import { type ExplorerContextType } from '../../types/ExplorerContextType';
 
 
 const OptionsBar = () => {

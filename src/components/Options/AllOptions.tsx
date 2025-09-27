@@ -1,6 +1,6 @@
 import type React from 'react';
-import ChangeMode from './ChangeMode.jsx';
-import ShowDisabled from './ShowDisabled.jsx';
+import ChangeMode from './ChangeMode';
+import ShowDisabled from './ShowDisabled';
 
 interface AllOptionsProps {
     isOpen: boolean,

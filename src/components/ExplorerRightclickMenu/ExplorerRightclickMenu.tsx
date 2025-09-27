@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import ExplorerContext from "../../utils/ExplorerContext.js"
+import ExplorerContext from "../../utils/ExplorerContext"
 
 interface ExplorerRightclickMenuProps {
     x: number, y: number

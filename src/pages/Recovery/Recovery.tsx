@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
-import Header from "../../components/Header/Header.jsx"
+import Header from "../../components/Header/Header"
 import moment from "moment";
-import axiosInstance from "../../utils/axiosInstance.js"
+import axiosInstance from "../../utils/axiosInstance"
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
-import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo.jsx";
-import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
-import MessageBox from "../../components/MessageBox/MessageBox.jsx";
+import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
+import { type RecoveryRecord } from "../../types/RecoveryRecord";
+import MessageBox from "../../components/MessageBox/MessageBox";
 
 const Recovery: React.FC = () => {
     const [recoveryRecords, setRecoveryRecords] = useState<Array<RecoveryRecord>>([]);

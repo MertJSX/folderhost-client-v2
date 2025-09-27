@@ -14,11 +14,11 @@ import { FaJava } from "react-icons/fa";
 import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
-import convertToBytes from '../../utils/convertToBytes.js';
-import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu.jsx';
-import ExplorerContext from '../../utils/ExplorerContext.js';
-import { type DirectoryItem } from '../../types/DirectoryItem.js';
-import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
+import convertToBytes from '../../utils/convertToBytes';
+import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
+import ExplorerContext from '../../utils/ExplorerContext';
+import { type DirectoryItem } from '../../types/DirectoryItem';
+import { type ExplorerContextType } from '../../types/ExplorerContextType';
 
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();

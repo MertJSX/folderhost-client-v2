@@ -24,21 +24,24 @@ const ChangeMode = () => {
             title: 'Quality mode',
             description: 'This is the slowest plan, but you will get all the folder size and file size information.'
         }
-
     ];
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleOptionClick = (option) => {
+    const handleOptionClick = (option: {
+        mode: string;
+        title: string;
+        description: string;
+    }) => {
         setSelectedOption(option.title);
         setIsOpen(false);
         Cookies.set("mode", option.title);
     };
 
-    const handleOutsideClick = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleOutsideClick = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             setIsOpen(false);
         }
     };
@@ -52,9 +55,9 @@ const ChangeMode = () => {
 
     useEffect(() => {
         if (Cookies.get("mode")) {
-            setSelectedOption(Cookies.get("mode"))
+            setSelectedOption(Cookies.get("mode") ?? "Optimized mode")
         } else {
-            setSelectedOption(options[0].title)
+            setSelectedOption(options[0]?.title ?? "Optimized mode")
             Cookies.set("mode", selectedOption)
         }
     }, [])
@@ -65,7 +68,7 @@ const ChangeMode = () => {
                 onClick={toggleDropdown}
                 className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"
             >
-                {selectedOption === "Quality mode" ? 
+                {selectedOption === "Quality mode" ?
                     <IoDiamond size={onButtonSize} /> :
                     <PiSpeedometerBold size={onButtonSize} />
                 }

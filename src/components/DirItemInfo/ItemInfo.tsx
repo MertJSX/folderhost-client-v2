@@ -13,8 +13,8 @@ import { FaJava } from "react-icons/fa";
 import { FaMusic } from "react-icons/fa";
 import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
-import ExplorerContext from '../../utils/ExplorerContext.js';
-import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
+import ExplorerContext from '../../utils/ExplorerContext';
+import { type ExplorerContextType } from '../../types/ExplorerContextType';
 
 const ItemInfo = () => {
   const renameInput = useRef<HTMLInputElement>(null)

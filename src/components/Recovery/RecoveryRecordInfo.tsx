@@ -1,6 +1,6 @@
 import { FaFolder, FaFileAlt } from "react-icons/fa"
 import moment from "moment";
-import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
+import { type RecoveryRecord } from "../../types/RecoveryRecord";
 
 interface RecoveryRecordInfoProps {
     recordInfo: RecoveryRecord,

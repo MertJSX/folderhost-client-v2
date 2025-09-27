@@ -1,19 +1,19 @@
-import Header from '../../components/Header/Header.jsx';
-import FileExplorer from '../../components/FileExplorer/FileExplorer.jsx';
-import OptionsBar from '../../components/Options/OptionsBar.jsx';
-import ItemInfo from '../../components/DirItemInfo/ItemInfo.jsx';
+import Header from '../../components/Header/Header';
+import FileExplorer from '../../components/FileExplorer/FileExplorer';
+import OptionsBar from '../../components/Options/OptionsBar';
+import ItemInfo from '../../components/DirItemInfo/ItemInfo';
 import { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
-import ExplorerContext from '../../utils/ExplorerContext.js';
-import MessageBox from '../../components/MessageBox/MessageBox.jsx';
-import useWebSocket from '../../utils/useWebSocket.js';
-import axiosInstance from '../../utils/axiosInstance.js';
-import { type ExplorerContextType } from '../../types/ExplorerContextType.js';
-import { type DirectoryItem } from '../../types/DirectoryItem.js';
-import { type AccountPermissions } from '../../types/AccountPermissions.js';
-import type { WebSocketResponseType } from '../../types/CodeEditorTypes.js';
+import ExplorerContext from '../../utils/ExplorerContext';
+import MessageBox from '../../components/MessageBox/MessageBox';
+import useWebSocket from '../../utils/useWebSocket';
+import axiosInstance from '../../utils/axiosInstance';
+import { type ExplorerContextType } from '../../types/ExplorerContextType';
+import { type DirectoryItem } from '../../types/DirectoryItem';
+import { type AccountPermissions } from '../../types/AccountPermissions';
+import type { WebSocketResponseType } from '../../types/CodeEditorTypes';
 
 const ExplorerPage: React.FC = () => {
   const params = useParams();

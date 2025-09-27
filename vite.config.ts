@@ -7,6 +7,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx']
+    },
     server: mode === 'development' ? {
       host: '0.0.0.0',
       port: 5173,
