@@ -6,17 +6,44 @@ import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
 import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo.jsx";
 import { type RecoveryRecord } from "../../types/RecoveryRecord.js";
+import MessageBox from "../../components/MessageBox/MessageBox.jsx";
 
 const Recovery: React.FC = () => {
     const [recoveryRecords, setRecoveryRecords] = useState<Array<RecoveryRecord>>([]);
     const [recordInfo, setRecordInfo] = useState<RecoveryRecord | null>(null);
     const [loadIndex, setLoadIndex] = useState<number>(1)
+    const [isError, setIsError] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("")
     const logoSize = 20;
     useEffect(() => {
         getRecoveryRecords()
     }, [])
 
-    const getRecoveryRecords = useCallback(() => {
+    const getRecoveryRecords = useCallback((reset: boolean = false) => {
+        if (reset) {
+            setLoadIndex(1)
+            setRecoveryRecords([])
+            axiosInstance.get(`/recovery?page=1`).then((data) => {
+                console.log(data.data);
+                if (!data.data.records[0]) {
+                    return
+                }
+                if (data.data.isLast != true) {
+                    setLoadIndex(loadIndex + 1)
+                } else {
+                    setLoadIndex(0)
+                }
+                setRecoveryRecords(prev => [...prev, ...data.data.records])
+            }).catch((error) => {
+                setIsError(true)
+                if (error.response.data.err) {
+                    setMessage(error.response.data.err)
+                    return
+                }
+                setMessage("Unknown error while trying to recover a record.")
+            })
+            return
+        }
         axiosInstance.get(`/recovery?page=${loadIndex}`).then((data) => {
             console.log(data.data);
             if (!data.data.records[0]) {
@@ -28,12 +55,35 @@ const Recovery: React.FC = () => {
                 setLoadIndex(0)
             }
             setRecoveryRecords(prev => [...prev, ...data.data.records])
+        }).catch((error) => {
+            setIsError(true)
+            if (error.response.data.err) {
+                setMessage(error.response.data.err)
+                return
+            }
+            setMessage("Unknown error while trying to recover a record.")
         })
     }, [loadIndex])
+
+    const handleRecoverRecord = useCallback(() => {
+        axiosInstance.get(`/recover-item?id=${recordInfo?.id}`).then((data) => {
+            setIsError(false)
+            setMessage(data.data.res)
+            getRecoveryRecords(true)
+        }).catch((error) => {
+            setIsError(true)
+            if (error.response.data.err) {
+                setMessage(error.response.data.err)
+                return
+            }
+            setMessage("Unknown error while trying to recover a record.")
+        })
+    }, [recordInfo])
 
     return (
         <div>
             <Header />
+            <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10">
                 <div className="flex flex-row">
                     <section className="flex flex-col resize overflow-auto bg-gray-700 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl">
@@ -59,15 +109,15 @@ const Recovery: React.FC = () => {
                             }
                             {
                                 loadIndex > 0 ?
-                                <button onClick={() => {
-                                    setLoadIndex(loadIndex + 1)
-                                    getRecoveryRecords()
-                                }}>Load more</button> : null
+                                    <button onClick={() => {
+                                        setLoadIndex(loadIndex + 1)
+                                        getRecoveryRecords()
+                                    }}>Load more</button> : null
                             }
                         </section>
                     </section>
                     {
-                        recordInfo && <RecoveryRecordInfo recordInfo={recordInfo} />
+                        recordInfo && <RecoveryRecordInfo handleRecoverRecord={handleRecoverRecord} recordInfo={recordInfo} />
                     }
                 </div>
 

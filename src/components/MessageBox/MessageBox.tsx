@@ -5,10 +5,11 @@ import ExplorerContext from "../../utils/ExplorerContext.js";
 
 interface MessageBoxProps {
     message: string,
-    isErr: boolean
+    isErr: boolean,
+    setMessage?: React.Dispatch<React.SetStateAction<string>>
 }
 
-const MessageBox: React.FC<MessageBoxProps> = ({ message, isErr }) => {
+const MessageBox: React.FC<MessageBoxProps> = ({ message, isErr, setMessage }) => {
     const { setMessageBoxMsg, setError, setRes } = useContext(ExplorerContext)
     return message && (
         <section className='bg-black absolute inset-0 flex items-center justify-center w-full bg-opacity-60'>
@@ -24,6 +25,9 @@ const MessageBox: React.FC<MessageBoxProps> = ({ message, isErr }) => {
                         setError("")
                         setRes("")
                         setMessageBoxMsg("")
+                        if (setMessage) {
+                            setMessage("")
+                        }
                     }}
                 >Okay</button>
             </div>
