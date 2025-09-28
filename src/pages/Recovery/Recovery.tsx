@@ -70,7 +70,7 @@ const Recovery: React.FC = () => {
 
     const handleRecoverRecord = useCallback(() => {
         setIsLoading(true)
-        axiosInstance.get(`/recovery/recover?id=${recordInfo?.id}`).then((data) => {
+        axiosInstance.put(`/recovery/recover?id=${recordInfo?.id}`).then((data) => {
             setIsLoading(false)
             setIsError(false)
             setMessage(data.data.res)
@@ -88,7 +88,7 @@ const Recovery: React.FC = () => {
 
     const handleRemoveRecord = useCallback(() => {
         setIsLoading(true)
-        axiosInstance.get(`/recovery/remove?id=${recordInfo?.id}`).then((data) => {
+        axiosInstance.delete(`/recovery/remove?id=${recordInfo?.id}`).then((data) => {
             setIsLoading(false)
             setIsError(false)
             setMessage(data.data.res)
@@ -108,7 +108,7 @@ const Recovery: React.FC = () => {
 
     const handleClearRecords = useCallback(() => {
         setIsLoading(true)
-        axiosInstance.get("/recovery/clear").then((data) => {
+        axiosInstance.delete("/recovery/clear").then((data) => {
             setIsLoading(false)
             setIsError(false)
             setMessage(data.data.res)

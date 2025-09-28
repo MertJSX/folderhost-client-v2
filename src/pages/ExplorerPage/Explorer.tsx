@@ -167,7 +167,7 @@ const ExplorerPage: React.FC = () => {
     } else {
       setWaitingResponse(true);
     }
-    axiosInstance.get(`/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`)
+    axiosInstance.put(`/explorer/rename?oldFilepath=${oldPath.slice(1)}&newFilepath=${newPath.slice(1)}&type=move`)
       .then(() => {
         setWaitingResponse(false)
         readDir();
@@ -191,7 +191,7 @@ const ExplorerPage: React.FC = () => {
     } else {
       newPath = newPath + "/" + newName
     }
-    axiosInstance.get(`/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`)
+    axiosInstance.put(`/explorer/rename?oldFilepath=${oldPath}&newFilepath=${newPath.slice(1)}&type=rename`)
       .then(() => {
         setWaitingResponse(false)
         if (itemWithPath.isDirectory) {
@@ -216,7 +216,7 @@ const ExplorerPage: React.FC = () => {
     } else {
       setDownloading(true);
     }
-    axiosInstance.get(`/download?filepath=${filepath.slice(1)}`,
+    axiosInstance.get(`/explorer/download?filepath=${filepath.slice(1)}`,
       {
         responseType: "blob",
         onDownloadProgress: (
@@ -260,7 +260,7 @@ const ExplorerPage: React.FC = () => {
     }
     const itemWithPath = item;
     let newPath = `${getParent(itemWithPath.path.slice(0, -1))}`;
-    axiosInstance.get(`/delete?path=${itemWithPath.path.slice(1)}`
+    axiosInstance.delete(`/explorer/delete?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
       if (itemWithPath.isDirectory) {
@@ -291,7 +291,7 @@ const ExplorerPage: React.FC = () => {
       setWaitingResponse(true);
     }
     const itemWithPath = item;
-    axiosInstance.get(`/create-copy?path=${itemWithPath.path.slice(1)}`
+    axiosInstance.post(`/explorer/create-copy?path=${itemWithPath.path.slice(1)}`
     ).then((data) => {
       setWaitingResponse(false)
       readDir()
@@ -313,7 +313,7 @@ const ExplorerPage: React.FC = () => {
     } else {
       setWaitingResponse(true);
     }
-    axiosInstance.get(`/create-item?path=${itempath.slice(1)}&isFolder=${isFolder}&itemName=${itemName}`)
+    axiosInstance.post(`/explorer/create-item?path=${itempath.slice(1)}&isFolder=${isFolder}&itemName=${itemName}`)
       .then((data) => {
         setWaitingResponse(false)
         readDir()
@@ -337,7 +337,7 @@ const ExplorerPage: React.FC = () => {
     setRes("");
     if (asParentPath && path !== "./") {
       setPath(getParent(path));
-      axiosInstance.get(`/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
+      axiosInstance.get(`/explorer/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       )
         .then((data) => {
           if (data.data.data != null) {
@@ -354,7 +354,7 @@ const ExplorerPage: React.FC = () => {
         })
       return;
     } else if (pathInput === undefined && !asParentPath) {
-      axiosInstance.get(`/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
+      axiosInstance.get(`/explorer/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setIsEmpty(data.data.isEmpty);
         if (data.data.data != null) {
@@ -370,7 +370,7 @@ const ExplorerPage: React.FC = () => {
       })
       return;
     } else if (pathInput) {
-      axiosInstance.get(`/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
+      axiosInstance.get(`/explorer/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setPath(pathInput)
         setIsEmpty(data.data.isEmpty);
