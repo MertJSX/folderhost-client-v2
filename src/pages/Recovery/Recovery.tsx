@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import Header from "../../components/Header/Header"
 import moment from "moment";
 import axiosInstance from "../../utils/axiosInstance"
@@ -7,46 +7,42 @@ import { FaFileAlt } from "react-icons/fa";
 import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
 import { type RecoveryRecord } from "../../types/RecoveryRecord";
 import MessageBox from "../../components/MessageBox/MessageBox";
+import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
+import { FaArrowRotateLeft } from "react-icons/fa6";
 
 const Recovery: React.FC = () => {
     const [recoveryRecords, setRecoveryRecords] = useState<Array<RecoveryRecord>>([]);
     const [recordInfo, setRecordInfo] = useState<RecoveryRecord | null>(null);
-    const [loadIndex, setLoadIndex] = useState<number>(1)
+    const [loadIndex, setLoadIndex] = useState<number>(1);
     const [isError, setIsError] = useState<boolean>(false);
+    const [isEmpty, setIsEmpty] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [message, setMessage] = useState<string>("")
     const logoSize = 20;
     useEffect(() => {
         getRecoveryRecords()
     }, [])
 
+    useEffect(() => {
+        console.log("isEmpty: "+isEmpty);
+        console.log("isLoading: "+isLoading);
+        console.log("loadIndex: "+loadIndex);
+        
+    }, [isEmpty, isLoading, loadIndex])
+
     const getRecoveryRecords = useCallback((reset: boolean = false) => {
-        if (reset) {
-            setLoadIndex(1)
-            setRecoveryRecords([])
-            axiosInstance.get(`/recovery?page=1`).then((data) => {
-                console.log(data.data);
-                if (!data.data.records[0]) {
-                    return
-                }
-                if (data.data.isLast != true) {
-                    setLoadIndex(loadIndex + 1)
-                } else {
-                    setLoadIndex(0)
-                }
-                setRecoveryRecords(prev => [...prev, ...data.data.records])
-            }).catch((error) => {
-                setIsError(true)
-                if (error.response.data.err) {
-                    setMessage(error.response.data.err)
-                    return
-                }
-                setMessage("Unknown error while trying to recover a record.")
-            })
+        let page: number = reset ? 1 : loadIndex;
+        if (loadIndex == 0 && !reset) {
             return
         }
-        axiosInstance.get(`/recovery?page=${loadIndex}`).then((data) => {
+        setRecordInfo(null);
+        setIsLoading(true)
+        axiosInstance.get(`/recovery?page=${page}`).then((data) => {
             console.log(data.data);
-            if (!data.data.records[0]) {
+            setIsLoading(false)
+            if (!data.data.records) {
+                setIsEmpty(true)
+                setRecoveryRecords([])
                 return
             }
             if (data.data.isLast != true) {
@@ -54,9 +50,16 @@ const Recovery: React.FC = () => {
             } else {
                 setLoadIndex(0)
             }
-            setRecoveryRecords(prev => [...prev, ...data.data.records])
+            if (!reset) {
+                setRecoveryRecords(prev => [...prev, ...data.data.records])
+            }
+            setRecoveryRecords(data.data.records)
         }).catch((error) => {
+            setIsLoading(false)
             setIsError(true)
+            setLoadIndex(0)
+            console.log(error);
+            
             if (error.response.data.err) {
                 setMessage(error.response.data.err)
                 return
@@ -66,11 +69,52 @@ const Recovery: React.FC = () => {
     }, [loadIndex])
 
     const handleRecoverRecord = useCallback(() => {
-        axiosInstance.get(`/recover-item?id=${recordInfo?.id}`).then((data) => {
+        setIsLoading(true)
+        axiosInstance.get(`/recovery/recover?id=${recordInfo?.id}`).then((data) => {
+            setIsLoading(false)
             setIsError(false)
             setMessage(data.data.res)
             getRecoveryRecords(true)
         }).catch((error) => {
+            setIsLoading(false)
+            setIsError(true)
+            if (error.response.data.err) {
+                setMessage(error.response.data.err)
+                return
+            }
+            setMessage("Unknown error while trying to recover a record.")
+        })
+    }, [recordInfo])
+
+    const handleRemoveRecord = useCallback(() => {
+        setIsLoading(true)
+        axiosInstance.get(`/recovery/remove?id=${recordInfo?.id}`).then((data) => {
+            setIsLoading(false)
+            setIsError(false)
+            setMessage(data.data.res)
+            getRecoveryRecords(true)
+        }).catch((error) => {
+            setIsLoading(false)
+            setIsError(true)
+            setIsEmpty(true)
+            if (error.response.data.err) {
+                setMessage(error.response.data.err)
+                return
+            }
+            setMessage("Unknown error while trying to recover a record.")
+        })
+    }, [recordInfo])
+
+
+    const handleClearRecords = useCallback(() => {
+        setIsLoading(true)
+        axiosInstance.get("/recovery/clear").then((data) => {
+            setIsLoading(false)
+            setIsError(false)
+            setMessage(data.data.res)
+            getRecoveryRecords(true)
+        }).catch((error) => {
+            setIsLoading(false)
             setIsError(true)
             if (error.response.data.err) {
                 setMessage(error.response.data.err)
@@ -87,6 +131,21 @@ const Recovery: React.FC = () => {
             <main className="mt-10">
                 <div className="flex flex-row">
                     <section className="flex flex-col resize overflow-auto bg-gray-700 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl">
+                        <div className="flex justify-between items-center">
+                            <h1 className="flex text-2xl items-center gap-2"><FaArrowRotateLeft /> Recovery</h1>
+                            <h1 className="text-base text-gray-400">Records: {recoveryRecords.length}</h1>
+                        </div>
+                        <section className="w-full flex gap-2">
+                            <button
+                                onDoubleClick={handleClearRecords}
+                                className="bg-red-500 hover:bg-red-600 w-1/6"
+                            >Clear all</button>
+                            <button
+                                onClick={() => { getRecoveryRecords(true) }}
+                                className="bg-sky-600 hover:bg-sky-500 w-5/6"
+                            >Refresh</button>
+                        </section>
+                        <hr  />
                         <section className="flex flex-col gap-2 overflow-hidden overflow-y-auto h-[100%]">
                             {
                                 recoveryRecords[0] ? recoveryRecords.map((record) => (
@@ -108,16 +167,25 @@ const Recovery: React.FC = () => {
                                 )) : null
                             }
                             {
-                                loadIndex > 0 ?
+                                loadIndex > 0 && !isEmpty && !isLoading ?
                                     <button onClick={() => {
                                         setLoadIndex(loadIndex + 1)
                                         getRecoveryRecords()
                                     }}>Load more</button> : null
                             }
+                            {
+                                isEmpty && !isLoading ?
+                                <h1 className="text-lg text-center">Recovery is empty</h1> : isLoading ? 
+                                <LoadingComponent /> : null
+                            }
                         </section>
                     </section>
                     {
-                        recordInfo && <RecoveryRecordInfo handleRecoverRecord={handleRecoverRecord} recordInfo={recordInfo} />
+                        recordInfo &&
+                        <RecoveryRecordInfo
+                            handleRecoverRecord={handleRecoverRecord}
+                            handleDeleteRecord={handleRemoveRecord}
+                            recordInfo={recordInfo} />
                     }
                 </div>
 

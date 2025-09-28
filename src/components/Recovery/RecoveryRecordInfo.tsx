@@ -4,10 +4,11 @@ import { type RecoveryRecord } from "../../types/RecoveryRecord";
 
 interface RecoveryRecordInfoProps {
     recordInfo: RecoveryRecord,
-    handleRecoverRecord: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+    handleRecoverRecord: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
+    handleDeleteRecord: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
-const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({ recordInfo, handleRecoverRecord }) => {
+const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({ recordInfo, handleRecoverRecord, handleDeleteRecord }) => {
     const logoSize = 70;
     return recordInfo && (
         <article className="flex flex-col items-center justify-center w-1/3 mx-auto min-w-[320px] max-w-[30%] min-h-[600px] h-[700px] max-h-[800px]">
@@ -30,7 +31,10 @@ const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({ recordInfo, han
                 </h1>
                 <button
                 onClick={handleRecoverRecord} 
-                className="w-full rounded-2xl bg-green-600 hover:bg-green-500 font-bold transition-all">Recover item</button>
+                className="w-full rounded-2xl bg-green-600 hover:bg-green-700 font-bold transition-all">Recover item</button>
+                <button
+                onDoubleClick={handleDeleteRecord} 
+                className="w-full rounded-2xl bg-red-500 hover:bg-red-600 font-bold transition-all">Remove</button>
             </div>
         </article>
     )
