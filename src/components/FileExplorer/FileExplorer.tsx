@@ -19,6 +19,8 @@ import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclick
 import ExplorerContext from '../../utils/ExplorerContext';
 import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';
+import LoadingComponent from '../LoadingComponent/LoadingComponent';
+import { MdExplore } from 'react-icons/md';
 
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
@@ -167,8 +169,9 @@ const FileExplorer: React.FC = () => {
             </div> : null
 
         }
+        <h1 className='text-2xl ml-auto italic flex items-center gap-2'><MdExplore /> Explorer</h1>
       </div>
-      <hr className='h-px bg-sky-400 border-0' />
+      <hr />
       <div className='flex gap-2 mb-0'>
         <h1
           className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
@@ -329,10 +332,7 @@ const FileExplorer: React.FC = () => {
               </div>
             ) : <h1 className='text-2xl'>{response ? <span className='text-amber-200'>{response}</span> :
               (
-                <div className='flex items-center justify-center'>
-                  Loading
-                  <img src='/loading2.gif' width={40} height={40} className='select-none' alt='' />
-                </div>
+                <LoadingComponent />
               )}</h1>
         }
       </div>

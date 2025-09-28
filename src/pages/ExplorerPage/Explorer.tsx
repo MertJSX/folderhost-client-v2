@@ -276,9 +276,6 @@ const ExplorerPage: React.FC = () => {
 
       if (data.data.response) {
         setRes(data.data.response)
-        setTimeout(() => {
-          setRes("")
-        }, 5000);
       }
 
     }).catch((err) => {
