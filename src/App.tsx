@@ -7,6 +7,9 @@ import CodeEditor from './pages/CodeEditorPage/CodeEditor';
 import UploadFile from './pages/UploadFilePage/UploadFile';
 import NoPage from './pages/NoPage';
 import Recovery from './pages/Recovery/Recovery';
+import Users from './pages/Users/Users';
+import Logs from './pages/Logs/Logs';
+import Services from './pages/Services/Services';
 
 function App() {
   return (
@@ -21,6 +24,15 @@ function App() {
           </Route>
           <Route path="recovery" >
             <Route index element={<Recovery />} />
+          </Route>
+          <Route path="users" >
+            <Route index element={<Users />} />
+          </Route>
+          <Route path="logs" >
+            <Route index element={<Logs />} />
+          </Route>
+          <Route path="services" >
+            <Route index element={<Services />} />
           </Route>
           <Route path="editor" >
             <Route index element={<NoPage />} />
