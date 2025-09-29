@@ -19,16 +19,10 @@ const Recovery: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [message, setMessage] = useState<string>("")
     const logoSize = 20;
+
     useEffect(() => {
         getRecoveryRecords()
     }, [])
-
-    useEffect(() => {
-        console.log("isEmpty: "+isEmpty);
-        console.log("isLoading: "+isLoading);
-        console.log("loadIndex: "+loadIndex);
-        
-    }, [isEmpty, isLoading, loadIndex])
 
     const getRecoveryRecords = useCallback((reset: boolean = false) => {
         let page: number = reset ? 1 : loadIndex;
@@ -36,9 +30,9 @@ const Recovery: React.FC = () => {
             return
         }
         setRecordInfo(null);
+        setRecoveryRecords([])
         setIsLoading(true)
         axiosInstance.get(`/recovery?page=${page}`).then((data) => {
-            console.log(data.data);
             setIsLoading(false)
             if (!data.data.records) {
                 setIsEmpty(true)
