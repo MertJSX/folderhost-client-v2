@@ -204,7 +204,7 @@ const FileExplorer: React.FC = () => {
           }}
         >Size</h1>
       </div>
-      <div className='flex flex-col gap-2 overflow-hidden overflow-y-auto h-[100%]' onContextMenu={(e) => { handleContextMenu(e, null) }}>
+      <div className='flex flex-col gap-1 overflow-hidden overflow-y-auto h-[100%]' onContextMenu={(e) => { handleContextMenu(e, null) }}>
         {contextMenu.show &&
           <ExplorerRightclickMenu
             x={contextMenu.x}
@@ -215,7 +215,7 @@ const FileExplorer: React.FC = () => {
             directory.map((element) => (
               <div
                 ref={addToChildElements}
-                className='bg-gray-600 file-explorer-item flex flex-row items-center cursor-pointer p-1 pl-2 shadow-2xl select-none border-2 border-gray-600 hover:border-l-cyan-500'
+                className='bg-gray-600 file-explorer-item flex flex-row items-center cursor-pointer p-1 pl-2 shadow-lg select-none border-2 border-gray-600 hover:border-l-cyan-500 hover:translate-x-2 transition-all'
                 draggable
                 onDragStart={() => {
                   setDraggedItem(element);
