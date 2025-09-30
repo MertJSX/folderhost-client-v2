@@ -163,7 +163,7 @@ const ItemInfo = () => {
                   >Create copy</button> : null
             }
             {itemInfo?.name.split(".").pop() === "zip" && unzipProgress === "" ?
-              (permissions?.unzip ?
+              (permissions?.extract ?
                 <button
                   className='bg-yellow-600 px-6 font-bold rounded-xl'
                   title='Click to unzip.'
