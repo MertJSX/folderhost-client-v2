@@ -8,8 +8,11 @@ export interface AccountPermissions {
     download: boolean,
     upload: boolean,
     rename: boolean,
-    unzip: boolean,
+    extract: boolean,
     copy: boolean,
     read_recovery: boolean,
-    use_recovery: boolean
+    use_recovery: boolean,
+    read_users: boolean,
+    edit_users: boolean,
+    read_logs: boolean
 }
