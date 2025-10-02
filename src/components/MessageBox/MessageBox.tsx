@@ -12,7 +12,7 @@ interface MessageBoxProps {
 const MessageBox: React.FC<MessageBoxProps> = ({ message, isErr, setMessage }) => {
     const { setMessageBoxMsg, setError, setRes } = useContext(ExplorerContext)
     return message && (
-        <section className='bg-black absolute inset-0 flex items-center justify-center w-full bg-opacity-60'>
+        <section className='bg-black fixed inset-0 flex items-center justify-center w-full bg-opacity-60 z-30'>
             <div className={`flex flex-col justify-center items-center bg-slate-800 border-2 rounded-xl w-[550px] p-5 ${isErr ? "border-red-400" : "border-sky-400"}`}>
                 {isErr ?
                     <MdError className="m-5" size={100} />
