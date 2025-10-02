@@ -10,6 +10,7 @@ import Recovery from './pages/Recovery/Recovery';
 import Users from './pages/Users/Users';
 import Logs from './pages/Logs/Logs';
 import Services from './pages/Services/Services';
+import NewUser from './pages/NewUser/NewUser';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           </Route>
           <Route path="users" >
             <Route index element={<Users />} />
+            <Route path='new' element={<NewUser />} />
           </Route>
           <Route path="logs" >
             <Route index element={<Logs />} />

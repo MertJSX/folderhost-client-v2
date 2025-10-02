@@ -6,6 +6,7 @@ import LoadingComponent from "../../components/LoadingComponent/LoadingComponent
 import type { Account } from "../../types/Account";
 import { FaUserFriends, FaUserPlus, FaUser } from "react-icons/fa";
 import UserDataPanel from "../../components/UserDataPanel/UserDataPanel";
+import { Link } from "react-router-dom";
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<Array<Account>>([]);
@@ -58,7 +59,7 @@ const Users: React.FC = () => {
   }, [])
 
   return (
-    <div>
+    <div className="min-h-screen bg-zinc-800">
       <Header />
       <MessageBox message={message} isErr={isError} setMessage={setMessage} />
       <main className="mt-10">
@@ -73,10 +74,10 @@ const Users: React.FC = () => {
                 onClick={() => { getUsersData() }}
                 className="bg-sky-600 hover:bg-sky-500 w-2/3 p-1"
               >Refresh</button>
-              <button
-                onClick={() => { getUsersData() }}
+              <Link
+                to="/users/new"
                 className="bg-green-600 hover:bg-green-500 w-1/3 flex items-center gap-2 p-1 justify-center"
-              ><FaUserPlus size={22} /> New</button>
+              ><FaUserPlus size={22} /> New</Link>
             </section>
             <hr />
             <section className="flex flex-col gap-2 overflow-hidden overflow-y-auto h-[100%]">
@@ -87,9 +88,10 @@ const Users: React.FC = () => {
                       setSelectedUser(user)
                     }}
                     key={index}
-                    className="flex flex-row items-center p-2 bg-gray-600 border-gray-600 border-2 hover:border-sky-300 cursor-pointer transition-all hover:translate-x-1"
+                    className="flex flex-row items-center p-2 gap-2 bg-gray-600 border-gray-600 border-2 hover:border-sky-300 cursor-pointer transition-all hover:translate-x-1"
                   >
-                    <div className="w-1/3 text-center text-lg text-sky-300">{user.username}</div>
+                    <FaUser className="ml-10" />
+                    <div className="w-1/3 text-lg text-center text-sky-300">{user.username}</div>
                     <div className="w-2/3 text-sm text-center text-gray-400">{user.email}</div>
                   </article>
                 )) : null
