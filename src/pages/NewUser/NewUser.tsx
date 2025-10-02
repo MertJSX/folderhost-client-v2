@@ -55,7 +55,7 @@ const NewUser = () => {
 
   const handleSubmit = () => {
     axiosInstance.post("/users/new", {
-      users: user
+      user: user
     }).then(() => {
       navigate("/users")
     }).catch((err) => {

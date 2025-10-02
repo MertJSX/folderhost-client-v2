@@ -11,6 +11,7 @@ import Users from './pages/Users/Users';
 import Logs from './pages/Logs/Logs';
 import Services from './pages/Services/Services';
 import NewUser from './pages/NewUser/NewUser';
+import EditUser from './pages/EditUser/EditUser';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           </Route>
           <Route path="users" >
             <Route index element={<Users />} />
+            <Route path=':username' element={<EditUser />} />
             <Route path='new' element={<NewUser />} />
           </Route>
           <Route path="logs" >
