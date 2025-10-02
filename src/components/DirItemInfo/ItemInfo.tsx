@@ -183,7 +183,7 @@ const ItemInfo = () => {
                 </div> : null
             }
             {!downloadProgress ?
-              permissions?.download ?
+              permissions?.download_files ?
                 <button
                   className='bg-emerald-600 px-6 font-bold rounded-xl'
                   title='Click to download.'
@@ -258,7 +258,7 @@ const ItemInfo = () => {
               itemInfo?.path === (path.slice(-1) === "/" ? path : path + "/") ?
                 <div className='w-full flex flex-col gap-2'>
                   {
-                    permissions?.upload ?
+                    permissions?.upload_files ?
                       <a
                         className='bg-purple-600 px-6 font-bold rounded-xl text-center'
                         title='Click to upload.'
