@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState, useRef } from "react"
 import Header from "../../components/Header/Header"
 import moment from "moment";
 import axiosInstance from "../../utils/axiosInstance"
-import { FaFolder } from "react-icons/fa";
-import { FaFileAlt } from "react-icons/fa";
+import { FaFolder, FaFileAlt, FaTrash, FaSync } from "react-icons/fa";
 import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
 import { type RecoveryRecord } from "../../types/RecoveryRecord";
 import MessageBox from "../../components/MessageBox/MessageBox";
@@ -30,7 +29,9 @@ const Recovery: React.FC = () => {
             return
         }
         setRecordInfo(null);
-        setRecoveryRecords([])
+        if (reset) {
+            setRecoveryRecords([])
+        }
         setIsLoading(true)
         axiosInstance.get(`/recovery?page=${page}`).then((data) => {
             setIsLoading(false)
@@ -46,8 +47,9 @@ const Recovery: React.FC = () => {
             }
             if (!reset) {
                 setRecoveryRecords(prev => [...prev, ...data.data.records])
+            } else {
+                setRecoveryRecords(data.data.records)
             }
-            setRecoveryRecords(data.data.records)
         }).catch((error) => {
             setIsLoading(false)
             setIsError(true)
@@ -99,8 +101,10 @@ const Recovery: React.FC = () => {
         })
     }, [recordInfo])
 
-
     const handleClearRecords = useCallback(() => {
+        if (!window.confirm("Are you sure you want to clear all recovery records? This action cannot be undone.")) {
+            return;
+        }
         setIsLoading(true)
         axiosInstance.delete("/recovery/clear").then((data) => {
             setIsLoading(false)
@@ -123,66 +127,110 @@ const Recovery: React.FC = () => {
             <Header />
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10">
-                <div className="flex flex-row">
-                    <section className="flex flex-col resize overflow-auto bg-gray-700 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl">
+                <div className="flex flex-row justify-center gap-6 px-6">
+                    <section className="flex flex-col bg-gray-700 gap-4 w-3/5 max-w-4xl p-6 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
+                        {/* Header Section */}
                         <div className="flex justify-between items-center">
-                            <h1 className="flex text-2xl items-center gap-2"><FaArrowRotateLeft /> Recovery</h1>
-                            <h1 className="text-base text-gray-400">Records: {recoveryRecords.length}</h1>
+                            <h1 className="flex text-2xl items-center gap-2">
+                                <FaArrowRotateLeft className="text-blue-400" /> 
+                                Recovery Bin
+                            </h1>
+                            <div className="flex items-center gap-3">
+                                <span className="text-base text-gray-400">
+                                    Records: {recoveryRecords.length}
+                                </span>
+                            </div>
                         </div>
-                        <section className="w-full flex gap-2">
+
+                        {/* Action Buttons */}
+                        <section className="flex gap-3">
                             <button
-                                onDoubleClick={handleClearRecords}
-                                className="bg-red-500 hover:bg-red-600 w-1/6"
-                            >Clear all</button>
+                                onClick={handleClearRecords}
+                                className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition-colors flex-1 min-w-[120px]"
+                                title="Clear all recovery records"
+                                disabled={recoveryRecords.length === 0}
+                            >
+                                <FaTrash className="text-sm" />
+                                Clear All
+                            </button>
                             <button
-                                onClick={() => { getRecoveryRecords(true) }}
-                                className="bg-sky-600 hover:bg-sky-500 w-5/6"
-                            >Refresh</button>
+                                onClick={() => getRecoveryRecords(true)}
+                                className="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 px-4 py-2 rounded transition-colors flex-1 min-w-[120px]"
+                                title="Refresh recovery records"
+                            >
+                                <FaSync className="text-sm" />
+                                Refresh
+                            </button>
                         </section>
-                        <hr  />
-                        <section className="flex flex-col gap-2 overflow-hidden overflow-y-auto h-[100%]">
-                            {
-                                recoveryRecords[0] ? recoveryRecords.map((record) => (
+
+                        <hr className="border-gray-600" />
+
+                        {/* Records List */}
+                        <section className="flex flex-col gap-3 overflow-y-auto flex-1 pr-2">
+                            {recoveryRecords[0] ? (
+                                recoveryRecords.map((record) => (
                                     <article
-                                        onClick={() => {
-                                            setRecordInfo(record)
-                                        }}
+                                        onClick={() => setRecordInfo(record)}
                                         key={record.id}
-                                        className="flex flex-row items-center p-2 bg-gray-600 border-gray-600 border-2 hover:border-sky-300 cursor-pointer transition-all hover:translate-x-1"
+                                        className={`flex items-center p-3 bg-gray-600 rounded border-2 cursor-pointer transition-all hover:border-blue-400 hover:translate-x-1 ${
+                                            recordInfo?.id === record.id 
+                                                ? 'border-blue-500 bg-gray-500' 
+                                                : 'border-gray-600'
+                                        }`}
                                     >
-                                        {
-                                            record.isDirectory ?
-                                                <FaFolder size={logoSize} className='mx-2' /> : <FaFileAlt size={logoSize} className='mx-2' />
-                                        }
-                                        <div className="w-1/3 text-lg text-green-200">{record.oldLocation}</div>
-                                        <div className="w-1/3 text-sm text-center text-gray-400">{moment(record.created_at).format("Do MMMM YYYY HH:mm")}</div>
-                                        <div className="w-1/3 text-right text-gray-300">{record.sizeDisplay}</div>
+                                        {record.isDirectory ? (
+                                            <FaFolder size={logoSize} className='mx-3 text-blue-400' />
+                                        ) : (
+                                            <FaFileAlt size={logoSize} className='mx-3 text-gray-300' />
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="text-green-200 font-medium truncate">
+                                                {record.oldLocation}
+                                            </div>
+                                            <div className="text-sm text-gray-400">
+                                                {moment(record.created_at).format("Do MMMM YYYY HH:mm")}
+                                            </div>
+                                        </div>
+                                        <div className="text-right text-gray-300 whitespace-nowrap ml-4">
+                                            {record.sizeDisplay}
+                                        </div>
                                     </article>
-                                )) : null
-                            }
-                            {
-                                loadIndex > 0 && !isEmpty && !isLoading ?
-                                    <button onClick={() => {
-                                        setLoadIndex(loadIndex + 1)
-                                        getRecoveryRecords()
-                                    }}>Load more</button> : null
-                            }
-                            {
-                                isEmpty && !isLoading ?
-                                <h1 className="text-lg text-center">Recovery is empty</h1> : isLoading ? 
-                                <LoadingComponent /> : null
-                            }
+                                ))
+                            ) : null}
+
+                            {/* Load More Button */}
+                            {loadIndex > 0 && !isEmpty && !isLoading && (
+                                <button 
+                                    onClick={() => getRecoveryRecords()}
+                                    className="bg-gray-600 hover:bg-gray-500 py-2 rounded transition-colors"
+                                >
+                                    Load More Records
+                                </button>
+                            )}
+
+                            {/* Empty State */}
+                            {isEmpty && !isLoading && (
+                                <div className="flex flex-col items-center justify-center text-gray-400 py-12">
+                                    <FaFolder size={48} className="mb-4 opacity-50" />
+                                    <h1 className="text-lg">Recovery bin is empty</h1>
+                                    <p className="text-sm mt-2">Deleted items will appear here</p>
+                                </div>
+                            )}
+
+                            {/* Loading State */}
+                            {isLoading && <LoadingComponent />}
                         </section>
                     </section>
-                    {
-                        recordInfo &&
+
+                    {/* Record Info Panel */}
+                    {recordInfo && (
                         <RecoveryRecordInfo
                             handleRecoverRecord={handleRecoverRecord}
                             handleDeleteRecord={handleRemoveRecord}
-                            recordInfo={recordInfo} />
-                    }
+                            recordInfo={recordInfo}
+                        />
+                    )}
                 </div>
-
             </main>
         </div>
     )

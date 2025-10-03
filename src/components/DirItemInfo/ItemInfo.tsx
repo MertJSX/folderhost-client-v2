@@ -136,8 +136,11 @@ const ItemInfo = () => {
               permissions?.delete ?
                 <button
                   className='bg-red-600 px-6 font-bold rounded-xl'
-                  title='Double click to delete.'
-                  onDoubleClick={() => {
+                  title='Click to delete.'
+                  onClick={() => {
+                    if (!window.confirm("Are you sure you want to delete this file?")) {
+                      return;
+                    }
                     deleteItem(itemInfo)
                   }}
                 >Delete file</button> : showDisabled === true ?
@@ -226,8 +229,11 @@ const ItemInfo = () => {
               itemInfo?.path !== "./" && permissions?.delete ?
                 <button
                   className='bg-red-600 hover:bg-red-700 px-6 font-bold rounded-xl'
-                  title='Double click to delete.'
-                  onDoubleClick={() => {
+                  title='Click to delete.'
+                  onClick={() => {
+                    if (!window.confirm("Are you sure you want to delete this directory?")) {
+                      return;
+                    }
                     deleteItem(itemInfo)
                   }}
                 >Delete directory</button> :
