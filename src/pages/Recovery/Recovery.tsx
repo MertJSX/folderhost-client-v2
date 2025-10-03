@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Header from "../../components/Header/Header"
 import moment from "moment";
 import axiosInstance from "../../utils/axiosInstance"
@@ -55,7 +55,7 @@ const Recovery: React.FC = () => {
             setIsError(true)
             setLoadIndex(0)
             console.log(error);
-            
+
             if (error.response.data.err) {
                 setMessage(error.response.data.err)
                 return
@@ -127,26 +127,31 @@ const Recovery: React.FC = () => {
             <Header />
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10">
-                <div className="flex flex-row justify-center gap-6 px-6">
+                <div className="flex flex-row justify-center items-center px-6">
                     <section className="flex flex-col bg-gray-700 gap-4 w-3/5 max-w-4xl p-6 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
                         {/* Header Section */}
-                        <div className="flex justify-between items-center">
-                            <h1 className="flex text-2xl items-center gap-2">
-                                <FaArrowRotateLeft className="text-blue-400" /> 
-                                Recovery Bin
-                            </h1>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                             <div className="flex items-center gap-3">
-                                <span className="text-base text-gray-400">
-                                    Records: {recoveryRecords.length}
+                                <div className="p-3 bg-blue-500 rounded-lg">
+                                    <FaArrowRotateLeft size={28} className="text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold text-white">Recovery Bin</h1>
+                                    <p className="text-gray-400">Restore deleted files and folders</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-base text-gray-300">
+                                    <span className="font-semibold text-white">{recoveryRecords.length}</span> record(s)
                                 </span>
                             </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <section className="flex gap-3">
+                        <div className="flex gap-3">
                             <button
                                 onClick={handleClearRecords}
-                                className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition-colors flex-1 min-w-[120px]"
+                                className="flex items-center justify-center gap-2 bg-red-700 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1"
                                 title="Clear all recovery records"
                                 disabled={recoveryRecords.length === 0}
                             >
@@ -155,13 +160,13 @@ const Recovery: React.FC = () => {
                             </button>
                             <button
                                 onClick={() => getRecoveryRecords(true)}
-                                className="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 px-4 py-2 rounded transition-colors flex-1 min-w-[120px]"
+                                className="flex items-center justify-center gap-2 bg-sky-700 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded transition-colors flex-1"
                                 title="Refresh recovery records"
                             >
                                 <FaSync className="text-sm" />
                                 Refresh
                             </button>
-                        </section>
+                        </div>
 
                         <hr className="border-gray-600" />
 
@@ -172,11 +177,10 @@ const Recovery: React.FC = () => {
                                     <article
                                         onClick={() => setRecordInfo(record)}
                                         key={record.id}
-                                        className={`flex items-center p-3 bg-gray-600 rounded border-2 cursor-pointer transition-all hover:border-blue-400 hover:translate-x-1 ${
-                                            recordInfo?.id === record.id 
-                                                ? 'border-blue-500 bg-gray-500' 
-                                                : 'border-gray-600'
-                                        }`}
+                                        className={`flex items-center p-3 bg-gray-600 rounded border-2 cursor-pointer transition-all hover:border-blue-400 hover:translate-x-1 ${recordInfo?.id === record.id
+                                            ? 'border-blue-500 bg-gray-500'
+                                            : 'border-gray-600'
+                                            }`}
                                     >
                                         {record.isDirectory ? (
                                             <FaFolder size={logoSize} className='mx-3 text-blue-400' />
@@ -200,7 +204,7 @@ const Recovery: React.FC = () => {
 
                             {/* Load More Button */}
                             {loadIndex > 0 && !isEmpty && !isLoading && (
-                                <button 
+                                <button
                                     onClick={() => getRecoveryRecords()}
                                     className="bg-gray-600 hover:bg-gray-500 py-2 rounded transition-colors"
                                 >
