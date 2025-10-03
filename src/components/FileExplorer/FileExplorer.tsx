@@ -1,18 +1,30 @@
 import { useEffect, useState, useRef, useContext } from 'react'
 import moment from 'moment';
-import { FaFolder } from "react-icons/fa";
-import { FaFileAlt } from "react-icons/fa";
-import { FaFileImage } from "react-icons/fa";
-import { FaFilePdf } from "react-icons/fa6";
-import { FaFileArchive } from "react-icons/fa";
-import { FaHtml5 } from "react-icons/fa";
-import { FaCss3 } from "react-icons/fa";
-import { IoLogoJavascript } from "react-icons/io";
-import { IoMdArrowBack } from "react-icons/io";
-import { FaFolderOpen } from "react-icons/fa6";
-import { FaJava } from "react-icons/fa";
-import { FaMusic } from "react-icons/fa";
-import { BiMoviePlay } from "react-icons/bi";
+import {
+  FaFolder,
+  FaFileAlt,
+  FaFileImage,
+  FaFilePdf,
+  FaFileArchive,
+  FaHtml5,
+  FaCss3,
+  FaFolderOpen,
+  FaJava,
+  FaMusic,
+  FaSort,
+  FaSortUp,
+  FaSortDown
+} from "react-icons/fa";
+import {
+  IoLogoJavascript,
+  IoMdArrowBack
+} from "react-icons/io";
+import {
+  BiMoviePlay
+} from "react-icons/bi";
+import {
+  MdExplore
+} from 'react-icons/md';
 import Cookies from 'js-cookie';
 import convertToBytes from '../../utils/convertToBytes';
 import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
@@ -20,17 +32,86 @@ import ExplorerContext from '../../utils/ExplorerContext';
 import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
-import { MdExplore } from 'react-icons/md';
 
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
   const [dropTarget, setDropTarget] = useState<string>("");
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
   const childElements = useRef<Array<HTMLDivElement>>([]);
   const previousDirRef = useRef<HTMLButtonElement | null>(null);
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
   const {
     directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
   } = useContext<ExplorerContextType>(ExplorerContext)
+
+  // File type icon mapping
+  const getFileIcon = (element: DirectoryItem) => {
+    if (element.isDirectory) {
+      return <FaFolder size={20} className='text-blue-400' />;
+    }
+
+    const extension = element.name.split(".").pop()?.toLowerCase();
+    const iconMap: { [key: string]: JSX.Element } = {
+      'png': <FaFileImage size={20} className='text-green-400' />,
+      'jpg': <FaFileImage size={20} className='text-green-400' />,
+      'jpeg': <FaFileImage size={20} className='text-green-400' />,
+      'pdf': <FaFilePdf size={20} className='text-red-400' />,
+      'zip': <FaFileArchive size={20} className='text-yellow-400' />,
+      'rar': <FaFileArchive size={20} className='text-yellow-400' />,
+      'html': <FaHtml5 size={20} className='text-orange-400' />,
+      'css': <FaCss3 size={20} className='text-blue-400' />,
+      'js': <IoLogoJavascript size={20} className='text-yellow-300' />,
+      'mp3': <FaMusic size={20} className='text-purple-400' />,
+      'mp4': <BiMoviePlay size={20} className='text-purple-400' />,
+      'java': <FaJava size={20} className='text-red-500' />,
+      'jar': <FaJava size={20} className='text-red-500' />,
+    };
+
+    return iconMap[extension || ''] || <FaFileAlt size={20} className='text-gray-300' />;
+  };
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+
+    let sortedItems = [...directory ?? []];
+
+    switch (key) {
+      case 'name':
+        sortedItems.sort((a, b) =>
+          direction === 'asc'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
+        break;
+      case 'date':
+        sortedItems.sort((a, b) =>
+          direction === 'asc'
+            ? new Date(a.dateModified).getTime() - new Date(b.dateModified).getTime()
+            : new Date(b.dateModified).getTime() - new Date(a.dateModified).getTime()
+        );
+        break;
+      case 'size':
+        sortedItems.sort((a, b) =>
+          direction === 'asc'
+            ? convertToBytes(a.size) - convertToBytes(b.size)
+            : convertToBytes(b.size) - convertToBytes(a.size)
+        );
+        break;
+    }
+
+    setSortConfig({ key, direction });
+    setDirectory(sortedItems.map((file, index) => ({ ...file, id: index })));
+  };
+
+  const getSortIcon = (key: string) => {
+    if (sortConfig.key !== key) return <FaSort className="text-gray-400" />;
+    return sortConfig.direction === 'asc'
+      ? <FaSortUp className="text-blue-400" />
+      : <FaSortDown className="text-blue-400" />;
+  };
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>, element: DirectoryItem | null) {
     event.preventDefault()
@@ -55,288 +136,246 @@ const FileExplorer: React.FC = () => {
 
   useEffect(() => {
     if (itemInfo?.id || itemInfo?.id === 0) {
-      if (selectedChildEl !== null) {
-        childElements.current[selectedChildEl]?.classList.remove("border-sky-300")
-      }
       setSelectedChildEl(itemInfo.id);
     } else {
-      console.log(childElements.current[0]);
-      if (selectedChildEl !== null) {
-        if (childElements.current[selectedChildEl]?.classList.contains("border-sky-300")) {
-          childElements.current[selectedChildEl]?.classList.remove("border-sky-300")
-        }
-      }
       setSelectedChildEl(null)
     }
   }, [itemInfo])
 
   useEffect(() => {
-    if (selectedChildEl !== null) {
-      childElements.current[selectedChildEl]?.classList.add("border-sky-300")
-    }
-  }, [selectedChildEl])
-
-  useEffect(() => {
-    if (selectedChildEl !== null) {
-      if (childElements.current[selectedChildEl]?.classList.contains("border-sky-300")) {
-        childElements.current[selectedChildEl].classList.remove("border-sky-300")
-      }
-    }
     childElements.current = []
     setSelectedChildEl(null);
-    directory?.forEach((el) => {
-      console.log(el);
-    })
   }, [directory])
 
   function addToChildElements(e: HTMLDivElement | undefined | null) {
-    if (!e) {
-      return
-    }
+    if (!e) return;
     if (e && !childElements.current.includes(e)) {
       childElements.current.push(e);
     }
   }
 
-  return (
-    <div className='flex flex-col resize overflow-auto bg-gray-700 gap-3 w-3/5 mx-auto p-4 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl'>
-      <div className='flex gap-2'>
-        {
-          directory ?
-            (
-              <button
-                className='bg-gray-600 w-auto flex flex-row items-center justify-center cursor-pointer p-1 pl-2 shadow-2xl select-none hover:opacity-90 rounded-full'
-                ref={previousDirRef}
-                onDragOver={(event) => {
-                  event.preventDefault()
-                }}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  if (draggedItem?.isDirectory) {
-                    let parentOfDir = draggedItem.parentPath;
-                    parentOfDir = getParent(parentOfDir.slice(0, -1));
-                    moveItem(draggedItem.path, parentOfDir)
-                  } else {
-                    moveItem(draggedItem?.path, getParent(getParent(draggedItem?.path)))
-                  }
-                }}
-                onDragEnter={(event) => {
-                  if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
-                    event.preventDefault()
-                    return;
-                  }
-                  previousDirRef.current?.classList.remove("border-gray-600")
-                  previousDirRef.current?.classList.add("border-emerald-400")
-                }}
-                onDragLeave={(event) => {
-                  if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
-                    event.preventDefault()
-                    return
-                  }
-                  if (previousDirRef.current?.classList.contains("border-emerald-400")) {
-                    previousDirRef.current?.classList.remove("border-emerald-400")
-                    previousDirRef.current?.classList.add("border-gray-600")
-                  }
-                  console.log("Leave event!");
-                }}
-                onClick={() => {
-                  readDir(true)
-                }}
-              >
-                <IoMdArrowBack size={22} className='mx-2' />
-              </button>
-            ) : isEmpty ?
-              (
-                <button className='bg-gray-600 w-1/4 flex flex-row items-center justify-center cursor-pointer p-1 pl-2 shadow-2xl select-none hover:opacity-90'
-                  onClick={() => {
-                    readDir(true)
-                  }}
-                >
-                  <FaFolder size={22} className='mx-2' />
-                  <IoMdArrowBack size={22} className='mx-2' />
-                </button>
-              ) : null
-        }
-        {
-          directoryInfo ?
-            <div className='bg-gray-600 w-auto flex flex-row items-center justify-center cursor-pointer p-1 pl-2 shadow-2xl select-none hover:opacity-90'
-              onClick={() => {
-                setItemInfo(directoryInfo)
-              }}
-            >
-              <FaFolderOpen size={22} className='mx-2' />
-              <h1 className='text-base text-gray-300 mr-2'>{directoryInfo.name}</h1>
-            </div> : null
+  const getDisplaySize = (element: DirectoryItem) => {
+    if (element.isDirectory && Cookies.get("mode") !== "Quality mode") {
+      return "";
+    }
+    if (element.size === "N/A" && (Cookies.get("mode") === "Quality mode" || !element.isDirectory)) {
+      return "0 Bytes";
+    }
+    return element.size;
+  };
 
-        }
-        <h1 className='text-2xl ml-auto italic flex items-center gap-2'><MdExplore /> Explorer</h1>
+  return (
+    <div className='flex flex-col bg-gray-700 gap-4 overflow-auto rounded-xl shadow-2xl w-3/5 mx-auto max-w-6xl min-h-[700px] h-[700px] max-h-[800px] p-6'>
+      {/* Header Section */}
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-blue-500 rounded-lg">
+            <MdExplore size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className='text-2xl font-bold text-white'>File Explorer</h1>
+            <p className='text-gray-400'>Browse and manage your files</p>
+          </div>
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className='flex gap-2'>
+          {directory && (
+            <button
+              className='flex items-center gap-2 bg-gray-600 hover:bg-gray-500 hover:border-gray-500 text-white p-3 rounded-lg transition-colors border-2 border-gray-600'
+              ref={previousDirRef}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                if (previousDirRef.current?.classList.contains("border-emerald-400")) {
+                  previousDirRef.current?.classList.remove("border-emerald-400")
+                  previousDirRef.current?.classList.add("border-gray-600")
+                }
+                if (draggedItem?.isDirectory) {
+                  let parentOfDir = draggedItem.parentPath;
+                  parentOfDir = getParent(parentOfDir.slice(0, -1));
+                  moveItem(draggedItem.path, parentOfDir)
+                } else {
+                  moveItem(draggedItem?.path, getParent(getParent(draggedItem?.path)))
+                }
+              }}
+              onDragEnter={(event) => {
+                if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
+                  return;
+                }
+                previousDirRef.current?.classList.remove("border-gray-600")
+                previousDirRef.current?.classList.add("border-emerald-400")
+              }}
+              onDragLeave={(event) => {
+                if (event.relatedTarget && previousDirRef.current?.contains(event.relatedTarget as Node)) {
+                  return;
+                }
+                previousDirRef.current?.classList.remove("border-emerald-400")
+                previousDirRef.current?.classList.add("border-gray-600")
+              }}
+              onClick={() => readDir(true)}
+              title="Go back"
+            >
+              <IoMdArrowBack size={18} />
+            </button>
+          )}
+
+          {directoryInfo && (
+            <button
+              className='flex items-center gap-2 p-3 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors'
+              onClick={() => setItemInfo(directoryInfo)}
+              title="Current folder info"
+            >
+              <FaFolderOpen size={18} />
+              <span className="max-w-[200px] truncate">{directoryInfo.name}</span>
+            </button>
+          )}
+        </div>
       </div>
-      <hr />
-      <div className='flex gap-2 mb-0'>
-        <h1
-          className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
-          onClick={() => {
-            let sortedItems = [...directory ?? []].sort((a, b) => a.name.localeCompare(b.name))
-              .map((file, index) => ({
-                ...file, id: index
-              }))
-            setDirectory(sortedItems)
-          }}
-        >Name</h1>
-        <h1
-          className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
-          onClick={() => {
-            let sortedItems = [...directory ?? []].sort((a, b) => new Date(b.dateModified).getTime() - new Date(a.dateModified).getTime())
-              .map((file, index) => ({
-                ...file, id: index
-              }))
-            setDirectory(sortedItems)
-          }}
-        >Date</h1>
-        <h1
-          className="bg-gray-600 text-center w-2/6 cursor-pointer hover:border-sky-400 border-t-2 border-gray-600"
-          onClick={() => {
-            let sortedItems = [...directory ?? []].sort((a, b) => convertToBytes(b.size) - convertToBytes(a.size))
-              .map((file, index) => ({
-                ...file, id: index
-              }))
-            setDirectory(sortedItems);
-          }}
-        >Size</h1>
+
+      <hr className="border-gray-500" />
+
+      {/* Table Header */}
+      <div className='grid grid-cols-12 gap-4 px-4 py-2 bg-gray-600 rounded-lg'>
+        <div className="col-span-1"></div>
+        <button
+          className="col-span-5 flex items-center gap-2 text-gray-300 font-semibold hover:text-white transition-colors"
+          onClick={() => handleSort('name')}
+        >
+          Name {getSortIcon('name')}
+        </button>
+        <button
+          className="col-span-3 flex items-center gap-2 text-gray-300 font-semibold hover:text-white transition-colors"
+          onClick={() => handleSort('date')}
+        >
+          Modified {getSortIcon('date')}
+        </button>
+        <button
+          className="col-span-3 flex items-center gap-2 text-gray-300 font-semibold hover:text-white transition-colors justify-end"
+          onClick={() => handleSort('size')}
+        >
+          Size {getSortIcon('size')}
+        </button>
       </div>
-      <div className='flex flex-col gap-1 overflow-hidden overflow-y-auto h-[100%]' onContextMenu={(e) => { handleContextMenu(e, null) }}>
-        {contextMenu.show &&
+
+      {/* Files List */}
+      <div
+        className='flex flex-col gap-1 overflow-y-auto p-2'
+        onContextMenu={(e) => handleContextMenu(e, null)}
+      >
+        {contextMenu.show && (
           <ExplorerRightclickMenu
             x={contextMenu.x}
             y={contextMenu.y}
-          />}
-        {
-          directory.length > 0 ?
-            directory.map((element) => (
-              <div
-                ref={addToChildElements}
-                className='bg-gray-600 file-explorer-item flex flex-row items-center cursor-pointer p-1 pl-2 shadow-lg select-none border-2 border-gray-600 hover:border-l-cyan-500 hover:translate-x-2 transition-all'
-                draggable
-                onDragStart={() => {
-                  setDraggedItem(element);
-                }}
-                onDrop={(event) => {
-                  if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
-                    childElements.current[element.id]?.classList.remove("border-emerald-400")
-                    childElements.current[element.id]?.classList.add("border-gray-600")
-                  }
-                  if (draggedItem?.path === element.path) {
-                    setDraggedItem(null);
-                    return
-                  }
-                  console.log(event);
-                  if (element.isDirectory) {
-                    setDropTarget(element.path);
-                  }
-                }}
-                onDragOver={(event) => {
-                  event.preventDefault()
-                }}
-                onDragEnd={() => {
-                  document.body.style.cursor = 'default'
-                }}
-                onDragEnter={(event) => {
-                  if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
-                    event.preventDefault()
-                    return;
-                  }
-                  if (element.isDirectory) {
-                    childElements.current[element.id]?.classList.remove("border-gray-600")
-                    childElements.current[element.id]?.classList.add("border-emerald-400")
-                  }
-                }}
-                onDragLeave={(event) => {
-                  if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
-                    event.preventDefault()
-                    return
-                  }
-                  if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
-                    childElements.current[element.id]?.classList.remove("border-emerald-400")
-                    childElements.current[element.id]?.classList.add("border-gray-600")
-                  }
-                  console.log("Leave event!");
-                }}
-                key={element.id}
-                onClick={() => {
-                  setContextMenu({ show: false, x: 0, y: 0 })
-                  if (!waitingResponse && !downloading && !unzipping) {
-                    setItemInfo(element);
-                  }
-                }}
-                onContextMenu={(event) => {
-                  event.stopPropagation();
-                  handleContextMenu(event, element)
-                }}
-                onDoubleClick={() => {
-                  if (element.isDirectory) {
-                    readDir(false, element.path)
-                  } else {
-                    window.open(`/editor/${encodeURIComponent(element.path)}`, '_blank', 'rel=noopener noreferrer')
-                  }
-                }}
-              >
-                {
-                  element.isDirectory ?
-                    <FaFolder size={22} className='mx-2' />
-                    : element.name.split(".").pop() === "png" ||
-                      element.name.split(".").pop() === "jpg" ||
-                      element.name.split(".").pop() === "jpeg" ?
-                      <FaFileImage size={22} className='mx-2' />
-                      : element.name.split(".").pop() === "pdf" ?
-                        <FaFilePdf size={22} className='mx-2' />
-                        : element.name.split(".").pop() === "mp3" ?
-                          <FaMusic size={22} className='mx-2' />
-                          : element.name.split(".").pop() === "mp4" ?
-                            <BiMoviePlay size={22} className='mx-2' />
-                            : element.name.split(".").pop() === "rar" ||
-                              element.name.split(".").pop() === "zip" ?
-                              <FaFileArchive size={22} className='mx-2' />
-                              : element.name.split(".").pop() === "java" ||
-                                element.name.split(".").pop() === "jar" ?
-                                <FaJava size={22} className='mx-2' />
-                                : element.name.split(".").pop() === "html" ?
-                                  <FaHtml5 size={22} className='mx-2' />
-                                  : element.name.split(".").pop() === "css" ?
-                                    <FaCss3 size={22} className='mx-2' />
-                                    : element.name.split(".").pop() === "js" ?
-                                      <IoLogoJavascript size={22} className='mx-2' /> :
-                                      <FaFileAlt size={22} className='mx-2' />
-                }
-                <h1 className='text-lg text-left text-wrap break-words w-1/3'>{element.name}</h1>
-                <h1 className='text-sm text-left pl-10 mx-auto text-gray-400 w-1/3'>{moment(element.dateModified).format("Do MMMM YYYY HH:mm")}</h1>
-                {
-                  element.isDirectory && Cookies.get("mode") === "Quality mode" ?
-                    <h1 className='text-base text-right text-gray-300 ml-auto mr-2 w-1/3'>
-                      {element.size === "N/A" && Cookies.get("mode") === "Quality mode" ? "0 Bytes" : element.size}
-                    </h1> : !element.isDirectory ?
-                      <h1 className='text-base text-right text-gray-300 ml-auto mr-2 w-1/3'>
-                        {
-                          (element.size === "N/A" && Cookies.get("mode") === "Quality mode") || element.size === "N/A" ?
-                            "0 Bytes" : element.size
-                        }
-                      </h1> : <h1 className='text-base text-right text-gray-300 ml-auto mr-2 w-1/3'>
+          />
+        )}
 
-                      </h1>
+        {directory.length > 0 ? (
+          directory.map((element) => (
+            <div
+              ref={addToChildElements}
+              className={`grid grid-cols-12 gap-4 items-center p-1 bg-gray-600 rounded-lg border-2 transition-all cursor-pointer group
+                ${selectedChildEl === element.id
+                  ? 'bg-zinc-800 border-gray-400'
+                  : 'border-gray-600 hover:border-gray-400 hover:bg-gray-550'
+                }`}
+              draggable
+              onDragStart={() => setDraggedItem(element)}
+              onDrop={() => {
+                if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
+                  childElements.current[element.id]?.classList.remove("border-emerald-400")
+                  childElements.current[element.id]?.classList.add("border-gray-600")
                 }
+                if (draggedItem?.path === element.path) {
+                  setDraggedItem(null);
+                  return
+                }
+                if (element.isDirectory) {
+                  setDropTarget(element.path);
+                }
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDragEnter={(event) => {
+                if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
+                  return;
+                }
+                if (element.isDirectory) {
+                  childElements.current[element.id]?.classList.remove("border-gray-600")
+                  childElements.current[element.id]?.classList.add("border-emerald-400")
+                }
+              }}
+              onDragLeave={(event) => {
+                if (event.relatedTarget && childElements.current[element.id]?.contains(event.relatedTarget as Node)) {
+                  return;
+                }
+                if (childElements.current[element.id]?.classList.contains("border-emerald-400")) {
+                  childElements.current[element.id]?.classList.remove("border-emerald-400")
+                  childElements.current[element.id]?.classList.add("border-gray-600")
+                }
+              }}
+              key={element.id}
+              onClick={() => {
+                setContextMenu({ show: false, x: 0, y: 0 })
+                if (!waitingResponse && !downloading && !unzipping) {
+                  setItemInfo(element);
+                }
+              }}
+              onContextMenu={(event) => {
+                event.stopPropagation();
+                handleContextMenu(event, element)
+              }}
+              onDoubleClick={() => {
+                if (element.isDirectory) {
+                  readDir(false, element.path)
+                } else {
+                  window.open(`/editor/${encodeURIComponent(element.path)}`, '_blank', 'rel=noopener noreferrer')
+                }
+              }}
+            >
+              {/* Icon */}
+              <div className="col-span-1 flex justify-center">
+                {getFileIcon(element)}
+              </div>
 
+              {/* Name */}
+              <div className="col-span-5">
+                <div className="text-white font-medium group-hover:text-cyan-200 transition-colors truncate">
+                  {element.name}
+                </div>
               </div>
-            )) : isEmpty ? (
-              <div className='flex flex-row items-center cursor-default p-1 pl-2 shadow-2xl select-none'>
-                <FaFolderOpen size={22} className='mx-2' />
-                <h1 className='text-lg'>Empty folder</h1>
+
+              {/* Date */}
+              <div className="col-span-3">
+                <div className="text-gray-300 text-sm">
+                  {moment(element.dateModified).format("MMM DD, YYYY")}
+                </div>
+                <div className="text-gray-400 text-xs">
+                  {moment(element.dateModified).format("HH:mm")}
+                </div>
               </div>
-            ) : <h1 className='text-2xl'>{response ? <span className='text-amber-200'>{response}</span> :
-              (
-                <LoadingComponent />
-              )}</h1>
-        }
+
+              {/* Size */}
+              <div className="col-span-3 text-right">
+                <div className="text-gray-300 text-sm font-medium">
+                  {getDisplaySize(element)}
+                </div>
+              </div>
+            </div>
+          ))
+        ) : isEmpty ? (
+          /* Empty State */
+          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <FaFolderOpen size={64} className="mb-4 opacity-50" />
+            <h2 className="text-xl font-semibold mb-2">Empty Folder</h2>
+            <p className="text-center">This folder doesn't contain any files or folders</p>
+          </div>
+        ) : (
+          /* Loading State */
+          <div className="flex justify-center items-center py-16">
+            <LoadingComponent />
+          </div>
+        )}
       </div>
-
     </div>
   )
 }
