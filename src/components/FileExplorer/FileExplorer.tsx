@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext } from 'react'
+import { useEffect, useState, useRef, useContext, useLayoutEffect } from 'react'
 import moment from 'moment';
 import {
   FaFolder,
@@ -40,8 +40,9 @@ const FileExplorer: React.FC = () => {
   const childElements = useRef<Array<HTMLDivElement>>([]);
   const previousDirRef = useRef<HTMLButtonElement | null>(null);
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
+  const directoryRef = useRef<HTMLDivElement | null>(null)
   const {
-    directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu
+    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu, scrollIndex, isDirLoading: isLoading
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   // File type icon mapping
@@ -126,6 +127,12 @@ const FileExplorer: React.FC = () => {
     }
   }
 
+  useLayoutEffect(() => {
+    if (directoryRef.current && directory.length > 0) {
+      directoryRef.current.scrollTop = scrollIndex.current;
+    }
+  }, [directory])
+
   useEffect(() => {
     if (dropTarget) {
       moveItem(draggedItem?.path, dropTarget)
@@ -180,7 +187,10 @@ const FileExplorer: React.FC = () => {
 
         {/* Navigation Buttons */}
         <div className='flex gap-2'>
-          {directory && (
+          {
+            isLoading ? <LoadingComponent /> : null
+          }
+          {(directory && path != "./") && (
             <button
               className='flex items-center gap-2 bg-gray-600 hover:bg-gray-500 hover:border-gray-500 text-white p-3 rounded-lg transition-colors border-2 border-gray-600'
               ref={previousDirRef}
@@ -260,8 +270,14 @@ const FileExplorer: React.FC = () => {
 
       {/* Files List */}
       <div
+        ref={directoryRef}
         className='flex flex-col gap-1 overflow-y-auto p-2'
         onContextMenu={(e) => handleContextMenu(e, null)}
+        onScroll={(e) => {
+          if (directory.length > 0) {
+            scrollIndex.current = e.currentTarget.scrollTop;
+          }
+        }}
       >
         {contextMenu.show && (
           <ExplorerRightclickMenu
@@ -276,7 +292,7 @@ const FileExplorer: React.FC = () => {
               ref={addToChildElements}
               className={`grid grid-cols-12 gap-4 items-center p-1 bg-gray-600 rounded-lg border-2 transition-all cursor-pointer group
                 ${selectedChildEl === element.id
-                  ? 'bg-zinc-800 border-gray-400'
+                  ? 'border-gray-200'
                   : 'border-gray-600 hover:border-gray-400 hover:bg-gray-550'
                 }`}
               draggable
@@ -362,17 +378,12 @@ const FileExplorer: React.FC = () => {
               </div>
             </div>
           ))
-        ) : isEmpty ? (
+        ) : (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <FaFolderOpen size={64} className="mb-4 opacity-50" />
             <h2 className="text-xl font-semibold mb-2">Empty Folder</h2>
             <p className="text-center">This folder doesn't contain any files or folders</p>
-          </div>
-        ) : (
-          /* Loading State */
-          <div className="flex justify-center items-center py-16">
-            <LoadingComponent />
           </div>
         )}
       </div>

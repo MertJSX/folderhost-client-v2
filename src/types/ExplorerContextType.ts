@@ -34,5 +34,7 @@ export interface ExplorerContextType {
         setError: React.Dispatch<React.SetStateAction<string>>,
         setRes: React.Dispatch<React.SetStateAction<string>>,
         showDisabled: boolean,
-        downloadProgress: number
+        downloadProgress: number,
+        scrollIndex: React.MutableRefObject<number>,
+        isDirLoading: boolean
 }

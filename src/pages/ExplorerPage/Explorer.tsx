@@ -2,7 +2,7 @@ import Header from '../../components/Header/Header';
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
 import OptionsBar from '../../components/Options/OptionsBar';
 import ItemInfo from '../../components/DirItemInfo/ItemInfo';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Cookies from 'js-cookie';
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -31,6 +31,8 @@ const ExplorerPage: React.FC = () => {
   const [unzipProgress, setUnzipProgress] = useState<string>(""); // formatted unzip size (2.5 GB for example)
   const [messageBoxMsg, setMessageBoxMsg] = useState<string>("")
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
+  const scrollIndex = useRef<number>(0)
+  const [isDirLoading, setIsDirLoading] = useState<boolean>(false)
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -68,7 +70,7 @@ const ExplorerPage: React.FC = () => {
   }, [path])
 
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && error == "WebSocket connection error!") {
       setError("")
       return
     }
@@ -122,7 +124,7 @@ const ExplorerPage: React.FC = () => {
     }
   }, [])
 
-  function declareError(error: string, client: boolean = true): void {
+  function declareError(error: string): void {
     setError(`${error}`);
   }
 
@@ -155,9 +157,6 @@ const ExplorerPage: React.FC = () => {
 
   function waitPreviousAction(): void {
     setError("You must wait previus action to be completed!")
-    setTimeout(() => {
-      setError("")
-    }, 3000);
   }
 
   function moveItem(oldPath: string, newPath: string): void {
@@ -333,9 +332,10 @@ const ExplorerPage: React.FC = () => {
   function readDir(asParentPath?: boolean, pathInput?: string): void {
     setWaitingResponse(false);
     setDownloading(false);
-    setDir([]);
     setRes("");
+    setIsDirLoading(true)
     if (asParentPath && path !== "./") {
+      scrollIndex.current = 0;
       setPath(getParent(path));
       axiosInstance.get(`/explorer/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       )
@@ -351,7 +351,9 @@ const ExplorerPage: React.FC = () => {
           setItemInfo(data.data.directoryInfo)
         }).catch((err) => {
           handleError(err)
-        })
+        }).finally(() => {
+        setIsDirLoading(false)
+      })
       return;
     } else if (pathInput === undefined && !asParentPath) {
       axiosInstance.get(`/explorer/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
@@ -367,9 +369,12 @@ const ExplorerPage: React.FC = () => {
         setItemInfo(data.data.directoryInfo);
       }).catch((err) => {
         handleError(err)
+      }).finally(() => {
+        setIsDirLoading(false)
       })
       return;
     } else if (pathInput) {
+      scrollIndex.current = 0;
       axiosInstance.get(`/explorer/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setPath(pathInput)
@@ -384,6 +389,8 @@ const ExplorerPage: React.FC = () => {
         setItemInfo(data.data.directoryInfo)
       }).catch((err) => {
         handleError(err)
+      }).finally(() => {
+        setIsDirLoading(false)
       })
     }
   }
@@ -434,7 +441,9 @@ const ExplorerPage: React.FC = () => {
     setError: setError,
     setRes: setRes,
     showDisabled: showDisabled,
-    downloadProgress: downloadProgress
+    downloadProgress: downloadProgress,
+    scrollIndex: scrollIndex,
+    isDirLoading: isDirLoading
   };
 
   return (
