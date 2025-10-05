@@ -64,7 +64,7 @@ const Users: React.FC = () => {
           {/* Main Container */}
           <section className="flex flex-col bg-gray-700 rounded-xl shadow-2xl w-full max-w-6xl min-h-[700px] h-auto p-6">
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-blue-500 rounded-lg">
                   <FaUserFriends size={28} className="text-white" />
@@ -85,7 +85,7 @@ const Users: React.FC = () => {
             </div>
 
             {/* Stats and Search Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 p-4 rounded-lg">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 p-2 rounded-lg">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-gray-300">
                   <FaUsers className="text-blue-400" />
