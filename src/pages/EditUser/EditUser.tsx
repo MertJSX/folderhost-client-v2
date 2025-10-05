@@ -104,7 +104,7 @@ const EditUser = () => {
             <section className="my-10 flex flex-col bg-gray-700 gap-6 w-3/5 mx-auto p-6 min-w-[600px] min-h-[600px] shadow-2xl rounded-lg">
                 <div className="flex justify-between items-center">
                     <h1 className="flex text-3xl items-center gap-3 text-white font-semibold">
-                        <FaUserEdit className="text-blue-400" /> Edit User
+                        <FaUserEdit className="text-blue-400" /> Edit: {username}
                     </h1>
                     <Link
                         to="/users"
