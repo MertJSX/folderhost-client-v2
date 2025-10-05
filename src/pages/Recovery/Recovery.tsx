@@ -29,21 +29,22 @@ const Recovery: React.FC = () => {
             return
         }
         setRecordInfo(null);
-        if (reset) {
-            setRecoveryRecords([])
-        }
         setIsLoading(true)
         axiosInstance.get(`/recovery?page=${page}`).then((data) => {
-            setIsLoading(false)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 500);
             if (!data.data.records) {
                 setIsEmpty(true)
                 setRecoveryRecords([])
                 return
             }
-            if (data.data.isLast != true) {
-                setLoadIndex(loadIndex + 1)
+            if (data.data.isLast) {
+                setLoadIndex(0);
+            } else if (reset) {
+                setLoadIndex(2);
             } else {
-                setLoadIndex(0)
+                setLoadIndex(loadIndex + 1);
             }
             if (!reset) {
                 setRecoveryRecords(prev => [...prev, ...data.data.records])
@@ -51,10 +52,12 @@ const Recovery: React.FC = () => {
                 setRecoveryRecords(data.data.records)
             }
         }).catch((error) => {
-            setIsLoading(false)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 500);
             setIsError(true)
             setLoadIndex(0)
-            console.log(error);
+            setRecoveryRecords([])
 
             if (error.response.data.err) {
                 setMessage(error.response.data.err)
@@ -107,12 +110,16 @@ const Recovery: React.FC = () => {
         }
         setIsLoading(true)
         axiosInstance.delete("/recovery/clear").then((data) => {
-            setIsLoading(false)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 500);
             setIsError(false)
             setMessage(data.data.res)
             getRecoveryRecords(true)
         }).catch((error) => {
-            setIsLoading(false)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 500);
             setIsError(true)
             if (error.response.data.err) {
                 setMessage(error.response.data.err)
@@ -163,7 +170,7 @@ const Recovery: React.FC = () => {
                                 className="flex items-center justify-center gap-2 bg-sky-700 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded transition-colors flex-1"
                                 title="Refresh recovery records"
                             >
-                                <FaSync className="text-sm" />
+                                <FaSync className={`text-sm ${isLoading ? "animate-spin-once" : ""}`} />
                                 Refresh
                             </button>
                         </div>
@@ -220,9 +227,6 @@ const Recovery: React.FC = () => {
                                     <p className="text-sm mt-2">Deleted items will appear here</p>
                                 </div>
                             )}
-
-                            {/* Loading State */}
-                            {isLoading && <LoadingComponent />}
                         </section>
                     </section>
 
