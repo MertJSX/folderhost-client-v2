@@ -86,6 +86,9 @@ const Recovery: React.FC = () => {
     }, [recordInfo])
 
     const handleRemoveRecord = useCallback(() => {
+        if (!window.confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+            return;
+        }
         setIsLoading(true)
         axiosInstance.delete(`/recovery/remove?id=${recordInfo?.id}`).then((data) => {
             setIsLoading(false)

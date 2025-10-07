@@ -83,10 +83,12 @@ const EditUser = () => {
                 setError(err.response.data.err)
             }
         })
-        console.log("New User Created:", user)
     }, [user])
 
     const handleRemove = useCallback(() => {
+        if (!window.confirm("If you remove a user, their logs will be deleted too. Are you sure you want to remove this user? This action cannot be undone.")) {
+            return;
+        }
         axiosInstance.delete(`/users/remove/${user.id}`).then(() => {
             navigate("/users")
         }).catch((err) => {
@@ -94,7 +96,6 @@ const EditUser = () => {
                 setError(err.response.data.err)
             }
         })
-        console.log("New User Created:", user)
     }, [user])
 
     return (
@@ -258,7 +259,7 @@ const EditUser = () => {
                     </button>
                     <button
                         title="Double click to remove"
-                        onDoubleClick={handleRemove}
+                        onClick={handleRemove}
                         className="bg-red-500 hover:bg-red-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 w-1/3"
                     >
                         Remove Account
