@@ -6,7 +6,6 @@ import { FaFolder, FaFileAlt, FaTrash, FaSync } from "react-icons/fa";
 import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
 import { type RecoveryRecord } from "../../types/RecoveryRecord";
 import MessageBox from "../../components/MessageBox/MessageBox";
-import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
 import { FaArrowRotateLeft } from "react-icons/fa6";
 
 const Recovery: React.FC = () => {
@@ -55,6 +54,7 @@ const Recovery: React.FC = () => {
             setTimeout(() => {
                 setIsLoading(false)
             }, 500);
+            setIsEmpty(true)
             setIsError(true)
             setLoadIndex(0)
             setRecoveryRecords([])

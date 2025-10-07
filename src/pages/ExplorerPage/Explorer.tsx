@@ -349,7 +349,7 @@ const ExplorerPage: React.FC = () => {
           } else {
             setDir([])
           }
-          setIsEmpty(data.data.items.length == 0);
+          setIsEmpty(data.data.items == null);
           setDirectoryInfo(data.data.directoryInfo)
           setItemInfo(data.data.directoryInfo)
         }).catch((err) => {
@@ -361,7 +361,7 @@ const ExplorerPage: React.FC = () => {
     } else if (pathInput === undefined && !asParentPath) {
       axiosInstance.get(`/explorer/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
-        setIsEmpty(data.data.items.length == 0);
+        setIsEmpty(data.data.items == null);
         if (data.data.items != null) {
           setDir(data.data.items)
         } else {
@@ -380,7 +380,7 @@ const ExplorerPage: React.FC = () => {
       axiosInstance.get(`/explorer/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setPath(pathInput)
-        setIsEmpty(data.data.items.length == 0);
+        setIsEmpty(data.data.items == null);
         if (data.data.items != null) {
           setDir(data.data.items)
         } else {
