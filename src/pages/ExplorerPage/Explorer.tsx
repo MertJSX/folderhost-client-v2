@@ -14,6 +14,7 @@ import { type ExplorerContextType } from '../../types/ExplorerContextType';
 import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type AccountPermissions } from '../../types/AccountPermissions';
 import type { WebSocketResponseType } from '../../types/CodeEditorTypes';
+import { getUserPermissions } from '../../utils/getUserPermissions';
 
 const ExplorerPage: React.FC = () => {
   const params = useParams();
@@ -119,6 +120,9 @@ const ExplorerPage: React.FC = () => {
   useEffect(() => {
     if (Cookies.get("token")) {
       readDir()
+      getUserPermissions((perms) => {
+        setPermissions(perms)
+      });
     } else {
       navigate("/login")
     }
@@ -340,13 +344,12 @@ const ExplorerPage: React.FC = () => {
       axiosInstance.get(`/explorer/read-dir?folder=${getParent(path).slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       )
         .then((data) => {
-          if (data.data.data != null) {
-            setDir(data.data.data)
+          if (data.data.items != null) {
+            setDir(data.data.items)
           } else {
             setDir([])
           }
-          setIsEmpty(data.data.isEmpty);
-          setPermissions(data.data.permissions)
+          setIsEmpty(data.data.items.length == 0);
           setDirectoryInfo(data.data.directoryInfo)
           setItemInfo(data.data.directoryInfo)
         }).catch((err) => {
@@ -358,13 +361,12 @@ const ExplorerPage: React.FC = () => {
     } else if (pathInput === undefined && !asParentPath) {
       axiosInstance.get(`/explorer/read-dir?folder=${path.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
-        setIsEmpty(data.data.isEmpty);
-        if (data.data.data != null) {
-          setDir(data.data.data)
+        setIsEmpty(data.data.items.length == 0);
+        if (data.data.items != null) {
+          setDir(data.data.items)
         } else {
           setDir([])
         }
-        setPermissions(data.data.permissions)
         setDirectoryInfo(data.data.directoryInfo)
         setItemInfo(data.data.directoryInfo);
       }).catch((err) => {
@@ -378,13 +380,12 @@ const ExplorerPage: React.FC = () => {
       axiosInstance.get(`/explorer/read-dir?folder=${pathInput.slice(1)}&mode=${Cookies.get("mode") || "Optimized mode"}`
       ).then((data) => {
         setPath(pathInput)
-        setIsEmpty(data.data.isEmpty);
-        if (data.data.data != null) {
-          setDir(data.data.data)
+        setIsEmpty(data.data.items.length == 0);
+        if (data.data.items != null) {
+          setDir(data.data.items)
         } else {
           setDir([])
         }
-        setPermissions(data.data.permissions)
         setDirectoryInfo(data.data.directoryInfo)
         setItemInfo(data.data.directoryInfo)
       }).catch((err) => {
