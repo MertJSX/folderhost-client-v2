@@ -1,6 +1,7 @@
 import { createContext, type Context } from "react"
 import { type ExplorerContextType } from "../types/ExplorerContextType.js";
 import { type ContextMenuType } from "../types/ContextMenuType.js";
+import type { DirectoryItem } from "../types/DirectoryItem.js";
 
 const ExplorerContext: Context<ExplorerContextType> = createContext<ExplorerContextType>({
     path: "",
@@ -10,9 +11,9 @@ const ExplorerContext: Context<ExplorerContextType> = createContext<ExplorerCont
     response: "",
     setShowDisabled: ((value: boolean | ((prev: boolean) => boolean)) => {}) as React.Dispatch<React.SetStateAction<boolean>>,
     directory: [],
-    setDirectory: ((value: object[] | ((prev: object[]) => object[])) => {}) as React.Dispatch<React.SetStateAction<object[]>>,
+    setDirectory: ((value: DirectoryItem[] | ((prev: DirectoryItem[]) => DirectoryItem[])) => {}) as React.Dispatch<React.SetStateAction<DirectoryItem[]>>,
     itemInfo: null,
-    setItemInfo: ((value: object | ((prev: object) => object)) => {}) as React.Dispatch<React.SetStateAction<object>>,
+    setItemInfo: ((value: DirectoryItem | ((prev: DirectoryItem) => DirectoryItem)) => {}) as React.Dispatch<React.SetStateAction<DirectoryItem | null>>,
     isEmpty: false,
     moveItem: () => {},
     getParent: () => "",
@@ -37,7 +38,10 @@ const ExplorerContext: Context<ExplorerContextType> = createContext<ExplorerCont
     setMessageBoxMsg: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
     setError: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
     setRes: ((value: string | ((prev: string) => string)) => {}) as React.Dispatch<React.SetStateAction<string>>,
-    showDisabled: false
+    showDisabled: false,
+    downloadProgress: 0,
+    scrollIndex: {current: 0},
+    isDirLoading: false
 });
 
 export default ExplorerContext;
