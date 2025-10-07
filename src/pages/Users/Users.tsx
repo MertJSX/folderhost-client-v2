@@ -159,18 +159,9 @@ const Users: React.FC = () => {
                     <p className="text-center max-w-md">
                       {searchTerm 
                         ? "Try adjusting your search terms to find what you're looking for."
-                        : "Get started by adding the first user to the system."
+                        : "You don't have permission to access users."
                       }
                     </p>
-                    {!searchTerm && (
-                      <Link
-                        to="/users/new"
-                        className="mt-4 flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                      >
-                        <FaUserPlus />
-                        Add First User
-                      </Link>
-                    )}
                   </div>
                 )}
 
