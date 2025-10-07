@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.data?.err === "invalid token" || error.response?.data?.err === "wrong password" || error.response?.data?.err === "authorization required") {
+        if (error.response?.data?.err === "invalid token" || error.response?.data?.err === "wrong password" || error.response?.data?.err === "authorization required" || error.response?.data?.err === "account not found") {
             Cookies.remove("token");
             window.location.href = '/login';
         }
