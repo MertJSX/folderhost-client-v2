@@ -159,7 +159,7 @@ const EditUser = () => {
                                     onChange={(checked) => handlePermissionChange('read_files', checked)}
                                 />
                                 <PermissionToggle
-                                    label="Create Files"
+                                    label="Create Items"
                                     checked={user.permissions.create}
                                     onChange={(checked) => handlePermissionChange('create', checked)}
                                 />
@@ -169,7 +169,7 @@ const EditUser = () => {
                                     onChange={(checked) => handlePermissionChange('change', checked)}
                                 />
                                 <PermissionToggle
-                                    label="Delete Files"
+                                    label="Delete Items"
                                     checked={user.permissions.delete}
                                     onChange={(checked) => handlePermissionChange('delete', checked)}
                                 />
@@ -189,17 +189,17 @@ const EditUser = () => {
                             <div className="space-y-3">
                                 <h3 className="text-lg text-gray-300 font-medium">Advanced Operations</h3>
                                 <PermissionToggle
-                                    label="Move Files"
+                                    label="Move Items"
                                     checked={user.permissions.move}
                                     onChange={(checked) => handlePermissionChange('move', checked)}
                                 />
                                 <PermissionToggle
-                                    label="Rename Files"
+                                    label="Rename Items"
                                     checked={user.permissions.rename}
                                     onChange={(checked) => handlePermissionChange('rename', checked)}
                                 />
                                 <PermissionToggle
-                                    label="Copy Files"
+                                    label="Copy Items"
                                     checked={user.permissions.copy}
                                     onChange={(checked) => handlePermissionChange('copy', checked)}
                                 />
@@ -215,7 +215,7 @@ const EditUser = () => {
                                 />
                             </div>
 
-                            {/* System Operations */}handleSubmit
+                            {/* System Operations */}
                             <div className="space-y-3">
                                 <h3 className="text-lg text-gray-300 font-medium">System Operations</h3>
                                 <PermissionToggle
