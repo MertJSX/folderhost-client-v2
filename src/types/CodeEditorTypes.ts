@@ -13,6 +13,7 @@ interface EditorChange {
     type: string,
     path: string,
     count?: number,
+    content?: string,
     error?: string,
     change: ChangeData
 }

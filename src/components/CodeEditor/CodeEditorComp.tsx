@@ -22,7 +22,9 @@ interface CodeEditorCompProps {
   readOnly: boolean,
   messages: Array<string>,
   isConnectedRef: React.RefObject<Boolean>,
-  setRes: React.Dispatch<React.SetStateAction<string>>
+  setRes: React.Dispatch<React.SetStateAction<string>>,
+  setFileContent: React.Dispatch<React.SetStateAction<string>>,
+  setReadOnly: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
@@ -35,7 +37,9 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
   readOnly,
   messages,
   isConnectedRef,
-  setRes
+  setRes,
+  setFileContent,
+  setReadOnly
 }) => {
   const [editorFontSize, setEditorFontSize] = useState<number>(parseInt(Cookies.get("editor-fontsize") ?? "18", 10) || 18);
   const [minimap, setMinimap] = useState<boolean>(Cookies.get("editor-minimap") === "false" ? false : true);
@@ -225,6 +229,15 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           break;
         case "error":
           setRes(message.error ?? "Unknown error");
+          break;
+        case "file-changed-externally":
+          setRes("File changed externally! Please refresh!");
+          setReadOnly(true);
+          break;
+        case "full-content-update":
+          if (message.content) {
+            setFileContent(message.content)
+          }
           break;
       }
     }

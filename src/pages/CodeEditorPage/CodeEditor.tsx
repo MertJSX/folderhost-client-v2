@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
 import useWebSocket from '../../utils/useWebSocket.js';
 import axiosInstance from '../../utils/axiosInstance.js';
-import type { ChangeData } from '../../types/CodeEditorTypes.js';
 import type { editor } from 'monaco-editor';
 
 const CodeEditorPage = () => {
@@ -138,6 +137,8 @@ const CodeEditorPage = () => {
                 isConnectedRef={isConnectedRef}
                 messages={messages}
                 setRes={setRes}
+                setFileContent={setFileContent}
+                setReadOnly={setReadOnly}
             />
         </div>
     )
