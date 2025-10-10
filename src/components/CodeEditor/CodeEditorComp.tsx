@@ -7,9 +7,18 @@ import theme from './themes/theme.json' with { type: 'json' }
 import Cookies from 'js-cookie';
 import type { ChangeData, EditorChange } from '../../types/CodeEditorTypes';
 import type { Monaco } from '@monaco-editor/react';
-
-// Monaco Editor tip tanımlamaları
-// import type monaco from 'monaco-editor';
+import {
+  FiSettings,
+  FiUsers,
+  FiFile,
+  FiCode,
+  FiType,
+  FiMap
+} from 'react-icons/fi';
+import {
+  FaArrowLeft,
+  FaArrowRight,
+} from 'react-icons/fa'
 import { editor, Position } from 'monaco-editor';
 
 interface CodeEditorCompProps {
@@ -282,27 +291,72 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
   };
 
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center">
-        <div className="flex items-center gap-1 p-2 flex-nowrap">
-          <h1 className='text-lg px-5 text-green-400'>Online: <span className='text-emerald-300'>{clientsCount}</span></h1>
-          <h1 className='text-lg italic px-5 text-gray-400 text-nowrap'>Editing: <span className='text-emerald-300'>{title}</span></h1>
-          <button
-            className='text-lg px-6 border-2 bg-gray-700 hover:bg-gray-800 active:bg-gray-700 border-slate-400 rounded-lg'
-            onClick={() => {
-              setToggleSettings(!toggleSettings);
-            }}
-          >
-            Settings
-          </button>
+    <div className={"flex flex-col h-screen bg-gray-900"}>
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center space-x-6">
+          {/* Logo/Brand */}
+          <div className="flex items-center space-x-2">
+            <FiCode className="w-6 h-6" />
+            <span className="text-xl font-bold text-white"><span className='italic'>FolderHost</span> Editor</span>
+          </div>
 
-          <h1 className='text-amber-200 text-xl'>{response}</h1>
+          {/* File Info */}
+          <div className="flex items-center space-x-2 text-gray-300">
+            <FiFile className="w-4 h-4" />
+            <span className="text-sm">{title}</span>
+          </div>
+
+          {/* Online Users */}
+          <div className="flex items-center space-x-2 text-green-400">
+            <FiUsers className="w-4 h-4" />
+            <span className="text-sm">
+              Online: <span className="font-semibold text-emerald-300">{clientsCount}</span>
+            </span>
+          </div>
+
+          {/* Status */}
+          {response && (
+            <div className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-full">
+              <span className="text-sm text-yellow-200">{response}</span>
+            </div>
+          )}
         </div>
-        <div className="flex flex-row w-full justify-center">
+
+        {/* Actions */}
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => editorRef.current?.trigger("myapp", "undo", "")}
+            className="p-2 text-2xl bg-slate-500 rounded-full hover:bg-sky-600 transition-colors"
+          >
+            <FaArrowLeft />
+          </button>
+          <button
+            onClick={() => editorRef.current?.trigger("myapp", "redo", "")}
+            className="p-2 text-2xl bg-slate-500 rounded-full hover:bg-sky-600 transition-colors"
+          >
+            <FaArrowRight />
+          </button>
+          {/* Settings Toggle */}
+          <button
+            onClick={() => setToggleSettings(!toggleSettings)}
+            className={`flex items-center space-x-2 px-4 py-2 transition-colors rounded-lg ${toggleSettings
+              ? 'bg-blue-500 text-white'
+              : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              }`}
+          >
+            <FiSettings className="w-5 h-5" />
+            <span>Settings</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Editor */}
+        <div className={`transition-all duration-300 ${toggleSettings ? 'w-3/4' : 'w-full'}`}>
           <Editor
-            className='mx-auto'
-            width={toggleSettings ? "65vw" : "90vw"}
-            height="90vh"
+            className="h-full"
             theme="vs-dark"
             onMount={handleEditorDidMount}
             options={{
@@ -325,77 +379,137 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
                 ambiguousCharacters: true,
                 includeComments: true,
                 includeStrings: true,
-              }
+              },
+              padding: { top: 20, bottom: 20 },
+              lineNumbersMinChars: 3,
+              folding: true,
+              showFoldingControls: 'mouseover',
+              matchBrackets: 'always',
+              automaticLayout: true,
             }}
             language={editorLanguage}
             value={fileContent}
           />
-          {toggleSettings && (
-            <div className='flex flex-col bg-gray-800 w-[25%] h-auto items-center gap-2 pt-2 rounded-r-3xl'>
-              <h1 className="text-center text-4xl italic font-bold">Settings</h1>
-              <div className="flex">
-                <h1 className='text-lg italic text-nowrap'>Mode:</h1>
-                <select
-                  className='bg-slate-600 font-bold text-lg px-2 mx-2'
-                  value={editorLanguage}
-                  onChange={(e) => {
-                    setEditorLanguage(e.target.value);
-                  }}
-                >
-                  <option value="javascript">Javascript</option>
-                  <option value="typescript">Typescript</option>
-                  <option value="html">HTML</option>
-                  <option value="css">CSS</option>
-                  <option value="php">PHP</option>
-                  <option value="yaml">YAML / YML</option>
-                  <option value="json">JSON</option>
-                  <option value="xml">XML</option>
-                  <option value="shell">Shell</option>
-                  <option value="bat">BAT</option>
-                  <option value="java">Java</option>
-                  <option value="kotlin">Kotlin</option>
-                  <option value="python">Python</option>
-                  <option value="csharp">C#</option>
-                  <option value="c">C</option>
-                  <option value="cpp">C++</option>
-                  <option value="sql">SQL</option>
-                  <option value="mysql">MYSQL</option>
-                  <option value="plaintext">Plain text</option>
-                </select>
-              </div>
-              <div className="flex">
-                <h1 className='text-lg italic text-nowrap'>Font size:</h1>
-                <input
-                  className='bg-gray-600 text-center px-0 mx-2 w-14'
-                  type="number"
-                  value={editorFontSize}
-                  min={5}
-                  max={100}
-                  step={1}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10);
-                    setEditorFontSize(value);
-                    Cookies.set("editor-fontsize", value.toString());
-                  }}
-                />px
-              </div>
-              <div className="flex">
-                <h1 className='text-lg italic text-nowrap'>Minimap:</h1>
-                <select
-                  className='bg-slate-600 font-bold px-2 mx-2 w-full'
-                  value={minimap.toString()}
-                  onChange={(e) => {
-                    setMinimap(e.target.value === "true");
-                    Cookies.set("editor-minimap", e.target.value);
-                  }}
-                >
-                  <option value={"true"}>Enabled</option>
-                  <option value={"false"}>Disabled</option>
-                </select>
+        </div>
+
+        {/* Settings Panel */}
+        {toggleSettings && (
+          <div className="w-1/4 bg-gray-800 border-l border-gray-700 overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
+                <FiSettings className="w-6 h-6" />
+                <span>Editor Settings</span>
+              </h2>
+
+              {/* Language Selection */}
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                    <FiCode className="w-4 h-4" />
+                    <span>Language</span>
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-transparent"
+                    value={editorLanguage}
+                    onChange={(e) => setEditorLanguage(e.target.value)}
+                  >
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="php">PHP</option>
+                    <option value="yaml">YAML</option>
+                    <option value="json">JSON</option>
+                    <option value="xml">XML</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                    <option value="sql">SQL</option>
+                    <option value="plaintext">Plain Text</option>
+                  </select>
+                </div>
+
+                {/* Font Size */}
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                    <FiType className="w-4 h-4" />
+                    <span>Font Size</span>
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="range"
+                      min="10"
+                      max="30"
+                      value={editorFontSize}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        setEditorFontSize(value);
+                        Cookies.set("editor-fontsize", value.toString());
+                      }}
+                      className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <span className="w-12 px-2 py-1 text-center text-white bg-gray-700 rounded-md">
+                      {editorFontSize}px
+                    </span>
+                  </div>
+                </div>
+
+                {/* Minimap */}
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                    <FiMap className="w-4 h-4" />
+                    <span>Minimap</span>
+                  </label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setMinimap(true);
+                        Cookies.set("editor-minimap", "true");
+                      }}
+                      className={`flex-1 px-3 py-2 rounded-lg transition-colors ${minimap
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                    >
+                      Enabled
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMinimap(false);
+                        Cookies.set("editor-minimap", "false");
+                      }}
+                      className={`flex-1 px-3 py-2 rounded-lg transition-colors ${!minimap
+                        ? 'bg-red-500 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        }`}
+                    >
+                      Disabled
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="pt-4 mt-6 border-t border-gray-700">
+                  <h3 className="text-lg font-semibold text-white mb-3">Quick Actions</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => editorRef.current?.trigger("myapp", "undo", "")}
+                      className="px-3 py-2 text-sm bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Undo (Ctrl+Z)
+                    </button>
+                    <button
+                      onClick={() => editorRef.current?.trigger("myapp", "redo", "")}
+                      className="px-3 py-2 text-sm bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Redo (Ctrl+Shift+Z)
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
