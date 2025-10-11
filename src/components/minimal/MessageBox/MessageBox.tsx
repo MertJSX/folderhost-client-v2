@@ -1,7 +1,7 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useContext } from "react";
-import ExplorerContext from "../../utils/ExplorerContext";
+import ExplorerContext from "../../../utils/ExplorerContext";
 
 interface MessageBoxProps {
     message: string,
