@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 import fileDownload from 'js-file-download';
 import { useParams, useNavigate } from 'react-router-dom';
 import ExplorerContext from '../../utils/ExplorerContext';
-import MessageBox from '../../components/MessageBox/MessageBox';
+import MessageBox from '../../components/minimal/MessageBox/MessageBox';
 import useWebSocket from '../../utils/useWebSocket';
 import axiosInstance from '../../utils/axiosInstance';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';

@@ -6,7 +6,7 @@ import { type Account } from "../../types/Account"
 import PermissionToggle from "../../components/minimal/PermissionToggle/PermissionToggle"
 import { type AccountPermissions } from "../../types/AccountPermissions"
 import axiosInstance from "../../utils/axiosInstance"
-import MessageBox from "../../components/MessageBox/MessageBox"
+import MessageBox from "../../components/minimal/MessageBox/MessageBox"
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from "react"
 

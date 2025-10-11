@@ -3,7 +3,7 @@ import Header from "../../components/Header/Header"
 import moment from "moment";
 import axiosInstance from "../../utils/axiosInstance"
 import { FaSync, FaSearch, FaCalendar, FaUser, FaPencilAlt, FaList } from "react-icons/fa";
-import MessageBox from "../../components/MessageBox/MessageBox";
+import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 import type { AuditLog } from "../../types/AuditLog";
 import { Link } from "react-router-dom";
 

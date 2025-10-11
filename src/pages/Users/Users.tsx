@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Header from "../../components/Header/Header"
 import axiosInstance from "../../utils/axiosInstance"
-import MessageBox from "../../components/MessageBox/MessageBox";
+import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 import LoadingComponent from "../../components/LoadingComponent/LoadingComponent";
 import type { Account } from "../../types/Account";
 import { FaUserFriends, FaUserPlus, FaUser, FaEnvelope, FaSearch, FaUsers } from "react-icons/fa";

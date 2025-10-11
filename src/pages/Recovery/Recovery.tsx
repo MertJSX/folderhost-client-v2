@@ -5,7 +5,7 @@ import axiosInstance from "../../utils/axiosInstance"
 import { FaFolder, FaFileAlt, FaTrash, FaSync } from "react-icons/fa";
 import RecoveryRecordInfo from "../../components/Recovery/RecoveryRecordInfo";
 import { type RecoveryRecord } from "../../types/RecoveryRecord";
-import MessageBox from "../../components/MessageBox/MessageBox";
+import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 import { FaArrowRotateLeft } from "react-icons/fa6";
 
 const Recovery: React.FC = () => {
