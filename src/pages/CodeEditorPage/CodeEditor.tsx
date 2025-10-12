@@ -5,6 +5,7 @@ import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
 import useWebSocket from '../../utils/useWebSocket.js';
 import axiosInstance from '../../utils/axiosInstance.js';
 import type { editor } from 'monaco-editor';
+import MessageBox from '../../components/minimal/MessageBox/MessageBox.js';
 
 const CodeEditorPage = () => {
     const params = useParams();
@@ -13,6 +14,7 @@ const CodeEditorPage = () => {
     const [fileContent, setFileContent] = useState<string>("")
     const path = params.path;
     const [res, setRes] = useState<string>("");
+    const [err, setErr] = useState<string>("");
     const [readOnly, setReadOnly] = useState<boolean>(false);
     const [fileTitle, setFileTitle] = useState<string>("")
     const {
@@ -63,14 +65,18 @@ const CodeEditorPage = () => {
 
     function readFile() {
         axiosInstance.get(`/read-file?filepath=${path?.slice(1)}`
-            ).then((data) => {
-                if (data.data.res) {
-                    setFileTitle(data.data.title);
-                    setFileContent(data.data.data);
-                    setReadOnly(!data.data.writePermission);
-                    setEditorLanguage(detectFileLanguage());
-                }
-            })
+        ).then((data) => {
+            if (data.data.res) {
+                setFileTitle(data.data.title);
+                setFileContent(data.data.data);
+                setReadOnly(!data.data.writePermission);
+                setEditorLanguage(detectFileLanguage());
+            }
+        }).catch((err) => {
+            if (err?.response?.data?.err) {
+                setErr(err.response.data.err)
+            }
+        })
     }
 
     function detectFileLanguage(): string {
@@ -119,13 +125,14 @@ const CodeEditorPage = () => {
             }, 1000);
             return
         }
-        
+
         setRes("Connection lost")
 
     }, [isConnected])
 
     return (
         <div>
+            <MessageBox isErr={err != ""} message={err} setMessage={setErr} />
             <CodeEditorComp
                 handleEditorChange={handleEditorChange}
                 editorLanguage={editorLanguage}
