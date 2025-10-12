@@ -245,7 +245,20 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           break;
         case "full-content-update":
           if (message.content) {
-            setFileContent(message.content)
+            if (!editorRef.current) return;
+
+            const editor = editorRef.current;
+            const model = editor.getModel();
+
+            if (!model) return;
+            
+            isRemoteChangeRef.current = true;
+
+            model.applyEdits([{
+              range: model.getFullModelRange(),
+              text: message.content,
+              forceMoveMarkers: true
+            }]);
           }
           break;
       }
@@ -264,7 +277,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
       case 'insert':
         model.applyEdits([{
           range: change.range,
-          text: change.text,
+          text: change?.text,
           forceMoveMarkers: true
         }]);
         break;
@@ -281,11 +294,6 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           text: change.text,
           forceMoveMarkers: true
         }]);
-        break;
-      case 'full':
-        if (change.content !== undefined) {
-          model.setValue(change.content);
-        }
         break;
     }
   };
