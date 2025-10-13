@@ -16,13 +16,14 @@ const CodeEditorPage = () => {
     const [res, setRes] = useState<string>("");
     const [err, setErr] = useState<string>("");
     const [readOnly, setReadOnly] = useState<boolean>(false);
+    const [shouldConnect, setShouldConnect] = useState<boolean>(false)
     const [fileTitle, setFileTitle] = useState<string>("")
     const {
         isConnected,
         isConnectedRef,
         messages,
         sendMessage
-    } = useWebSocket(path?.slice(1))
+    } = useWebSocket(path?.slice(1) ? path?.slice(1) : "", shouldConnect)
 
     function handleEditorChange(event: editor.IModelContentChangedEvent) {
         sendChangeToWebSocket(event.changes)
@@ -71,6 +72,7 @@ const CodeEditorPage = () => {
                 setFileContent(data.data.data);
                 setReadOnly(!data.data.writePermission);
                 setEditorLanguage(detectFileLanguage());
+                setShouldConnect(true)
             }
         }).catch((err) => {
             if (err?.response?.data?.err) {

@@ -2,13 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const useWebSocket = (path) => {
-  const wsRef = useRef(null);
+const useWebSocket = (path : string, shouldConnect: boolean) => {
+  const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState<Boolean>(false);
   const [connectionError, setConnectionError] = useState<Boolean>(false);
   const isConnectedRef = useRef<Boolean>(false)
   const [messages, setMessages] = useState<Array<string>>([]);
-  const reconnectTimeoutRef = useRef(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
 
   const connect = useCallback(() => {
     const token = Cookies.get("token");
@@ -67,7 +67,7 @@ const useWebSocket = (path) => {
     }
   }, []);
 
-  const sendMessage = useCallback((message) => {
+  const sendMessage = useCallback((message: string) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(message);
     } else {
@@ -76,12 +76,14 @@ const useWebSocket = (path) => {
   }, []);
 
   useEffect(() => {
-    connect();
+    if (shouldConnect) {
+      connect();
+    }
 
     return () => {
       disconnect();
     };
-  }, []);
+  }, [shouldConnect]);
 
   return {
     isConnected,

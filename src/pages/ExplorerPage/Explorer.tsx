@@ -51,7 +51,7 @@ const ExplorerPage: React.FC = () => {
     messages,
     sendMessage,
     connectionError
-  } = useWebSocket(path.slice(1))
+  } = useWebSocket(path.slice(1), true)
 
   function getParent(filePath: string): string {
     let lastIndex = filePath.lastIndexOf('/');
