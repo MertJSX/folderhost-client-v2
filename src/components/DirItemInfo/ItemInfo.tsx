@@ -22,7 +22,7 @@ const ItemInfo = () => {
   const [fileName, setFileName] = useState("");
   const logoSize = 75;
   const {
-    itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping
+    itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping, directoryInfo
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   return (
@@ -122,7 +122,7 @@ const ItemInfo = () => {
           </h1>
         }
         {
-          itemInfo?.storage_limit ?
+          itemInfo?.storage_limit && path == "./" ?
             <h1 className='text-gray-400'>
               {"Limit: "}<span className='text-emerald-300'>{itemInfo?.storage_limit}</span>
             </h1> : null
@@ -226,7 +226,7 @@ const ItemInfo = () => {
         ) :
           <div className="flex flex-col gap-2 w-5/6">
             {
-              itemInfo?.path !== "./" && permissions?.delete ?
+              itemInfo?.path !== "./" && permissions?.delete && itemInfo.path !== directoryInfo?.path ?
                 <button
                   className='bg-red-600 hover:bg-red-700 px-6 font-bold rounded-xl'
                   title='Click to delete.'
@@ -245,7 +245,7 @@ const ItemInfo = () => {
                   >Delete directory</button> : null
             }
             {
-              itemInfo?.path !== "./" && permissions?.copy && itemInfo?.path !== (path.slice(-1) === "/" ? path : path + "/") ?
+              itemInfo?.path !== "./" && permissions?.copy && itemInfo?.path !== "./" && itemInfo.path !== directoryInfo?.path ?
                 <button
                   className='bg-sky-600 px-6 font-bold rounded-xl'
                   title='Click to create copy.'
@@ -261,7 +261,7 @@ const ItemInfo = () => {
                   >Create copy</button> : null
             }
             {
-              itemInfo?.path === (path.slice(-1) === "/" ? path : path + "/") ?
+              itemInfo?.path === directoryInfo?.path ?
                 <div className='w-full flex flex-col gap-2'>
                   {
                     permissions?.upload_files ?
