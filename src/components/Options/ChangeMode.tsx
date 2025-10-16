@@ -66,7 +66,7 @@ const ChangeMode = () => {
         <div className="relative inline-block text-left pl-5" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none"
+                className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-700 focus:outline-none"
             >
                 {selectedOption === "Quality mode" ?
                     <IoDiamond size={onButtonSize} /> :

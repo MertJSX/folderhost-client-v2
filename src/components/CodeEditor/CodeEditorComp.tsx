@@ -335,13 +335,13 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
         <div className="flex items-center space-x-3">
           <button
             onClick={() => editorRef.current?.trigger("myapp", "undo", "")}
-            className="p-2 text-2xl bg-slate-500 rounded-full hover:bg-sky-600 transition-colors"
+            className="p-2 text-2xl bg-slate-600 rounded-full hover:bg-sky-600 transition-colors"
           >
             <FaArrowLeft />
           </button>
           <button
             onClick={() => editorRef.current?.trigger("myapp", "redo", "")}
-            className="p-2 text-2xl bg-slate-500 rounded-full hover:bg-sky-600 transition-colors"
+            className="p-2 text-2xl bg-slate-600 rounded-full hover:bg-sky-600 transition-colors"
           >
             <FaArrowRight />
           </button>

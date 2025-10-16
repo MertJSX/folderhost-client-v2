@@ -21,7 +21,7 @@ const OptionsBar = () => {
                 <input
                     type="text"
                     spellCheck={false}
-                    className='w-1/2 bg-slate-600 text-base min-w-[300px] font-bold font-sans rounded-t-lg rounded-l-lg rounded-b-lg rounded-r-none rounded-tr-none px-2'
+                    className='w-1/2 bg-slate-700 text-base min-w-[300px] font-bold font-sans rounded-t-lg rounded-l-lg rounded-b-lg rounded-r-none rounded-tr-none px-2'
                     placeholder='Path'
                     value={path}
                     onKeyDown={(e) => {
@@ -47,7 +47,7 @@ const OptionsBar = () => {
                     }}
                 >Refresh</button>
                 <button
-                    className='ml-5 inline-flex justify-between items-center w-48 px-3 py-2 text-left text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none'
+                    className='ml-5 inline-flex justify-between items-center w-48 px-3 py-2 text-left text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-700 focus:outline-none'
                     onClick={() => { setSettings(!settings) }}>
                     <IoMdSettings size={buttonSize} />
                     Options

@@ -138,7 +138,7 @@ const Recovery: React.FC = () => {
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10">
                 <div className="flex flex-row justify-center items-center px-6">
-                    <section className="flex flex-col bg-gray-700 gap-4 w-3/5 max-w-4xl p-6 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
+                    <section className="flex flex-col bg-gray-800 gap-4 w-4/5 max-w-[1000px] p-6 min-w-[600px] min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
                         {/* Header Section */}
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                             <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ const Recovery: React.FC = () => {
                                     <article
                                         onClick={() => setRecordInfo(record)}
                                         key={record.id}
-                                        className={`flex items-center p-3 bg-gray-600 rounded border-2 cursor-pointer transition-all hover:border-blue-400 hover:translate-x-1 ${recordInfo?.id === record.id
+                                        className={`flex items-center p-3 bg-gray-700 rounded border-2 cursor-pointer transition-all hover:border-blue-400 hover:translate-x-1 ${recordInfo?.id === record.id
                                             ? 'border-blue-500 bg-gray-500'
                                             : 'border-gray-600'
                                             }`}

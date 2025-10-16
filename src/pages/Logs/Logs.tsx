@@ -99,7 +99,7 @@ const Logs: React.FC = () => {
         <div>
             <Header />
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
-            <main className="mt-10 flex flex-col mx-auto bg-gray-700 gap-4 w-full max-w-6xl p-6 min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
+            <main className="mt-10 flex flex-col mx-auto bg-gray-800 gap-4 w-full max-w-6xl p-6 min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                     <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ const Logs: React.FC = () => {
                             <select
                                 value={usernameFilter}
                                 onChange={(e) => setUsernameFilter(e.target.value)}
-                                className="w-full h-11 pl-10 pr-4 py-2 bg-gray-600 border border-gray-500 rounded text-white focus:outline-none focus:border-blue-500"
+                                className="w-full h-11 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
                             >
                                 <option value="">All Users</option>
                                 {uniqueUsernames.map(username => (
@@ -155,7 +155,7 @@ const Logs: React.FC = () => {
                                 type="date"
                                 value={dateFilter}
                                 onChange={(e) => setDateFilter(e.target.value)}
-                                className="w-full h-11 pl-10 pr-4 py-2 bg-gray-600 border border-gray-500 rounded text-white focus:outline-none focus:border-blue-500"
+                                className="w-full h-11 pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
                             />
                         </div>
 
@@ -180,7 +180,7 @@ const Logs: React.FC = () => {
                 {/* Logs List */}
                 <section className="flex flex-col gap-3 overflow-y-auto flex-1 pr-2">
                     {/* Table Header */}
-                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-gray-800 sticky top-0 left-0 right-0">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-gray-900 sticky top-0 left-0 right-0">
                         <div className="col-span-2 text-gray-300 font-semibold">User</div>
                         <div className="col-span-2 text-gray-300 font-semibold">Action</div>
                         <div className="col-span-6 text-gray-300 font-semibold">Description</div>
@@ -191,7 +191,7 @@ const Logs: React.FC = () => {
                         filteredLogs.map((log, index) => (
                             <article
                                 key={log.id || index}
-                                className="grid grid-cols-12 gap-4 items-center p-4 bg-gray-600 rounded-lg border border-gray-500 hover:border-blue-400 transition-all"
+                                className="grid grid-cols-12 gap-4 items-center p-4 bg-gray-700 rounded-lg border border-gray-600 hover:border-blue-400 transition-all"
                             >
                                 <div className="col-span-2">
                                     <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ const Logs: React.FC = () => {
                         <div className="flex justify-center mt-4">
                             <button
                                 onClick={() => getLogs()}
-                                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 px-6 rounded transition-colors"
+                                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded transition-colors"
                             >
                                 <FaSync className="text-sm" />
                                 Load More Logs

@@ -102,7 +102,7 @@ const EditUser = () => {
         <div>
             <Header />
             <MessageBox message={error !== "" ? error : ""} isErr={error !== ""} setMessage={setError} />
-            <section className="my-10 flex flex-col bg-gray-700 gap-6 w-3/5 mx-auto p-6 min-w-[600px] min-h-[600px] shadow-2xl rounded-lg">
+            <section className="my-10 flex flex-col bg-gray-800 gap-6 w-4/5 mx-auto p-6 max-w-[1000px] min-h-[600px] shadow-2xl rounded-lg">
                 <div className="flex justify-between items-center">
                     <h1 className="flex text-3xl items-center gap-3 text-white font-semibold">
                         <FaUserEdit className="text-blue-400" /> Edit: {username}
@@ -127,21 +127,21 @@ const EditUser = () => {
                                 placeholder="Username (Required)"
                                 value={user.username}
                                 onChange={(e) => handleInputChange('username', e.target.value)}
-                                className="bg-gray-600 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
+                                className="bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
                             />
                             <input
                                 type="email"
                                 placeholder="Email"
                                 value={user.email}
                                 onChange={(e) => handleInputChange('email', e.target.value)}
-                                className="bg-gray-600 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
+                                className="bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
                             />
                             <input
                                 type="password"
                                 placeholder="Password (Required)"
                                 value={user.password}
                                 onChange={(e) => handleInputChange('password', e.target.value)}
-                                className="bg-gray-600 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
+                                className="bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-500 focus:border-blue-400 focus:outline-none transition-colors placeholder-gray-400"
                             />
                         </div>
                     </div>
@@ -149,7 +149,7 @@ const EditUser = () => {
                     {/* Permissions */}
                     <div className="space-y-4">
                         <h2 className="text-xl text-white font-semibold">Permissions</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-600 p-4 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-700 p-4 rounded-lg">
                             {/* File Operations */}
                             <div className="space-y-3">
                                 <h3 className="text-lg text-gray-300 font-medium">File Operations</h3>
@@ -253,7 +253,7 @@ const EditUser = () => {
                     <button
                         onClick={handleSubmit}
                         disabled={(!user.username || !user.password) || (memUser == user)}
-                        className="bg-green-600 hover:bg-green-500 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 w-2/3"
+                        className="bg-green-700 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 w-2/3"
                     >
                         Submit Changes
                     </button>

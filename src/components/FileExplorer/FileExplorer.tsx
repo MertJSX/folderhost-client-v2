@@ -172,7 +172,7 @@ const FileExplorer: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col bg-gray-700 gap-4 overflow-auto rounded-xl shadow-2xl w-3/5 mx-auto max-w-6xl min-h-[700px] h-[700px] max-h-[800px] p-6'>
+    <div className='flex flex-col bg-gray-800 gap-4 overflow-auto rounded-xl shadow-2xl w-3/5 mx-auto max-w-6xl min-h-[700px] h-[700px] max-h-[800px] p-6'>
       {/* Header Section */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ const FileExplorer: React.FC = () => {
           }
           {(directory && path != "./") && (
             <button
-              className='flex items-center gap-2 bg-gray-600 hover:bg-gray-500 hover:border-gray-500 text-white p-3 rounded-lg transition-colors border-2 border-gray-600'
+              className='flex items-center gap-2 bg-gray-700 hover:bg-gray-500 hover:border-gray-500 text-white p-3 rounded-lg transition-colors border-2 border-gray-600'
               ref={previousDirRef}
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => {
@@ -232,7 +232,7 @@ const FileExplorer: React.FC = () => {
 
           {directoryInfo && (
             <button
-              className='flex items-center gap-2 p-3 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors'
+              className='flex items-center gap-2 p-3 bg-gray-700 hover:bg-gray-700 text-white rounded-lg transition-colors'
               onClick={() => setItemInfo(directoryInfo)}
               title="Current folder info"
             >
@@ -246,7 +246,7 @@ const FileExplorer: React.FC = () => {
       <hr className="border-gray-500" />
 
       {/* Table Header */}
-      <div className='grid grid-cols-12 gap-4 px-4 py-2 bg-gray-600 rounded-lg'>
+      <div className='grid grid-cols-12 gap-4 px-4 py-2 bg-gray-700 rounded-lg'>
         <div className="col-span-1"></div>
         <button
           className="col-span-5 flex items-center gap-2 text-gray-300 font-semibold hover:text-white transition-colors"
@@ -290,7 +290,7 @@ const FileExplorer: React.FC = () => {
           directory.map((element) => (
             <div
               ref={addToChildElements}
-              className={`grid grid-cols-12 gap-4 items-center p-1 bg-gray-600 rounded-lg border-2 transition-all cursor-pointer group
+              className={`grid grid-cols-12 gap-4 items-center p-1 bg-gray-700 rounded-lg border-2 transition-all cursor-pointer group
                 ${selectedChildEl === element.id
                   ? 'border-gray-200'
                   : 'border-gray-600 hover:border-gray-400 hover:bg-gray-550'

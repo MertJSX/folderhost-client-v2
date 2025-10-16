@@ -453,7 +453,7 @@ const ExplorerPage: React.FC = () => {
       <Header />
       <div className='relative'>
         <OptionsBar />
-        <main className="flex flex-row w-full justify-center pt-5 flex-wrap min-h-[calc(100vh-158px)]"
+        <main className="flex flex-row w-full justify-center pt-4 flex-wrap min-h-[calc(100vh-190px)]"
           onClick={(e) => {
             setContextMenu({ show: false, x: e.pageX, y: e.pageY })
           }}

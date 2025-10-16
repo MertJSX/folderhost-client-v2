@@ -6,7 +6,7 @@ import React from 'react';
 const Home: React.FC = () => {
   return (
     <div>
-        <div className="flex flex-col justify-center items-center bg-gray-700 w-1/2 mx-auto rounded-lg p-5 gap-4 mt-20">
+        <div className="flex flex-col justify-center items-center bg-gray-800 w-1/2 mx-auto rounded-lg p-5 gap-4 mt-20">
                 <FaHome size={65} />
                 {
                   !Cookies.get("token") ?

@@ -24,7 +24,7 @@ const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({
 
     return recordInfo && (
         <article className="flex flex-col w-1/3 mx-auto min-w-[380px] max-w-[450px] min-h-[600px] h-[700px] max-h-[800px]">
-            <div className="flex flex-col bg-gray-700 gap-4 rounded-xl shadow-2xl w-full h-full p-6">
+            <div className="flex flex-col bg-gray-800 gap-4 rounded-xl shadow-2xl w-full h-full p-6">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-4">
                     {recordInfo.isDirectory ? (
@@ -41,7 +41,7 @@ const RecoveryRecordInfo: React.FC<RecoveryRecordInfoProps> = ({
                 </div>
 
                 {/* File Info Section */}
-                <div className="flex flex-col gap-4 bg-gray-600 rounded-lg p-4">
+                <div className="flex flex-col gap-4 bg-gray-700 rounded-lg p-4">
                     {/* Size */}
                     <div className="flex items-center justify-between">
                         <span className="text-gray-300 font-medium">Size:</span>

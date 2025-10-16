@@ -62,7 +62,7 @@ const Users: React.FC = () => {
       <main className="mt-10">
         <div className="flex flex-col items-center">
           {/* Main Container */}
-          <section className="flex flex-col bg-gray-700 rounded-xl shadow-2xl w-full max-w-6xl min-h-[700px] h-auto p-6">
+          <section className="flex flex-col bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl min-h-[700px] h-auto p-6">
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center gap-3">
@@ -77,7 +77,7 @@ const Users: React.FC = () => {
               
               <Link
                 to="/users/new"
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 hover:scale-105 min-w-[140px] justify-center"
+                className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 hover:scale-105 min-w-[140px] justify-center"
               >
                 <FaUserPlus size={18} />
                 Add User
@@ -101,7 +101,7 @@ const Users: React.FC = () => {
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-600 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -117,7 +117,7 @@ const Users: React.FC = () => {
                     <article
                       onClick={() => navigate(`/users/${user.username}`)}
                       key={user.username}
-                      className="flex items-center p-4 bg-gray-600 border border-gray-700 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:bg-gray-600 group mb-2 rounded-lg"
+                      className="flex items-center p-4 bg-gray-700 border border-gray-700 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:bg-gray-600 group mb-2 rounded-lg"
                     >
                       {/* Avatar/Icon */}
                       <div className="flex-shrink-0 mr-4">
