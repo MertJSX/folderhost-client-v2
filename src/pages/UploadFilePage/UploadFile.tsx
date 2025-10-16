@@ -28,8 +28,9 @@ const UploadFile = () => {
     setUploading(false)
   }, [file])
 
-  async function uploadFile() {
-    if (!file) {
+  function uploadFile() {
+    if (file === undefined) {
+      alert("Please select a file to upload!")
       return
     }
     const chunkSize: number = 5 * 1024 * 1024; // 5 MB
@@ -50,10 +51,10 @@ const UploadFile = () => {
       formData.append('fileID', fileID)
       formData.append('fileName', fileName)
 
-      await axiosInstance.post(`/upload?path=${path.slice(1)}`, formData)
+      axiosInstance.post(`/upload?path=${path.slice(1)}`, formData)
         .then((data) => {
           setUploadProgress((prev) => prev + progressIndex)
-          
+
           if (data.data.response && !data.data.uploaded) {
             setRes(`Uploading ${convertBytesToString(chunkSize * i)} / ${convertBytesToString(file.size)}`)
           }
@@ -67,18 +68,16 @@ const UploadFile = () => {
             console.error(err.response);
             setErr(err.response.data.err)
           }
+        }).finally(() => {
+          setUploadProgress(100)
+
+          setTimeout(() => {
+            setUploadProgress(0)
+          }, 1000);
+
+          setUploading(false)
         })
     }
-
-
-    setUploadProgress(100)
-
-    setTimeout(() => {
-      setUploadProgress(0)
-    }, 1000);
-
-    setUploading(false)
-
   }
 
   return (

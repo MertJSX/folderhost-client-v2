@@ -15,17 +15,19 @@ const UploadFileComp: React.FC<UploadFileCompProps> = ({
     setFile, uploadFile, response, error, uploadProgress, path, uploading, setUploading
 }) => {
     return (
-        <div className='flex flex-col w-1/2 mx-auto mt-40 gap-2 p-5 bg-gray-700'>
+        <div className='flex flex-col w-1/2 mx-auto mt-40 gap-2 p-5 bg-gray-800'>
             <h1 className="text-center text-5xl font-extrabold text-sky-300 m-2">
                 UPLOAD
             </h1>
             <h1 className="text-left text-2xl text-white">
-                Upload path: <span className="font-mono text-sky-300 bg-gray-800 px-2 rounded-lg">{path}</span>
+                Upload path: <span className="font-mono text-sky-300 px-2 rounded-lg">{path}</span>
             </h1>
             <input
                 type="file"
                 onChange={(e) => {
-                    setFile(e.target.files[0])
+                    if (e.target.files !== null) {
+                        setFile(e.target.files[0])
+                    }
                 }}
             />
             {!uploadProgress && !uploading ?
