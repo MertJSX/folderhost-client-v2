@@ -36,5 +36,7 @@ export interface ExplorerContextType {
         showDisabled: boolean,
         downloadProgress: number,
         scrollIndex: React.MutableRefObject<number>,
-        isDirLoading: boolean
+        isDirLoading: boolean,
+        showCreateItemMenu: boolean,
+        setShowCreateItemMenu: React.Dispatch<React.SetStateAction<boolean>>
 }

@@ -277,49 +277,6 @@ const ItemInfo = () => {
                         >Upload new file</button> : null
                   }
 
-                  {
-                    permissions?.create ?
-                      <div className='w-full flex flex-col gap-2'>
-                        <div className="flex flex-row">
-                          <input
-                            type="text"
-                            placeholder='folder name'
-                            className='bg-gray-700 w-2/3 text-center rounded-lg rounded-r-none'
-                            value={folderName}
-                            onChange={(e) => {
-                              setFolderName(e.target.value)
-                            }}
-                          />
-                          <button
-                            className='bg-sky-700 rounded-r-lg w-1/3 hover:bg-sky-600'
-                            onClick={() => {
-                              setFolderName("")
-                              createItem(itemInfo.path, true, folderName)
-                            }}
-                          >Create</button>
-                        </div>
-                        <div className="flex flex-row">
-                          <input
-                            type="text"
-                            placeholder='file name'
-                            className='bg-gray-700 w-2/3 text-center rounded-lg rounded-r-none'
-                            value={fileName}
-                            onChange={(e) => {
-                              setFileName(e.target.value)
-                            }}
-                          />
-                          <button
-                            className='bg-sky-700 rounded-r-lg w-1/3 hover:bg-sky-600'
-                            onClick={() => {
-                              setFileName("");
-                              createItem(itemInfo.path, false, fileName)
-                            }}
-                          >Create</button>
-                        </div>
-                      </div> : showDisabled === true ?
-                        <h1 className='text-center text-lg text-yellow-200'>No permission to create content</h1> : null
-                  }
-
                 </div> : null
             }
           </div>

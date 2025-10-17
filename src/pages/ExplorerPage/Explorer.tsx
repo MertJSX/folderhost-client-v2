@@ -15,6 +15,7 @@ import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type AccountPermissions } from '../../types/AccountPermissions';
 import type { WebSocketResponseType } from '../../types/CodeEditorTypes';
 import { getUserPermissions } from '../../utils/getUserPermissions';
+import CreateDirectoryItem from '../../components/minimal/CreateDirectoryItem/CreateDirectoryItem';
 
 const ExplorerPage: React.FC = () => {
   const params = useParams();
@@ -34,6 +35,7 @@ const ExplorerPage: React.FC = () => {
   const [messageBoxIsErr, setMessageBoxIsErr] = useState(false)
   const scrollIndex = useRef<number>(0)
   const [isDirLoading, setIsDirLoading] = useState<boolean>(false)
+  const [showCreateItemMenu, setShowCreateItemMenu] = useState<boolean>(false);
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -444,7 +446,9 @@ const ExplorerPage: React.FC = () => {
     showDisabled: showDisabled,
     downloadProgress: downloadProgress,
     scrollIndex: scrollIndex,
-    isDirLoading: isDirLoading
+    isDirLoading: isDirLoading,
+    showCreateItemMenu: showCreateItemMenu,
+    setShowCreateItemMenu: setShowCreateItemMenu
   };
 
   return (
@@ -459,6 +463,7 @@ const ExplorerPage: React.FC = () => {
           }}
         >
           <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
+          <CreateDirectoryItem />
           <FileExplorer />
           {
             itemInfo && (

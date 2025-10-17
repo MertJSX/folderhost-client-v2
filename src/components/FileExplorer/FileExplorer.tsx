@@ -32,6 +32,7 @@ import ExplorerContext from '../../utils/ExplorerContext';
 import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
+import { RiAddLargeFill } from "react-icons/ri";
 
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
@@ -42,7 +43,7 @@ const FileExplorer: React.FC = () => {
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
   const directoryRef = useRef<HTMLDivElement | null>(null)
   const {
-    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, isEmpty, readDir, getParent, response, downloading, unzipping, waitingResponse, contextMenu, setContextMenu, scrollIndex, isDirLoading: isLoading
+    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, setContextMenu, scrollIndex, isDirLoading: isLoading
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   // File type icon mapping
@@ -192,7 +193,7 @@ const FileExplorer: React.FC = () => {
           }
           {(directory && path != "./") && (
             <button
-              className='flex items-center gap-2 bg-gray-700 hover:bg-gray-500 hover:border-gray-500 text-white p-3 rounded-lg transition-colors border-2 border-gray-600'
+              className='flex items-center gap-2 bg-gray-700 hover:bg-gray-600 hover:border-gray-600 text-white p-3 rounded-lg transition-colors border-2 border-gray-700'
               ref={previousDirRef}
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => {
@@ -232,7 +233,7 @@ const FileExplorer: React.FC = () => {
 
           {directoryInfo && (
             <button
-              className='flex items-center gap-2 p-3 bg-gray-700 hover:bg-gray-700 text-white rounded-lg transition-colors'
+              className='flex items-center gap-2 p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors'
               onClick={() => setItemInfo(directoryInfo)}
               title="Current folder info"
             >
@@ -240,6 +241,22 @@ const FileExplorer: React.FC = () => {
               <span className="max-w-[200px] truncate">{directoryInfo.name}</span>
             </button>
           )}
+          {permissions?.create ? <button
+              className='flex items-center gap-2 p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors'
+              onClick={() => setShowCreateItemMenu(true)}
+              title="Create a new item"
+            >
+              <RiAddLargeFill size={18} />
+            </button> :
+            <button
+              className='flex items-center gap-2 opacity-60 cursor-not-allowed p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors'
+              onClick={() => setShowCreateItemMenu(true)}
+              title="No permission to create a new item"
+              disabled
+            >
+              <RiAddLargeFill size={18} />
+            </button>
+            }
         </div>
       </div>
 
