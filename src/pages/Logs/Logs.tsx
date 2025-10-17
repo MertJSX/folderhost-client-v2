@@ -97,7 +97,7 @@ const Logs: React.FC = () => {
 
     return (
         <div>
-            <Header />
+            {/* <Header /> */}
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10 flex flex-col mx-auto bg-gray-800 gap-4 w-full max-w-6xl p-6 min-h-[600px] h-[700px] max-h-[800px] shadow-2xl rounded-lg">
                 {/* Header Section */}

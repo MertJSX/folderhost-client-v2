@@ -57,7 +57,7 @@ const Users: React.FC = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <MessageBox message={message} isErr={isError} setMessage={setMessage} />
       <main className="mt-10">
         <div className="flex flex-col items-center">

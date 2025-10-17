@@ -1,14 +1,14 @@
 import Cookies from 'js-cookie';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { MdExplore, MdMiscellaneousServices } from "react-icons/md";
 import { FaUserFriends, FaPencilAlt, FaFolder, FaUser } from "react-icons/fa"
 import { FaArrowRotateLeft } from "react-icons/fa6"
 import { useCallback, useLayoutEffect, useState } from 'react';
-import axios from 'axios';
 import axiosInstance from '../../utils/axiosInstance';
 
 const Header = () => {
     let navigate = useNavigate();
+    let location = useLocation();
     const [username, setUsername] = useState<string>(Cookies.get("username") as string);
 
     useLayoutEffect(() => {
@@ -27,6 +27,18 @@ const Header = () => {
             console.error('Failed to fetch user info:', err);
         });
     }, [])
+
+    const isActiveLink = (path: string) => {
+        return location.pathname.startsWith(path);
+    }
+
+    const getNavLinkClass = (path: string) => {
+        const baseClasses = 'text-base flex items-center gap-2 px-5 py-3 transition-all border-b-2';
+        const activeClasses = 'text-sky-400 border-sky-500';
+        const inactiveClasses = 'text-white border-transparent hover:bg-slate-700 hover:text-sky-400 hover:border-sky-500';
+        
+        return `${baseClasses} ${isActiveLink(path) ? activeClasses : inactiveClasses}`;
+    }
 
     return (
         <div className='flex flex-col items-center justify-center bg-slate-800 sticky left-0 right-0 top-0 w-full border-b-2 border-slate-700 shadow-lg z-50'>
@@ -66,31 +78,31 @@ const Header = () => {
             {/* Navigation */}
             <nav className='flex flex-row justify-center items-center gap-1 w-full border-t border-slate-700/50'>
                 <Link
-                    className='text-base flex items-center gap-2 px-5 py-3 transition-all hover:bg-slate-700 hover:text-sky-400 border-b-2 border-transparent hover:border-sky-500'
+                    className={getNavLinkClass('/explorer')}
                     to={"/explorer/.%2F"}>
                     <MdExplore className="w-5 h-5" />
                     Explorer
                 </Link>
                 <Link
-                    className='text-base flex items-center gap-2 px-5 py-3 transition-all hover:bg-slate-700 hover:text-sky-400 border-b-2 border-transparent hover:border-sky-500'
+                    className={getNavLinkClass('/services')}
                     to={"/services"}>
                     <MdMiscellaneousServices className="w-5 h-5" />
                     Services
                 </Link>
                 <Link
-                    className='text-base flex items-center gap-2 px-5 py-3 transition-all hover:bg-slate-700 hover:text-sky-400 border-b-2 border-transparent hover:border-sky-500'
+                    className={getNavLinkClass('/recovery')}
                     to={"/recovery"}>
                     <FaArrowRotateLeft className="w-4 h-4" />
                     Recovery
                 </Link>
                 <Link
-                    className='text-base flex items-center gap-2 px-5 py-3 transition-all hover:bg-slate-700 hover:text-sky-400 border-b-2 border-transparent hover:border-sky-500'
+                    className={getNavLinkClass('/users')}
                     to={"/users"}>
                     <FaUserFriends className="w-5 h-5" />
                     Users
                 </Link>
                 <Link
-                    className='text-base flex items-center gap-2 px-5 py-3 transition-all hover:bg-slate-700 hover:text-sky-400 border-b-2 border-transparent hover:border-sky-500'
+                    className={getNavLinkClass('/logs')}
                     to={"/logs"}>
                     <FaPencilAlt className="w-4 h-4" />
                     Logs

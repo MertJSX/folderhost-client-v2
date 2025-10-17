@@ -100,7 +100,6 @@ const EditUser = () => {
 
     return (
         <div>
-            <Header />
             <MessageBox message={error !== "" ? error : ""} isErr={error !== ""} setMessage={setError} />
             <section className="my-10 flex flex-col bg-gray-800 gap-6 w-4/5 mx-auto p-6 max-w-[1000px] min-h-[600px] shadow-2xl rounded-lg">
                 <div className="flex justify-between items-center">

@@ -12,6 +12,7 @@ import Logs from './pages/Logs/Logs';
 import Services from './pages/Services/Services';
 import NewUser from './pages/NewUser/NewUser';
 import EditUser from './pages/EditUser/EditUser';
+import Default from './components/templates/Default';
 
 function App() {
   return (
@@ -21,22 +22,22 @@ function App() {
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="explorer" >
-            <Route index element={<NoPage />} />
-            <Route path=':path' element={<ExplorerPage />} />
+            <Route index element={<Default><NoPage /></Default>} />
+            <Route path=':path' element={<Default><ExplorerPage /></Default>} />
           </Route>
           <Route path="recovery" >
-            <Route index element={<Recovery />} />
+            <Route index element={<Default><Recovery /></Default>} />
           </Route>
           <Route path="users" >
-            <Route index element={<Users />} />
-            <Route path=':username' element={<EditUser />} />
-            <Route path='new' element={<NewUser />} />
+            <Route index element={<Default><Users /></Default>} />
+            <Route path=':username' element={<Default><EditUser /></Default>} />
+            <Route path='new' element={<Default><NewUser /></Default>} />
           </Route>
           <Route path="logs" >
-            <Route index element={<Logs />} />
+            <Route index element={<Default><Logs /></Default>} />
           </Route>
           <Route path="services" >
-            <Route index element={<Services />} />
+            <Route index element={<Default><Services /></Default>} />
           </Route>
           <Route path="editor" >
             <Route index element={<NoPage />} />

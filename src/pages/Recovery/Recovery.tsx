@@ -134,7 +134,7 @@ const Recovery: React.FC = () => {
 
     return (
         <div>
-            <Header />
+            {/* <Header /> */}
             <MessageBox message={message} isErr={isError} setMessage={setMessage} />
             <main className="mt-10">
                 <div className="flex flex-row justify-center items-center px-6">

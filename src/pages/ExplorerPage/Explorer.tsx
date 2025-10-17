@@ -450,7 +450,7 @@ const ExplorerPage: React.FC = () => {
   return (
     <ExplorerContext.Provider
       value={contextValue}>
-      <Header />
+      {/* <Header /> */}
       <div className='relative'>
         <OptionsBar />
         <main className="flex flex-row w-full justify-center pt-4 flex-wrap min-h-[calc(100vh-190px)]"
