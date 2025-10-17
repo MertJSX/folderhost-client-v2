@@ -1,4 +1,4 @@
-import { useRef, useState, useContext } from 'react'
+import { useRef, useContext } from 'react'
 import moment from 'moment'
 import { FaFolder } from "react-icons/fa";
 import { FaFileAlt } from "react-icons/fa";
@@ -18,8 +18,6 @@ import { type ExplorerContextType } from '../../types/ExplorerContextType';
 
 const ItemInfo = () => {
   const renameInput = useRef<HTMLInputElement>(null)
-  const [folderName, setFolderName] = useState("");
-  const [fileName, setFileName] = useState("");
   const logoSize = 75;
   const {
     itemInfo, setItemInfo, renameItem, downloadFile, downloadProgress, deleteItem, createCopy, path, createItem, unzipProgress, permissions, showDisabled, startUnzipping, directoryInfo
