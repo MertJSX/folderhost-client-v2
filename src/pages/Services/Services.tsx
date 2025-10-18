@@ -27,7 +27,6 @@ const Services = () => {
           The Services page is currently under development. This feature will allow you to manage and monitor your services that you configured in server settings.
         </p>
 
-        <div className="flex gap-2">
           {/* Features List */}
           <div className="w-full bg-slate-700/50 border border-slate-600 rounded-lg p-6 mt-4">
             <div className="flex items-center gap-2 mb-4">
@@ -83,7 +82,6 @@ const Services = () => {
               </li>
             </ul>
           </div>
-        </div>
 
         {/* Footer Message */}
         <p className="text-slate-500 text-sm text-center mt-4">
