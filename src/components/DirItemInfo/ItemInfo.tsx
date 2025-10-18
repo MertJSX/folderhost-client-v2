@@ -15,6 +15,7 @@ import { BiMoviePlay } from "react-icons/bi";
 import Cookies from 'js-cookie';
 import ExplorerContext from '../../utils/ExplorerContext';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';
+import { DirectoryItemIcon } from '../../utils/DirectoryItemIcon';
 
 const ItemInfo = () => {
   const renameInput = useRef<HTMLInputElement>(null)
@@ -26,35 +27,7 @@ const ItemInfo = () => {
   return (
     <div className='flex flex-col items-center justify-center w-1/3 mx-auto min-w-[320px] max-w-[30%] min-h-[600px] h-[700px] max-h-[800px]'>
       <div className='flex flex-col bg-gray-800 items-center justify-center gap-3 rounded-xl shadow-2xl w-full h-auto p-4 min-h-[400px]'>
-        {
-          itemInfo?.isDirectory && itemInfo.path !== (path.slice(-1) === "/" ? path : path + "/") ?
-            <FaFolder size={logoSize} className='mx-2' />
-            : itemInfo?.isDirectory && itemInfo.path === (path.slice(-1) === "/" ? path : path + "/") ?
-              <FaFolderOpen size={logoSize} className='mx-2' />
-              : itemInfo?.name.split(".").pop() === "png" ||
-                itemInfo?.name.split(".").pop() === "jpg" ||
-                itemInfo?.name.split(".").pop() === "jpeg" ?
-                <FaFileImage size={logoSize} className='mx-2' />
-                : itemInfo?.name.split(".").pop() === "pdf" ?
-                  <FaFilePdf size={logoSize} className='mx-2' />
-                  : itemInfo?.name.split(".").pop() === "rar" ||
-                    itemInfo?.name.split(".").pop() === "zip" ?
-                    <FaFileArchive size={logoSize} className='mx-2' />
-                    : itemInfo?.name.split(".").pop() === "html" ?
-                      <FaHtml5 size={logoSize} className='mx-2' />
-                      : itemInfo?.name.split(".").pop() === "css" ?
-                        <FaCss3 size={logoSize} className='mx-2' />
-                        : itemInfo?.name.split(".").pop() === "mp3" ?
-                          <FaMusic size={logoSize} className='mx-2' />
-                          : itemInfo?.name.split(".").pop() === "mp4" ?
-                            <BiMoviePlay size={logoSize} className='mx-2' />
-                            : itemInfo?.name.split(".").pop() === "java" ||
-                              itemInfo?.name.split(".").pop() === "jar" ?
-                              <FaJava size={logoSize} className='mx-2' />
-                              : itemInfo?.name.split(".").pop() === "js" ?
-                                <IoLogoJavascript size={logoSize} className='mx-2' /> :
-                                <FaFileAlt size={logoSize} className='mx-2' />
-        }
+        { itemInfo ? <DirectoryItemIcon itemInfo={itemInfo} logoSize={logoSize} /> : null}
         {
           itemInfo?.path === "./" ?
             <h1

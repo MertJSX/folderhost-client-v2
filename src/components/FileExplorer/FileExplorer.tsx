@@ -33,6 +33,7 @@ import { type DirectoryItem } from '../../types/DirectoryItem';
 import { type ExplorerContextType } from '../../types/ExplorerContextType';
 import LoadingComponent from '../LoadingComponent/LoadingComponent';
 import { RiAddLargeFill } from "react-icons/ri";
+import { DirectoryItemIcon } from '../../utils/DirectoryItemIcon';
 
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
@@ -45,32 +46,6 @@ const FileExplorer: React.FC = () => {
   const {
     path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, setContextMenu, scrollIndex, isDirLoading: isLoading
   } = useContext<ExplorerContextType>(ExplorerContext)
-
-  // File type icon mapping
-  const getFileIcon = (element: DirectoryItem) => {
-    if (element.isDirectory) {
-      return <FaFolder size={20} className='text-blue-400' />;
-    }
-
-    const extension = element.name.split(".").pop()?.toLowerCase();
-    const iconMap: { [key: string]: JSX.Element } = {
-      'png': <FaFileImage size={20} className='text-green-400' />,
-      'jpg': <FaFileImage size={20} className='text-green-400' />,
-      'jpeg': <FaFileImage size={20} className='text-green-400' />,
-      'pdf': <FaFilePdf size={20} className='text-red-400' />,
-      'zip': <FaFileArchive size={20} className='text-yellow-400' />,
-      'rar': <FaFileArchive size={20} className='text-yellow-400' />,
-      'html': <FaHtml5 size={20} className='text-orange-400' />,
-      'css': <FaCss3 size={20} className='text-blue-400' />,
-      'js': <IoLogoJavascript size={20} className='text-yellow-300' />,
-      'mp3': <FaMusic size={20} className='text-purple-400' />,
-      'mp4': <BiMoviePlay size={20} className='text-purple-400' />,
-      'java': <FaJava size={20} className='text-red-500' />,
-      'jar': <FaJava size={20} className='text-red-500' />,
-    };
-
-    return iconMap[extension || ''] || <FaFileAlt size={20} className='text-gray-300' />;
-  };
 
   const handleSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -367,7 +342,8 @@ const FileExplorer: React.FC = () => {
             >
               {/* Icon */}
               <div className="col-span-1 flex justify-center">
-                {getFileIcon(element)}
+                {/* {getFileIcon(element)} */}
+                <DirectoryItemIcon itemInfo={element} logoSize={22} />
               </div>
 
               {/* Name */}
