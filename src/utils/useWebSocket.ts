@@ -6,20 +6,22 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState<Boolean>(false);
   const [connectionError, setConnectionError] = useState<Boolean>(false);
-  const isConnectedRef = useRef<Boolean>(false)
+  const isConnectedRef = useRef<Boolean>(false);
   const [messages, setMessages] = useState<Array<string>>([]);
   const reconnectTimeoutRef = useRef<number | null>(null);
+  
+  const previousPathRef = useRef<string>(path);
 
   const connect = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+
     const token = Cookies.get("token");
     if (!token) {
       console.error('Token not found');
       return;
-    }
-
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
     }
 
     const wsUrl = `${API_BASE_URL}/ws/${encodeURIComponent(path)}?token=${encodeURIComponent(token)}`;
@@ -49,7 +51,7 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
       isConnectedRef.current = false;
       wsRef.current = null;
 
-      if (event.code !== 1000 && !reconnectTimeoutRef.current) {
+      if (event.code !== 1000 && shouldConnect && !reconnectTimeoutRef.current) {
         setConnectionError(true);
         reconnectTimeoutRef.current = setTimeout(() => {
           console.log('Trying to connect again...');
@@ -62,16 +64,19 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
       console.error('WebSocket error:', error);
       setConnectionError(true);
     };
-  }, [path]);
+  }, [path, shouldConnect]);
 
   const disconnect = useCallback(() => {
     if (wsRef.current) {
       wsRef.current.close(1000, "Manual disconnect");
+      wsRef.current = null;
     }
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
+    setIsConnected(false);
+    isConnectedRef.current = false;
   }, []);
 
   const sendMessage = useCallback((message: string) => {
@@ -92,14 +97,15 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
     return () => {
       disconnect();
     };
-  }, [shouldConnect, connect, disconnect]);
+  }, [shouldConnect]);
 
   useEffect(() => {
-    if (shouldConnect && isConnectedRef.current) {
+    if (shouldConnect && isConnectedRef.current && previousPathRef.current !== path) {
       console.log('Path changed, reconnecting WebSocket...');
+      previousPathRef.current = path;
       connect();
     }
-  }, [path, shouldConnect, connect]);
+  }, [path, shouldConnect]);
 
   return {
     isConnected,
