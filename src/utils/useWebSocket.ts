@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const useWebSocket = (path : string, shouldConnect: boolean) => {
+const useWebSocket = (path: string, shouldConnect: boolean) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState<Boolean>(false);
   const [connectionError, setConnectionError] = useState<Boolean>(false);
@@ -17,6 +17,11 @@ const useWebSocket = (path : string, shouldConnect: boolean) => {
       return;
     }
 
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+
     const wsUrl = `${API_BASE_URL}/ws/${encodeURIComponent(path)}?token=${encodeURIComponent(token)}`;
 
     const websocket = new WebSocket(wsUrl);
@@ -26,6 +31,7 @@ const useWebSocket = (path : string, shouldConnect: boolean) => {
       setIsConnected(true);
       isConnectedRef.current = true;
       wsRef.current = websocket;
+      setConnectionError(false);
 
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
@@ -40,11 +46,11 @@ const useWebSocket = (path : string, shouldConnect: boolean) => {
     websocket.onclose = (event) => {
       console.log('WebSocket connection has been closed', event.code, event.reason);
       setIsConnected(false);
-      setConnectionError(true);
       isConnectedRef.current = false;
       wsRef.current = null;
 
-      if (!reconnectTimeoutRef.current) {
+      if (event.code !== 1000 && !reconnectTimeoutRef.current) {
+        setConnectionError(true);
         reconnectTimeoutRef.current = setTimeout(() => {
           console.log('Trying to connect again...');
           connect();
@@ -54,12 +60,13 @@ const useWebSocket = (path : string, shouldConnect: boolean) => {
 
     websocket.onerror = (error) => {
       console.error('WebSocket error:', error);
+      setConnectionError(true);
     };
   }, [path]);
 
   const disconnect = useCallback(() => {
     if (wsRef.current) {
-      wsRef.current.close();
+      wsRef.current.close(1000, "Manual disconnect");
     }
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -78,12 +85,21 @@ const useWebSocket = (path : string, shouldConnect: boolean) => {
   useEffect(() => {
     if (shouldConnect) {
       connect();
+    } else {
+      disconnect();
     }
 
     return () => {
       disconnect();
     };
-  }, [shouldConnect]);
+  }, [shouldConnect, connect, disconnect]);
+
+  useEffect(() => {
+    if (shouldConnect && isConnectedRef.current) {
+      console.log('Path changed, reconnecting WebSocket...');
+      connect();
+    }
+  }, [path, shouldConnect, connect]);
 
   return {
     isConnected,

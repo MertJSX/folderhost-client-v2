@@ -112,6 +112,12 @@ const ExplorerPage: React.FC = () => {
             setRes("Unzip completed successfully!")
           }
           break;
+        case "directory-update":
+          if (unzipping) {
+            return
+          }
+          readDir()
+          break;
         case "error":
           setError(message.error ?? "Unknown error")
           break;
