@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import convertBytesToString from '../../utils/convertBytesToString.js';
 import axiosInstance from '../../utils/axiosInstance.js';
+import type { AxiosError } from 'axios';
 
 const UploadFile = () => {
   const params = useParams();
@@ -28,7 +29,7 @@ const UploadFile = () => {
     setUploading(false)
   }, [file])
 
-  function uploadFile() {
+  async function uploadFile() {
     if (file === undefined) {
       alert("Please select a file to upload!")
       return
@@ -42,41 +43,38 @@ const UploadFile = () => {
     setRes("");
     setErr("");
     setUploadProgress(0);
-    for (let i = 0; i < totalChunks; i++) {
-      const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
-      let formData = new FormData();
-      formData.append('file', chunk)
-      formData.append('chunkIndex', i.toString())
-      formData.append('totalChunks', totalChunks.toString())
-      formData.append('fileID', fileID)
-      formData.append('fileName', fileName)
 
-      axiosInstance.post(`/upload?path=${path.slice(1)}`, formData)
-        .then((data) => {
+    try {
+      for (let i = 0; i < totalChunks; i++) {
+        const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
+        const formData = new FormData();
+        formData.append('file', chunk);
+        formData.append('chunkIndex', i.toString());
+        formData.append('totalChunks', totalChunks.toString());
+        formData.append('fileID', fileID);
+        formData.append('fileName', file.name);
+
+        const response = await axiosInstance.post(`/upload?path=${path.slice(1)}`, formData);
+
+
+        if (response.data.response && !response.data.uploaded) {
           setUploadProgress((prev) => prev + progressIndex)
+          setRes(`Uploading ${convertBytesToString(chunkSize * i)} / ${convertBytesToString(file.size)}`)
+        }
 
-          if (data.data.response && !data.data.uploaded) {
-            setRes(`Uploading ${convertBytesToString(chunkSize * i)} / ${convertBytesToString(file.size)}`)
-          }
-          if (data.data.uploaded) {
-            setRes(data.data.response)
-            setUploadProgress(100);
-          }
-        }).catch((err) => {
-          console.error(err);
-          if (err.response) {
-            console.error(err.response);
-            setErr(err.response.data.err)
-          }
-        }).finally(() => {
+        if (response.data.uploaded) {
+          setRes(response.data.response);
           setUploadProgress(100)
-
-          setTimeout(() => {
-            setUploadProgress(0)
-          }, 1000);
-
-          setUploading(false)
-        })
+        }
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ err?: string }>;
+      console.error(err);
+      if (err.response?.data?.err) {
+        setErr(err.response?.data?.err || "Upload failed");
+      }
+    } finally {
+      setUploading(false);
     }
   }
 
