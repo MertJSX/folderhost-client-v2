@@ -47,7 +47,7 @@ const OptionsBar = () => {
                     }}
                 >Refresh</button>
                 <button
-                    className='ml-5 inline-flex justify-between items-center w-48 px-3 py-2 text-left text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-700 focus:outline-none'
+                    className='ml-5 inline-flex justify-between items-center w-48 px-3 py-2 text-left text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none'
                     onClick={() => { setSettings(!settings) }}>
                     <IoMdSettings size={buttonSize} />
                     Options

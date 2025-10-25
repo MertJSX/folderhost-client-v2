@@ -66,7 +66,7 @@ const ChangeMode = () => {
         <div className="relative inline-block text-left pl-5" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-700 focus:outline-none"
+                className="inline-flex justify-between items-center w-48 px-3 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none"
             >
                 {selectedOption === "Quality mode" ?
                     <IoDiamond size={onButtonSize} /> :
@@ -77,12 +77,12 @@ const ChangeMode = () => {
             </button>
 
             {isOpen && (
-                <div className="origin-top-left absolute left-0 mt-2 w-72 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
+                <div className="origin-top-left absolute left-0 mt-2 w-72 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
                     <div className="py-1">
                         {options.map((option, index) => (
                             <div
                                 key={index}
-                                className="flex items-start px-4 py-2 text-sm text-white hover:bg-gray-800 cursor-pointer border-2 border-sky-700"
+                                className="flex items-start px-4 py-2 text-sm text-white hover:bg-gray-900 cursor-pointer border-2 border-sky-700"
                                 onClick={() => handleOptionClick(option)}
                             >
                                 {option.mode === "optimized" ? (
