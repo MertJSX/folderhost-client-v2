@@ -9,7 +9,7 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
   const isConnectedRef = useRef<Boolean>(false);
   const [messages, setMessages] = useState<Array<string>>([]);
   const reconnectTimeoutRef = useRef<number | null>(null);
-  
+
   const previousPathRef = useRef<string>(path);
 
   const connect = useCallback(() => {
@@ -101,9 +101,12 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
 
   useEffect(() => {
     if (shouldConnect && isConnectedRef.current && previousPathRef.current !== path) {
-      console.log('Path changed, reconnecting WebSocket...');
       previousPathRef.current = path;
-      connect();
+      const delta = JSON.stringify({
+        type: 'change-path',
+        path: path?.slice(1)
+      });
+      sendMessage(delta)
     }
   }, [path, shouldConnect]);
 
